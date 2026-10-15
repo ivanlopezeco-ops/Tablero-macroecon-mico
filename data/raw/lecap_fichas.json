@@ -3,7 +3,8 @@
   "tem": null,
   "emision": "2026-06-30",
   "vencimiento": "2026-11-13",
-  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 13 DE NOVIEMBRE DE 2026"
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 13 DE NOVIEMBRE DE 2026",
+  "interes": "Pagarán una tasa efectiva mensual capitalizable mensualmente hasta el vencimiento del instrumento.\n"
  },
  "S16O6": {
   "tem": 0.020499999999999997,
@@ -15,7 +16,8 @@
   "tem": null,
   "emision": "2026-08-31",
   "vencimiento": "2027-01-29",
-  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 29 DE ENERO DE 2027"
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 29 DE ENERO DE 2027",
+  "interes": "Pagarán una tasa efectiva mensual capitalizable mensualmente hasta el vencimiento del instrumento "
  },
  "S30N6": {
   "tem": 0.023,

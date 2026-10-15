@@ -1,22 +1,18 @@
 {
- "corrida_utc": "2026-10-15T02:42:45.446978",
+ "corrida_utc": "2026-10-15T02:53:48.272180",
  "modo": "completo",
  "fuentes": {
   "bcra": {
    "estado": "ok",
-   "filas": 81301
+   "filas": 81299
   },
   "bcra_cny": {
    "estado": "ok",
-   "filas": 655
+   "filas": 696
   },
   "bcrd_embi": {
    "estado": "ok",
    "filas": 83686
-  },
-  "bcrp_embig": {
-   "estado": "ok",
-   "filas": 7824
   },
   "argentinadatos": {
    "estado": "ok",
@@ -44,8 +40,8 @@
   },
   "datos_gob": {
    "estado": "ok",
-   "filas": 861,
-   "error": "143.3_NO_PR_2004_A_31: tramo vacío desde 2012-04-02, la serie puede quedar incompleta | 74.3_IET_0_M_16: tramo vacío desde 2000-04-02, la serie puede quedar incompleta | 74.3_IIT_0_M_25: tramo vacío desde 2025-04-02, la serie puede quedar incompleta"
+   "filas": 848,
+   "error": "143.3_NO_PR_2004_A_31: tramo vacío desde 2012-05-01, la serie puede quedar incompleta | 74.3_IET_0_M_16: tramo vacío desde 2008-09-01, la serie puede quedar incompleta | 74.3_IIT_0_M_25: tramo vacío desde 2017-01-01, la serie puede quedar incompleta"
   },
   "rem": {
    "estado": "ok",
@@ -65,7 +61,7 @@
   },
   "lecaps": {
    "estado": "ok",
-   "filas": 88
+   "filas": 481
   },
   "byma_snapshots": {
    "estado": "ok",
@@ -73,7 +69,7 @@
   }
  },
  "notas": {
-  "swap_cny_millones_usado": 130004.4,
+  "swap_cny_millones_usado": 130010.5,
   "dep_tesoro": "BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
  }
 }
