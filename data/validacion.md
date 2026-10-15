@@ -1,4 +1,4 @@
-# Validación — corrida 2026-10-15 02:59 UTC
+# Validación — corrida 2026-10-15 03:02 UTC
 
 ## 1. Reservas vs tabla de Machado
 
@@ -192,139 +192,140 @@ Swap: 130010.5 millones de CNY.
 
 | variable | último dato | valor | días de rezago |
 |---|---|---:|---:|
-| al30_ars | 2026-10-14 | 86,260.00 | 0 |
-| al30_usd_ccl | 2026-10-14 | 53.30 | 0 |
-| al30_usd_mep | 2026-10-14 | 56.20 | 0 |
-| badlar | 2026-10-13 | 21.69 | 1 |
-| baibar | 2026-10-13 | 21.54 | 1 |
-| banda_piso | 2026-10-15 | 718.30 | -1 |
-| banda_techo | 2026-10-15 | 1,935.12 | -1 |
-| base_monetaria | 2026-10-09 | 46,528,318.00 | 5 |
-| bc_bienes | 2026-08-01 | 3,176.42 | 74 |
-| bc_billetes_divisas_spnf | 2026-08-01 | -2,677.48 | 74 |
-| bc_cobros_exportaciones | 2026-08-01 | 8,794.90 | 74 |
-| bc_cuenta_corriente | 2026-08-01 | 806.31 | 74 |
-| bc_cuenta_financiera | 2026-08-01 | -1,061.28 | 74 |
-| bc_fmi | 2026-08-01 | 0.00 | 74 |
-| bc_ied | 2026-08-01 | -595.56 | 74 |
-| bc_intereses | 2026-08-01 | -1,175.40 | 74 |
-| bc_intereses_fmi | 2026-08-01 | 808.40 | 74 |
-| bc_otros_organismos | 2026-08-01 | -52.40 | 74 |
-| bc_pagos_importaciones | 2026-08-01 | 5,618.48 | 74 |
-| bc_portafolio | 2026-08-01 | -15.56 | 74 |
-| bc_prestamos_titulos_deuda | 2026-08-01 | 1,296.97 | 74 |
-| bc_servicios | 2026-08-01 | -712.22 | 74 |
-| bc_utilidades_dividendos | 2026-08-01 | -475.16 | 74 |
-| bc_var_reservas_transacciones | 2026-08-01 | -249.79 | 74 |
-| brecha_ccl | 2026-10-14 | 6.85 | 0 |
-| brent | 2026-10-15 | 104.45 | -1 |
-| brl_usd | 2026-10-15 | 5.05 | -1 |
-| canje_ccl_mep | 2026-10-14 | 5.44 | 0 |
-| caucion_a3_pesos_1d | 2026-10-14 | 22.43 | 0 |
-| caucion_a3_usd_1d | 2026-10-14 | 1.14 | 0 |
-| ccl | 2026-10-14 | 1,618.39 | 0 |
-| ccl_ad | 2026-10-15 | 1,617.30 | -1 |
-| ccl_largo | 2026-10-14 | 1,618.39 | 0 |
-| compras_bcra_acum_anio | 2026-10-08 | 14,852.41 | 6 |
-| compras_bcra_mlc | 2026-10-08 | 43.00 | 6 |
-| compras_bcra_pct_volumen | 2026-10-08 | 8.15 | 6 |
-| demanda_electrica_diaria | 2026-10-14 | 392,277.00 | 0 |
-| depositos_gobierno_bcra_me_ars | 2026-10-09 | 1,869,903.00 | 5 |
-| depositos_privados_usd | 2026-10-08 | 42,377.00 | 6 |
-| distancia_techo_banda | 2026-10-14 | 27.70 | 0 |
-| dxy | 2026-10-15 | 101.97 | -1 |
-| emae_desest | 2026-07-01 | 149.65 | 105 |
-| encajes_usd_bcra | 2026-10-09 | 16,446.60 | 5 |
-| exportaciones | 2026-08-01 | 8,882.58 | 74 |
-| futuro_diciembre | 2026-10-14 | 1,583.50 | 0 |
-| futuro_fin_mes | 2026-10-14 | 1,527.00 | 0 |
-| gd30_ars | 2026-10-14 | 88,580.00 | 0 |
-| gd30_usd_ccl | 2026-10-14 | 54.68 | 0 |
-| gd35_usd_ccl | 2026-10-14 | 71.79 | 0 |
-| importaciones | 2026-08-01 | 6,695.99 | 74 |
-| ipc_nivel_general | 2026-08-01 | 12,276.77 | 74 |
-| ipc_nucleo | 2026-08-01 | 12,445.80 | 74 |
-| lebac_lediv_bopreal_usd | 2026-10-13 | 4,889.69 | 1 |
-| m2_transaccional_privado | 2026-10-08 | 67,012,136.40 | 6 |
-| mc_mineria | 2026-08-01 | 674.92 | 74 |
-| mc_oleaginosos_cerealeros | 2026-08-01 | 2,932.54 | 74 |
-| mc_personas_humanas | 2026-08-01 | -3,531.90 | 74 |
-| mc_petroleo | 2026-08-01 | 1,007.98 | 74 |
-| mc_total | 2026-08-01 | 271.53 | 74 |
-| mep | 2026-10-14 | 1,534.88 | 0 |
-| mep_ad | 2026-10-15 | 1,539.70 | -1 |
-| mep_largo | 2026-10-14 | 1,534.88 | 0 |
-| oro | 2026-10-15 | 4,168.00 | -1 |
-| prestamos_privados_pesos | 2026-10-08 | 107,444,201.00 | 6 |
-| prestamos_privados_usd | 2026-10-08 | 25,929.00 | 6 |
-| rem_inflacion_12m | 2026-09-30 | 21.05 | 14 |
-| rem_inflacion_mes_siguiente | 2026-09-30 | 1.70 | 14 |
-| rem_tc_fin_de_anio | 2026-09-30 | 1,614.32 | 14 |
-| repo_a3_pesos_1d | 2026-10-14 | 21.66 | 0 |
-| res_bis | 2026-10-09 | 148.00 | 5 |
-| res_bopreal_1a | 2026-10-09 | 1,444.00 | 5 |
-| res_dep_tesoro | 2026-10-09 | 1,233.55 | 5 |
-| res_encajes | 2026-10-09 | 16,446.60 | 5 |
-| res_repos | 2026-10-09 | 2,484.00 | 5 |
-| res_swap_china | 2026-10-09 | 19,421.36 | 5 |
-| reservas_brutas | 2026-10-09 | 49,709.00 | 5 |
-| reservas_netas | 2026-10-09 | 11,209.04 | 5 |
-| reservas_super_netas | 2026-10-09 | 8,531.49 | 5 |
-| resultado_primario_spn | 2026-08-01 | 1,990,321.80 | 74 |
-| riesgo_pais_argentina | 2026-10-13 | 599.10 | 1 |
-| riesgo_pais_argentina_ad | 2026-10-14 | 611.00 | 0 |
-| riesgo_pais_argentina_largo | 2026-10-13 | 599.10 | 1 |
-| riesgo_pais_bolivia | 2026-10-13 | 481.13 | 1 |
-| riesgo_pais_brasil | 2026-10-13 | 156.55 | 1 |
-| riesgo_pais_chile | 2026-10-13 | 93.23 | 1 |
-| riesgo_pais_colombia | 2026-10-13 | 214.89 | 1 |
-| riesgo_pais_costa_rica | 2026-10-13 | 138.47 | 1 |
-| riesgo_pais_ecuador | 2026-10-13 | 521.36 | 1 |
-| riesgo_pais_el_salvador | 2026-10-13 | 287.66 | 1 |
-| riesgo_pais_global | 2026-10-13 | 187.74 | 1 |
-| riesgo_pais_guatemala | 2026-10-13 | 123.45 | 1 |
-| riesgo_pais_honduras | 2026-10-13 | 173.42 | 1 |
-| riesgo_pais_latam | 2026-10-13 | 185.09 | 1 |
-| riesgo_pais_mexico | 2026-10-13 | 206.63 | 1 |
-| riesgo_pais_panama | 2026-10-13 | 122.67 | 1 |
-| riesgo_pais_paraguay | 2026-10-13 | 113.01 | 1 |
-| riesgo_pais_peru | 2026-10-13 | 112.79 | 1 |
-| riesgo_pais_rep_dominicana | 2026-10-13 | 178.59 | 1 |
-| riesgo_pais_uruguay | 2026-10-13 | 75.32 | 1 |
-| riesgo_pais_venezuela | 2026-10-13 | 4,129.95 | 1 |
-| soja_cbot | 2026-10-15 | 1,272.50 | -1 |
-| tamar | 2026-10-13 | 23.81 | 1 |
-| tasa_pases_terceros_1d | 2026-10-13 | 21.09 | 1 |
-| tasa_plazo_fijo_30d | 2026-10-13 | 20.65 | 1 |
-| tasa_real_ex_ante_tamar | 2026-10-13 | 0.25 | 1 |
-| tc_mayorista_a3500 | 2026-10-14 | 1,514.57 | 0 |
-| tcr_brasil | 2026-10-14 | 87.64 | 0 |
-| tcr_eeuu | 2026-10-14 | 92.94 | 0 |
-| tcrm | 2026-10-14 | 85.13 | 0 |
-| usd_por_cny | 2026-10-14 | 0.15 | 0 |
-| ust_10y | 2026-10-14 | 5.19 | 0 |
-| ust_2y | 2026-10-14 | 4.82 | 0 |
-| ust_30y | 2026-10-14 | 5.52 | 0 |
-| vix | 2026-10-14 | 16.87 | 0 |
-| volumen_mlc | 2026-10-14 | 588.24 | 0 |
+| al30_ars | 2026-10-14 | 86,260.00 | 1 |
+| al30_usd_ccl | 2026-10-14 | 53.30 | 1 |
+| al30_usd_mep | 2026-10-14 | 56.20 | 1 |
+| badlar | 2026-10-13 | 21.69 | 2 |
+| baibar | 2026-10-13 | 21.54 | 2 |
+| banda_piso | 2026-10-15 | 718.30 | 0 |
+| banda_techo | 2026-10-15 | 1,935.12 | 0 |
+| base_monetaria | 2026-10-09 | 46,528,318.00 | 6 |
+| bc_bienes | 2026-08-01 | 3,176.42 | 75 |
+| bc_billetes_divisas_spnf | 2026-08-01 | -2,677.48 | 75 |
+| bc_cobros_exportaciones | 2026-08-01 | 8,794.90 | 75 |
+| bc_cuenta_corriente | 2026-08-01 | 806.31 | 75 |
+| bc_cuenta_financiera | 2026-08-01 | -1,061.28 | 75 |
+| bc_fmi | 2026-08-01 | 0.00 | 75 |
+| bc_ied | 2026-08-01 | -595.56 | 75 |
+| bc_intereses | 2026-08-01 | -1,175.40 | 75 |
+| bc_intereses_fmi | 2026-08-01 | 808.40 | 75 |
+| bc_otros_organismos | 2026-08-01 | -52.40 | 75 |
+| bc_pagos_importaciones | 2026-08-01 | 5,618.48 | 75 |
+| bc_portafolio | 2026-08-01 | -15.56 | 75 |
+| bc_prestamos_titulos_deuda | 2026-08-01 | 1,296.97 | 75 |
+| bc_servicios | 2026-08-01 | -712.22 | 75 |
+| bc_utilidades_dividendos | 2026-08-01 | -475.16 | 75 |
+| bc_var_reservas_transacciones | 2026-08-01 | -249.79 | 75 |
+| brecha_ccl | 2026-10-14 | 6.85 | 1 |
+| brent | 2026-10-15 | 104.43 | 0 |
+| brl_usd | 2026-10-15 | 5.05 | 0 |
+| canje_ccl_mep | 2026-10-14 | 5.44 | 1 |
+| caucion_a3_pesos_1d | 2026-10-14 | 22.43 | 1 |
+| caucion_a3_usd_1d | 2026-10-14 | 1.14 | 1 |
+| ccl | 2026-10-14 | 1,618.39 | 1 |
+| ccl_ad | 2026-10-15 | 1,617.30 | 0 |
+| ccl_largo | 2026-10-14 | 1,618.39 | 1 |
+| compras_bcra_acum_anio | 2026-10-08 | 14,852.41 | 7 |
+| compras_bcra_mlc | 2026-10-08 | 43.00 | 7 |
+| compras_bcra_pct_volumen | 2026-10-08 | 8.15 | 7 |
+| demanda_electrica_diaria | 2026-10-14 | 392,277.00 | 1 |
+| depositos_gobierno_bcra_me_ars | 2026-10-09 | 1,869,903.00 | 6 |
+| depositos_privados_usd | 2026-10-08 | 42,377.00 | 7 |
+| distancia_techo_banda | 2026-10-14 | 27.70 | 1 |
+| dxy | 2026-10-15 | 101.98 | 0 |
+| emae_desest | 2026-07-01 | 149.65 | 106 |
+| encajes_usd_bcra | 2026-10-09 | 16,446.60 | 6 |
+| exportaciones | 2026-08-01 | 8,882.58 | 75 |
+| futuro_diciembre | 2026-10-14 | 1,583.50 | 1 |
+| futuro_fin_mes | 2026-10-14 | 1,527.00 | 1 |
+| gd30_ars | 2026-10-14 | 88,580.00 | 1 |
+| gd30_usd_ccl | 2026-10-14 | 54.68 | 1 |
+| gd35_usd_ccl | 2026-10-14 | 71.79 | 1 |
+| importaciones | 2026-08-01 | 6,695.99 | 75 |
+| ipc_nivel_general | 2026-08-01 | 12,276.77 | 75 |
+| ipc_nucleo | 2026-08-01 | 12,445.80 | 75 |
+| lebac_lediv_bopreal_usd | 2026-10-13 | 4,889.69 | 2 |
+| m2_transaccional_privado | 2026-10-08 | 67,012,136.40 | 7 |
+| mc_mineria | 2026-08-01 | 674.92 | 75 |
+| mc_oleaginosos_cerealeros | 2026-08-01 | 2,932.54 | 75 |
+| mc_personas_humanas | 2026-08-01 | -3,531.90 | 75 |
+| mc_petroleo | 2026-08-01 | 1,007.98 | 75 |
+| mc_total | 2026-08-01 | 271.53 | 75 |
+| mep | 2026-10-14 | 1,534.88 | 1 |
+| mep_ad | 2026-10-15 | 1,539.70 | 0 |
+| mep_largo | 2026-10-14 | 1,534.88 | 1 |
+| oro | 2026-10-15 | 4,169.20 | 0 |
+| prestamos_privados_pesos | 2026-10-08 | 107,444,201.00 | 7 |
+| prestamos_privados_usd | 2026-10-08 | 25,929.00 | 7 |
+| rem_inflacion_12m | 2026-09-30 | 21.05 | 15 |
+| rem_inflacion_mes_siguiente | 2026-09-30 | 1.70 | 15 |
+| rem_tc_fin_de_anio | 2026-09-30 | 1,614.32 | 15 |
+| repo_a3_pesos_1d | 2026-10-14 | 21.66 | 1 |
+| res_bis | 2026-10-09 | 148.00 | 6 |
+| res_bopreal_1a | 2026-10-09 | 1,444.00 | 6 |
+| res_dep_tesoro | 2026-10-09 | 1,233.55 | 6 |
+| res_encajes | 2026-10-09 | 16,446.60 | 6 |
+| res_repos | 2026-10-09 | 2,484.00 | 6 |
+| res_swap_china | 2026-10-09 | 19,421.36 | 6 |
+| reservas_brutas | 2026-10-09 | 49,709.00 | 6 |
+| reservas_netas | 2026-10-09 | 11,209.04 | 6 |
+| reservas_super_netas | 2026-10-09 | 8,531.49 | 6 |
+| resultado_primario_spn | 2026-08-01 | 1,990,321.80 | 75 |
+| riesgo_pais_argentina | 2026-10-13 | 599.10 | 2 |
+| riesgo_pais_argentina_ad | 2026-10-14 | 611.00 | 1 |
+| riesgo_pais_argentina_largo | 2026-10-13 | 599.10 | 2 |
+| riesgo_pais_bolivia | 2026-10-13 | 481.13 | 2 |
+| riesgo_pais_brasil | 2026-10-13 | 156.55 | 2 |
+| riesgo_pais_chile | 2026-10-13 | 93.23 | 2 |
+| riesgo_pais_colombia | 2026-10-13 | 214.89 | 2 |
+| riesgo_pais_costa_rica | 2026-10-13 | 138.47 | 2 |
+| riesgo_pais_ecuador | 2026-10-13 | 521.36 | 2 |
+| riesgo_pais_el_salvador | 2026-10-13 | 287.66 | 2 |
+| riesgo_pais_global | 2026-10-13 | 187.74 | 2 |
+| riesgo_pais_guatemala | 2026-10-13 | 123.45 | 2 |
+| riesgo_pais_honduras | 2026-10-13 | 173.42 | 2 |
+| riesgo_pais_latam | 2026-10-13 | 185.09 | 2 |
+| riesgo_pais_mexico | 2026-10-13 | 206.63 | 2 |
+| riesgo_pais_panama | 2026-10-13 | 122.67 | 2 |
+| riesgo_pais_paraguay | 2026-10-13 | 113.01 | 2 |
+| riesgo_pais_peru | 2026-10-13 | 112.79 | 2 |
+| riesgo_pais_rep_dominicana | 2026-10-13 | 178.59 | 2 |
+| riesgo_pais_uruguay | 2026-10-13 | 75.32 | 2 |
+| riesgo_pais_venezuela | 2026-10-13 | 4,129.95 | 2 |
+| soja_cbot | 2026-10-15 | 1,272.50 | 0 |
+| tamar | 2026-10-13 | 23.81 | 2 |
+| tasa_pases_terceros_1d | 2026-10-13 | 21.09 | 2 |
+| tasa_plazo_fijo_30d | 2026-10-13 | 20.65 | 2 |
+| tasa_real_ex_ante_badlar | 2026-10-13 | 0.08 | 2 |
+| tasa_real_ex_ante_tamar | 2026-10-13 | 0.25 | 2 |
+| tc_mayorista_a3500 | 2026-10-14 | 1,514.57 | 1 |
+| tcr_brasil | 2026-10-14 | 87.64 | 1 |
+| tcr_eeuu | 2026-10-14 | 92.94 | 1 |
+| tcrm | 2026-10-14 | 85.13 | 1 |
+| usd_por_cny | 2026-10-14 | 0.15 | 1 |
+| ust_10y | 2026-10-14 | 5.19 | 1 |
+| ust_2y | 2026-10-14 | 4.82 | 1 |
+| ust_30y | 2026-10-14 | 5.52 | 1 |
+| vix | 2026-10-14 | 16.87 | 1 |
+| volumen_mlc | 2026-10-14 | 588.24 | 1 |
 
 ## 7. Estado de fuentes
 
 | fuente | estado | filas | detalle |
 |---|---|---:|---|
-| bcra | ok | 1465 |  |
-| bcra_cny | ok | 83 |  |
+| bcra | ok | 1449 |  |
+| bcra_cny | ok | 82 |  |
 | bcrd_embi | ok | 83686 |  |
 | argentinadatos | ok | 15667 |  |
-| byma_historicos | ok | 504 |  |
-| rofex_futuros | ok | 995 |  |
+| byma_historicos | ok | 498 |  |
+| rofex_futuros | ok | 983 |  |
 | cammesa | ok | 1 |  |
 | treasury | ok | 591 |  |
-| yahoo | ok | 513 |  |
+| yahoo | ok | 507 |  |
 | datos_gob | ok | 1465 |  |
 | rem | ok | 312 |  |
 | itcrm | ok | 32637 |  |
 | balance_cambiario | ok | 5964 |  |
-| a3_mae | ok | 345 |  |
-| lecaps | ok | 214 |  |
+| a3_mae | ok | 341 |  |
+| lecaps | ok | 212 |  |
 | byma_snapshots | ok | 0 |  |
