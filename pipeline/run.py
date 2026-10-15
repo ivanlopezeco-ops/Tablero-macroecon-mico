@@ -63,6 +63,10 @@ def derivadas(df):
     out.append(largo(comp.groupby(comp.index.year).cumsum(), "compras_bcra_acum_anio", "USD M",
                      "Cálculo: suma anual de compras BCRA"))
 
+    vol = serie(df, "volumen_mlc")
+    if not vol.empty:
+        out.append(largo(comp / vol * 100, "compras_bcra_pct_volumen", "%", "Cálculo: compras BCRA / volumen MLC (A3)"))
+
     # Reservas netas y súper netas (método Machado)
     brutas = serie(df, "reservas_brutas")
     f = brutas.index
@@ -169,7 +173,8 @@ def validar(df, notas, estado):
     cruce("mep", "mep_ad", "3. MEP: cálculo propio (AL30) vs ArgentinaDatos")
     cruce("ccl", "ccl_ad", "4. CCL: cálculo propio (AL30) vs ArgentinaDatos")
     cruce("tamar", "badlar", "5. Control de rango: TAMAR vs BADLAR", n=5)
-    cruce("caucion_pesos_1d", "tasa_pases_terceros_1d", "5b. Caución 1 día (BYMA) vs pases entre terceros (BCRA)", n=5)
+    cruce("caucion_a3_pesos_1d", "tasa_pases_terceros_1d", "5b. Caución 1 día (A3) vs pases entre terceros (BCRA)", n=5)
+    cruce("compras_bcra_mlc", "volumen_mlc", "5d. Compras del BCRA vs volumen del MLC (A3)", n=5)
 
     lec = df[df["variable"].str.startswith("lecap_tem_")]
     if not lec.empty:
@@ -202,7 +207,7 @@ def main():
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
                        ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob),
                        ("rem", F.rem), ("itcrm", F.itcrm),
-                       ("balance_cambiario", F.balance_cambiario)]:
+                       ("balance_cambiario", F.balance_cambiario), ("a3_mae", F.a3_mae)]:
         try:
             d = fn()
             partes.append(d)

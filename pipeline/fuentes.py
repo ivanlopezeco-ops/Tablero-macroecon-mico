@@ -391,10 +391,41 @@ def lecaps(fichas):
                 f = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
                 liq = pd.Timestamp(f) + pd.offsets.BDay(1)
                 dias = (ven - liq).days
-                if c and dias > 0:
+                if c and dias >= 10:  # con menos de 10 días el redondeo distorsiona la tasa
                     tem = ((pago / c) ** (30 / dias) - 1) * 100
                     filas.append((f, f"lecap_tem_{sym}", tem, "% TEM",
                                   f"Cálculo: BYMA {sym} (vence {fi['vencimiento']}, TEM emisión {fi['tem']*100:.2f}%)"))
         except Exception:  # noqa: BLE001
             continue
+    return _df(filas)
+
+
+# ---------------------------------------------------------------- A3 / MAE (API de la web pública)
+MAE = "https://api.marketdata.mae.com.ar/api/"
+MAE_H = {**UA, "Origin": "https://marketdata.mae.com.ar", "Referer": "https://marketdata.mae.com.ar/"}
+
+
+def _mae(ruta, ini, fin):
+    import json as _json
+    return _get(MAE + ruta, headers=MAE_H, params={"oTitulo": _json.dumps({"fechaDesde": str(ini), "fechaHasta": str(fin)})}).json()
+
+
+def a3_mae():
+    """Volumen del mercado de cambios (FOREX MAE) y tasas de caución y repo a 1 día, por ventanas de 30 días."""
+    filas = []
+    ini = max(DESDE, HOY - dt.timedelta(days=500))
+    while ini <= HOY:
+        fin = min(ini + dt.timedelta(days=29), HOY)
+        for d in _mae("mercado/titulo/historicoforex/volumenoperado", ini, fin) or []:
+            filas.append((d["fecha"][:10], "volumen_mlc", d["cant_Millones"], "USD M", "A3/MAE FOREX (volumen operado)"))
+        for d in _mae("mercado/titulo/historicocauciones", ini, fin) or []:
+            for x in d.get("details", []):
+                if x.get("plazo") == "001" and x.get("ticker") in ("CAARS", "CAUSD") and x.get("tasaPP"):
+                    var = "caucion_a3_pesos_1d" if x["ticker"] == "CAARS" else "caucion_a3_usd_1d"
+                    filas.append((x["fecha"][:10], var, x["tasaPP"], "% TNA", f"A3/MAE cauciones ({x['ticker']})"))
+        for d in _mae("mercado/titulo/historicorepo", ini, fin) or []:
+            for x in d.get("details", []):
+                if x.get("plazo") == "001" and x.get("rueda") == "REPO" and x.get("moneda") == "$" and x.get("tasaPP"):
+                    filas.append((x["fecha"][:10], "repo_a3_pesos_1d", x["tasaPP"], "% TNA", "A3/MAE repo (rueda REPO)"))
+        ini = fin + dt.timedelta(days=1)
     return _df(filas)
