@@ -1,5 +1,5 @@
 {
- "corrida_utc": "2026-10-15T01:25:12.591243",
+ "corrida_utc": "2026-10-15T01:26:42.398742",
  "fuentes": {
   "bcra": {
    "estado": "ok",
@@ -39,8 +39,7 @@
   },
   "datos_gob": {
    "estado": "ok",
-   "filas": 293,
-   "error": "143.3_NO_PR_2004_A_31: sin datos"
+   "filas": 348
   },
   "rem": {
    "estado": "ok",
