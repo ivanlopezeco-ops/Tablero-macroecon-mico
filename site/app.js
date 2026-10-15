@@ -163,7 +163,7 @@ function tarjeta(cont, cfg) {
   if (el.dataset.agregado) baj.textContent += el.dataset.agregado === "suma" ? " · Sumas mensuales" : " · Promedios mensuales";
   if (cfg.series && cfg.series[0].v) {   // aviso si la serie principal dejó de actualizarse
     const f = ult(cfg.series[0].v)[0]; const dias = f ? (Date.now() - Date.parse(f)) / 864e5 : 0;
-    if (f && dias > (cfg.mensual ? 75 : 10)) baj.insertAdjacentHTML("beforeend", ` · <span class="viejo">último dato: ${cfg.mensual ? mesCorto(f) : fechaCorta(f)}</span>`);
+    if (f && dias > (cfg.mensual ? 110 : 10)) baj.insertAdjacentHTML("beforeend", ` · <span class="viejo">último dato: ${cfg.mensual ? mesCorto(f) : fechaCorta(f)}</span>`);
   }
   return card;
 }
@@ -176,7 +176,7 @@ function kpi(cont, k) {
   const val = k.valor ? k.valor(v) : fmt(v, k.dec ?? 0);
   const dt = d == null ? "" : `${d > 0 ? "▲" : d < 0 ? "▼" : "="} ${fmt(Math.abs(d), k.decD ?? k.dec ?? 0)}`;
   const atraso = f ? Math.round((Date.now() - Date.parse(f)) / 864e5) : 0;
-  const viejo = f && atraso > (k.mensual ? 75 : 9);
+  const viejo = f && atraso > (k.mensual ? 110 : 9);
   el.innerHTML = `<div class="lbl">${k.lbl}</div><div class="val">${val}<small>${k.u || ""}</small></div>
     <div class="meta"><span>${dt}</span><span class="${viejo ? "viejo" : ""}" title="${viejo ? `Último dato hace ${atraso} días` : ""}">${f ? (k.mensual ? mesCorto(f) : fechaCorta(f)) : ""}</span></div><div class="spark"></div>`;
   cont.appendChild(el);
@@ -427,15 +427,20 @@ function actividad(main) {
     series: [{ v: "rem_inflacion_12m", nombre: "Próximos 12 meses" }] });
   tarjeta(g, { titulo: "Actividad económica (EMAE)", bajada: "Serie desestacionalizada · Índice 2004 = 100", fuente: F.indec, mensual: true, dec: 1,
     series: [{ v: "emae_desest", nombre: "EMAE" }] });
-  tarjeta(g, { titulo: "Demanda eléctrica diaria", badge: "acumulando historia",
-    bajada: "Energía demandada en el sistema · En MWh por día", fuente: "Fuente: elaboración propia en base a CAMMESA. La serie se acumula desde oct-26.",
-    series: [{ v: "demanda_electrica_diaria", nombre: "Demanda" }] });
+  const nDem = S("demanda_electrica_diaria").length;
+  tarjeta(g, { titulo: "Demanda eléctrica diaria", badge: nDem < 30 ? "acumulando historia" : "",
+    bajada: "Energía demandada en el sistema · En MWh por día", fuente: "Fuente: elaboración propia en base a CAMMESA. CAMMESA publica solo el día anterior: la serie se acumula desde oct-26.",
+    series: [{ v: "demanda_electrica_diaria", nombre: "Demanda" }],
+    render: nDem < 10 ? (el) => { el.style.height = "auto"; el.innerHTML = `<p class="seccion-intro" style="margin:24px 0">${nDem === 1 ? "Hay un día registrado" : `Hay ${nDem} días registrados`} (último: ${fmt(ult("demanda_electrica_diaria")[1])} MWh). El gráfico aparece con diez días de historia.</p>`; } : undefined });
   tarjeta(g, { titulo: () => `En ${mesCorto(ult("exportaciones")[0])} se exportaron USD ${fmt(ult("exportaciones")[1])} millones`,
     bajada: "Intercambio comercial de bienes · En millones de USD", fuente: F.indec, mensual: true,
     series: [{ v: "exportaciones", nombre: "Expo" }, { v: "importaciones", nombre: "Impo" }] });
-  tarjeta(g, { titulo: "Resultado primario del sector público nacional", bajada: "Base caja · En miles de millones de pesos",
-    fuente: "Fuente: elaboración propia en base a Ministerio de Economía.", mensual: true, tipo: "bar", sinEtiquetas: true, cero: true, negGris: true,
-    series: [{ v: "resultado_primario_spn", nombre: "Resultado primario", escala: 0.001 }] });
+  const ultIpc = ult("ipc_nivel_general")[0];
+  D.series._rpr = { u: "", f: "", d: deflactar("resultado_primario_spn").map(([f, x]) => [f, x / 1e3]) };
+  tarjeta(g, { titulo: () => { const v = ult("_rpr")[1]; return `En ${mesCorto(ult("_rpr")[0])} hubo un ${v >= 0 ? "superávit" : "déficit"} primario de $${fmt(Math.abs(v))} miles de millones`; },
+    bajada: `Sector público nacional, base caja · En miles de millones de pesos a precios de ${ultIpc ? mesCorto(ultIpc) : ""}`,
+    fuente: "Fuente: elaboración propia en base a Ministerio de Economía. Deflactado por IPC del INDEC.", mensual: true, tipo: "bar", sinEtiquetas: true, cero: true, negGris: true,
+    series: [{ v: "_rpr", nombre: "Resultado primario" }] });
   tarjeta(g, { ancha: true, titulo: () => `El tipo de cambio real multilateral está en ${fmt(ult("tcrm")[1], 1)}`,
     bajada: "Índice de tipo de cambio real multilateral y bilaterales · Base 17-12-15 = 100", fuente: F.bcra, dec: 1,
     series: [{ v: "tcrm", nombre: "Multilateral" }, { v: "tcr_brasil", nombre: "Brasil" }, { v: "tcr_eeuu", nombre: "EE.UU.", color: "celeste" }] });
@@ -443,7 +448,7 @@ function actividad(main) {
 
 function balance(main) {
   const g = grilla(main);
-  const m = { mensual: true };
+  const m = { mensual: true, dec: 0 };
   tarjeta(g, { ...m, titulo: () => `Las personas humanas demandaron USD ${fmt(-ult("mc_personas_humanas")[1])} millones netos en ${mesCorto(ult("mc_personas_humanas")[0])}`,
     bajada: "Operaciones netas de personas humanas en el mercado de cambios · En millones de USD", fuente: F.bcra, tipo: "bar", sinEtiquetas: true, cero: true,
     series: [{ v: "mc_personas_humanas", nombre: "Personas humanas" }] });
@@ -486,6 +491,8 @@ function decodificar(j) {          // {t:[día inicial, saltos...], v:[...]} -> 
 }
 
 function render() {
+  const [pa, pb] = rango();
+  document.getElementById("periodoTxt").textContent = R.desde ? `Período elegido: ${fechaCorta(pa)} a ${fechaCorta(pb)}` : "";
   charts.splice(0).forEach((c) => c.dispose());
   const main = document.getElementById("main"); main.innerHTML = "";
   SECCIONES.find((s) => s.id === TAB).armar(main);

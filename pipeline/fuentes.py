@@ -3,6 +3,8 @@ fecha (date) | variable | valor | unidad | fuente
 """
 import datetime as dt
 import io
+import json
+import pathlib
 import re
 from zoneinfo import ZoneInfo
 
@@ -265,48 +267,37 @@ DATOS_GOB = {
 
 def datos_gob():
     """Una consulta por serie, para que un id que cambie no frene al resto.
-    La API devuelve 100 filas por defecto y con limit=1000 a veces responde vacío: se pide en tramos
-    de 100 filas avanzando la fecha de inicio, con reintentos."""
+    La API es errática: según la combinación de parámetros a veces devuelve vacío o corta la serie
+    (probado oct-26: EMAE vacío con csv y limit=1000 en una corrida y completo en otra; expo vacío con csv
+    limit=1000 y completo con json). Se piden varias variantes y se unen; al final se controla que no
+    queden meses salteados."""
+    variantes = [{"format": "json", "limit": 1000}, {"format": "csv", "limit": 1000}, {"format": "csv", "limit": 500},
+                 {"format": "json", "limit": 500}, {"format": "csv", "limit": 999, "start_date": "1990-01-01"}]
     filas, errores = [], []
     for sid, (var, uni) in DATOS_GOB.items():
-        try:
-            ini, n = "1990-01-01", 0
-            for _ in range(12):
-                csv = pd.DataFrame()
-                for _intento in range(3):
-                    t = _get("https://apis.datos.gob.ar/series/api/series/",
-                             params={"ids": sid, "start_date": ini, "format": "csv"}).text
-                    csv = pd.read_csv(io.StringIO(t))
-                    if not csv.empty:
-                        break
-                for f, v in zip(csv.iloc[:, 0], csv.iloc[:, 1]):
-                    filas.append((f, var, v, uni, f"datos.gob.ar ({sid})"))
-                n += len(csv)
-                if csv.empty and n:
-                    errores.append(f"{sid}: tramo vacío desde {ini}, la serie puede quedar incompleta")
-                if len(csv) < 100:
-                    break
-                # el inicio tiene que caer en el primer día del período (si no, la API responde vacío)
-                ini = str((pd.Timestamp(csv.iloc[-1, 0]) + pd.offsets.MonthBegin(1)).date())
-            if not n:
-                errores.append(f"{sid}: sin datos")
-        except Exception as e:  # noqa: BLE001
-            errores.append(f"{sid}: {e}"[:120])
+        datos = {}
+        for p in variantes:
+            try:
+                r = _get("https://apis.datos.gob.ar/series/api/series/", params={"ids": sid, **p})
+                pares = (r.json().get("data", []) if p["format"] == "json"
+                         else pd.read_csv(io.StringIO(r.text)).iloc[:, :2].values.tolist())
+                for f, v in pares:
+                    if v is not None and not pd.isna(v):
+                        datos[str(f)[:10]] = v
+            except Exception as e:  # noqa: BLE001
+                errores.append(f"{sid} {p}: {e}"[:120])
+        if not datos:
+            errores.append(f"{sid}: sin datos")
+            continue
+        fechas = pd.to_datetime(sorted(datos))
+        faltan = pd.date_range(fechas[0], fechas[-1], freq="MS").difference(fechas)
+        if len(faltan):
+            errores.append(f"{sid}: faltan {len(faltan)} meses (primero {faltan[0]:%Y-%m})")
+        for f, v in datos.items():
+            filas.append((f, var, v, uni, f"datos.gob.ar ({sid})"))
     df = _df(filas)
-    df.attrs["errores"] = errores
+    df.attrs["errores"] = [e for e in errores if "faltan" in e or "sin datos" in e]
     return df
-
-
-def datos_gob_buscar(consultas):
-    out = {}
-    for q in consultas:
-        try:
-            j = _get("https://apis.datos.gob.ar/series/api/search/", params={"q": q, "limit": 8}).json()
-            out[q] = [(x["field"]["id"], x["field"].get("description"), x["field"].get("time_index_end"))
-                      for x in j.get("data", [])]
-        except Exception as e:  # noqa: BLE001
-            out[q] = str(e)
-    return out
 
 
 # ---------------------------------------------------------------- Archivos para inspeccionar
@@ -404,13 +395,21 @@ def _ficha(sym):
     m = re.search(r"(\d+[.,]\d+)\s*%", d.get("interes", ""))
     return {"tem": float(m.group(1).replace(",", ".")) / 100 if m else None,
             "emision": d["fechaEmision"][:10], "vencimiento": d["fechaVencimiento"][:10],
-            "denominacion": d.get("denominacion", ""), "interes": d.get("interes", "")[:300]}
+            "denominacion": d.get("denominacion", ""), "interes": d.get("interes", "")[:300],
+            "crudo": None if m else {k: v for k, v in d.items() if isinstance(v, (str, int, float)) and len(str(v)) < 300}}
 
 
 def _dias360(a, b):
     """Convención 30E/360, la que usa el Tesoro para contar los meses de capitalización de las LECAP."""
     d1, d2 = min(a.day, 30), min(b.day, 30)
     return (b.year - a.year) * 360 + (b.month - a.month) * 30 + (d2 - d1)
+
+
+try:
+    TEM_MANUAL = {k: v for k, v in json.loads((pathlib.Path(__file__).resolve().parents[1] / "config" / "lecap_tem.json")
+                                               .read_text(encoding="utf-8")).items() if not k.startswith("_") and v}
+except Exception:  # noqa: BLE001
+    TEM_MANUAL = {}
 
 
 def lecaps(fichas):
@@ -429,6 +428,8 @@ def lecaps(fichas):
             if sym not in fichas or not fichas[sym].get("tem"):
                 fichas[sym] = _ficha(sym)
             fi = fichas[sym]
+            if not fi["tem"] and TEM_MANUAL.get(sym):  # la ficha no trae la tasa: se toma de config/lecap_tem.json
+                fi = {**fi, "tem": TEM_MANUAL[sym] / 100}
             if not fi["tem"]:
                 continue
             emi, ven = pd.Timestamp(fi["emision"]), pd.Timestamp(fi["vencimiento"])
