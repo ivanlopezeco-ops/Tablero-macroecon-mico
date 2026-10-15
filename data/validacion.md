@@ -1,4 +1,4 @@
-# Validación — corrida 2026-10-15 02:53 UTC
+# Validación — corrida 2026-10-15 02:59 UTC
 
 ## 1. Reservas vs tabla de Machado
 
@@ -84,7 +84,6 @@ Swap: 130010.5 millones de CNY.
 
 | fecha | mep | mep_ad | dif |
 |---|---:|---:|---:|
-| 2026-09-29 | 1,549.4 | 1,556.5 | -7.1 |
 | 2026-09-30 | 1,542.6 | 1,557.0 | -14.4 |
 | 2026-10-01 | 1,552.4 | 1,548.7 | 3.7 |
 | 2026-10-02 | 1,549.3 | 1,556.0 | -6.7 |
@@ -94,12 +93,12 @@ Swap: 130010.5 millones de CNY.
 | 2026-10-08 | 1,538.3 | 1,539.0 | -0.7 |
 | 2026-10-09 | 1,539.3 | 1,542.7 | -3.4 |
 | 2026-10-13 | 1,539.9 | 1,542.9 | -3.0 |
+| 2026-10-14 | 1,534.9 | 1,539.4 | -4.5 |
 
 ## 4. CCL: cálculo propio (AL30) vs ArgentinaDatos
 
 | fecha | ccl | ccl_ad | dif |
 |---|---:|---:|---:|
-| 2026-09-29 | 1,622.9 | 1,619.6 | 3.3 |
 | 2026-09-30 | 1,614.5 | 1,617.4 | -2.9 |
 | 2026-10-01 | 1,623.0 | 1,614.2 | 8.8 |
 | 2026-10-02 | 1,624.4 | 1,624.8 | -0.4 |
@@ -109,6 +108,7 @@ Swap: 130010.5 millones de CNY.
 | 2026-10-08 | 1,611.6 | 1,608.7 | 2.9 |
 | 2026-10-09 | 1,611.2 | 1,613.6 | -2.4 |
 | 2026-10-13 | 1,612.4 | 1,606.6 | 5.8 |
+| 2026-10-14 | 1,618.4 | 1,613.8 | 4.6 |
 
 ## 2b. Empalme riesgo país Argentina: BCRD vs ArgentinaDatos en el período común
 
@@ -137,15 +137,15 @@ Swap: 130010.5 millones de CNY.
 
 ## 4b. Empalme CCL: propio vs ArgentinaDatos en el período común
 
-486 fechas en común (2024-10-14 a 2026-10-13). Diferencia media -0.4, mediana absoluta 2.0, máxima absoluta 37.4.
+487 fechas en común (2024-10-14 a 2026-10-14). Diferencia media -0.4, mediana absoluta 2.0, máxima absoluta 37.4.
 
 - 2024: media -1.0 · máx. abs. 21.0
 - 2025: media -0.8 · máx. abs. 37.4
-- 2026: media +0.2 · máx. abs. 18.0
+- 2026: media +0.3 · máx. abs. 18.0
 
 ## 4c. Empalme MEP: propio vs ArgentinaDatos en el período común
 
-486 fechas en común (2024-10-14 a 2026-10-13). Diferencia media -3.0, mediana absoluta 2.7, máxima absoluta 37.7.
+487 fechas en común (2024-10-14 a 2026-10-14). Diferencia media -3.1, mediana absoluta 2.7, máxima absoluta 37.7.
 
 - 2024: media -0.7 · máx. abs. 12.3
 - 2025: media -3.5 · máx. abs. 37.7
@@ -181,20 +181,20 @@ Swap: 130010.5 millones de CNY.
 | 2026-10-07 | 45.0 | 425.1 | -380.1 |
 | 2026-10-08 | 43.0 | 527.3 | -484.3 |
 
-## 5c. Curva LECAP/BONCAP al 2026-10-13 (TEM %)
+## 5c. Curva LECAP/BONCAP al 2026-10-14 (TEM %)
 
 | letra | TEM | fuente |
 |---|---:|---|
-| S30N6 | 1.93 | Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%) |
-| S30O6 | 1.84 | Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%) |
+| S30N6 | 2.00 | Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%) |
+| S30O6 | 1.97 | Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%) |
 
 ## 6. Último dato por variable
 
 | variable | último dato | valor | días de rezago |
 |---|---|---:|---:|
-| al30_ars | 2026-10-13 | 86,360.00 | 1 |
-| al30_usd_ccl | 2026-10-13 | 53.56 | 1 |
-| al30_usd_mep | 2026-10-13 | 56.08 | 1 |
+| al30_ars | 2026-10-14 | 86,260.00 | 0 |
+| al30_usd_ccl | 2026-10-14 | 53.30 | 0 |
+| al30_usd_mep | 2026-10-14 | 56.20 | 0 |
 | badlar | 2026-10-13 | 21.69 | 1 |
 | baibar | 2026-10-13 | 21.54 | 1 |
 | banda_piso | 2026-10-15 | 718.30 | -1 |
@@ -216,15 +216,15 @@ Swap: 130010.5 millones de CNY.
 | bc_servicios | 2026-08-01 | -712.22 | 74 |
 | bc_utilidades_dividendos | 2026-08-01 | -475.16 | 74 |
 | bc_var_reservas_transacciones | 2026-08-01 | -249.79 | 74 |
-| brecha_ccl | 2026-10-13 | 6.37 | 1 |
-| brent | 2026-10-15 | 104.39 | -1 |
+| brecha_ccl | 2026-10-14 | 6.85 | 0 |
+| brent | 2026-10-15 | 104.45 | -1 |
 | brl_usd | 2026-10-15 | 5.05 | -1 |
-| canje_ccl_mep | 2026-10-13 | 4.71 | 1 |
+| canje_ccl_mep | 2026-10-14 | 5.44 | 0 |
 | caucion_a3_pesos_1d | 2026-10-14 | 22.43 | 0 |
 | caucion_a3_usd_1d | 2026-10-14 | 1.14 | 0 |
-| ccl | 2026-10-13 | 1,612.40 | 1 |
+| ccl | 2026-10-14 | 1,618.39 | 0 |
 | ccl_ad | 2026-10-15 | 1,617.30 | -1 |
-| ccl_largo | 2026-10-13 | 1,612.40 | 1 |
+| ccl_largo | 2026-10-14 | 1,618.39 | 0 |
 | compras_bcra_acum_anio | 2026-10-08 | 14,852.41 | 6 |
 | compras_bcra_mlc | 2026-10-08 | 43.00 | 6 |
 | compras_bcra_pct_volumen | 2026-10-08 | 8.15 | 6 |
@@ -232,15 +232,15 @@ Swap: 130010.5 millones de CNY.
 | depositos_gobierno_bcra_me_ars | 2026-10-09 | 1,869,903.00 | 5 |
 | depositos_privados_usd | 2026-10-08 | 42,377.00 | 6 |
 | distancia_techo_banda | 2026-10-14 | 27.70 | 0 |
-| dxy | 2026-10-15 | 102.02 | -1 |
+| dxy | 2026-10-15 | 101.97 | -1 |
 | emae_desest | 2026-07-01 | 149.65 | 105 |
 | encajes_usd_bcra | 2026-10-09 | 16,446.60 | 5 |
 | exportaciones | 2026-08-01 | 8,882.58 | 74 |
 | futuro_diciembre | 2026-10-14 | 1,583.50 | 0 |
 | futuro_fin_mes | 2026-10-14 | 1,527.00 | 0 |
-| gd30_ars | 2026-10-13 | 88,610.00 | 1 |
-| gd30_usd_ccl | 2026-10-13 | 55.07 | 1 |
-| gd35_usd_ccl | 2026-10-13 | 72.13 | 1 |
+| gd30_ars | 2026-10-14 | 88,580.00 | 0 |
+| gd30_usd_ccl | 2026-10-14 | 54.68 | 0 |
+| gd35_usd_ccl | 2026-10-14 | 71.79 | 0 |
 | importaciones | 2026-08-01 | 6,695.99 | 74 |
 | ipc_nivel_general | 2026-08-01 | 12,276.77 | 74 |
 | ipc_nucleo | 2026-08-01 | 12,445.80 | 74 |
@@ -251,10 +251,10 @@ Swap: 130010.5 millones de CNY.
 | mc_personas_humanas | 2026-08-01 | -3,531.90 | 74 |
 | mc_petroleo | 2026-08-01 | 1,007.98 | 74 |
 | mc_total | 2026-08-01 | 271.53 | 74 |
-| mep | 2026-10-13 | 1,539.94 | 1 |
+| mep | 2026-10-14 | 1,534.88 | 0 |
 | mep_ad | 2026-10-15 | 1,539.70 | -1 |
-| mep_largo | 2026-10-13 | 1,539.94 | 1 |
-| oro | 2026-10-15 | 4,165.70 | -1 |
+| mep_largo | 2026-10-14 | 1,534.88 | 0 |
+| oro | 2026-10-15 | 4,168.00 | -1 |
 | prestamos_privados_pesos | 2026-10-08 | 107,444,201.00 | 6 |
 | prestamos_privados_usd | 2026-10-08 | 25,929.00 | 6 |
 | rem_inflacion_12m | 2026-09-30 | 21.05 | 14 |
@@ -312,19 +312,19 @@ Swap: 130010.5 millones de CNY.
 
 | fuente | estado | filas | detalle |
 |---|---|---:|---|
-| bcra | ok | 81299 |  |
-| bcra_cny | ok | 696 |  |
+| bcra | ok | 1465 |  |
+| bcra_cny | ok | 83 |  |
 | bcrd_embi | ok | 83686 |  |
 | argentinadatos | ok | 15667 |  |
-| byma_historicos | ok | 2916 |  |
-| rofex_futuros | ok | 19144 |  |
+| byma_historicos | ok | 504 |  |
+| rofex_futuros | ok | 995 |  |
 | cammesa | ok | 1 |  |
-| treasury | ok | 19103 |  |
-| yahoo | ok | 36921 |  |
-| datos_gob | ok | 848 | 143.3_NO_PR_2004_A_31: tramo vacío desde 2012-05-01, la serie puede quedar incompleta | 74.3_IET_0_M_16: tramo vacío desde 2008-09-01, la serie puede  |
+| treasury | ok | 591 |  |
+| yahoo | ok | 513 |  |
+| datos_gob | ok | 1465 |  |
 | rem | ok | 312 |  |
 | itcrm | ok | 32637 |  |
 | balance_cambiario | ok | 5964 |  |
-| a3_mae | ok | 5630 |  |
-| lecaps | ok | 481 |  |
+| a3_mae | ok | 345 |  |
+| lecaps | ok | 214 |  |
 | byma_snapshots | ok | 0 |  |
