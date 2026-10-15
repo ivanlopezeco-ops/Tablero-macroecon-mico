@@ -1,0 +1,29 @@
+name: Test de fuentes
+
+on:
+  push:
+    paths:
+      - "tests/**"
+      - ".github/workflows/test-fuentes.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - run: python tests/test_fuentes.py
+      - name: Guardar resultados en el repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add results
+          git commit -m "Resultados del test de fuentes" || echo "sin cambios"
+          git push
