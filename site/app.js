@@ -384,6 +384,17 @@ function internacional(main) {
 }
 
 // ------------------------------------------------------------------ armado general
+function decodificar(j) {          // {t:[día inicial, saltos...], v:[...]} -> d:[[fecha, valor]]
+  const memo = new Map();
+  const iso = (n) => { let s = memo.get(n); if (!s) { s = new Date(n * 864e5).toISOString().slice(0, 10); memo.set(n, s); } return s; };
+  Object.values(j.series).forEach((s) => {
+    if (s.d || !s.t) return;
+    let n = 0; s.d = s.t.map((x, i) => { n += x; return [iso(n), s.v[i]]; });
+    delete s.t; delete s.v;
+  });
+  return j;
+}
+
 function render() {
   charts.splice(0).forEach((c) => c.dispose());
   const main = document.getElementById("main"); main.innerHTML = "";
@@ -417,6 +428,6 @@ function iniciar() {
 
 const h = location.hash.slice(1); if (h) TAB = h;
 fetch("data.json", { cache: "no-cache" }).then((r) => r.json()).then((j) => {
-  D = j; if (!SECCIONES.some((s) => s.id === TAB)) TAB = "resumen";
+  D = decodificar(j); if (!SECCIONES.some((s) => s.id === TAB)) TAB = "resumen";
   iniciar(); estado(); render();
 }).catch((e) => { document.getElementById("main").textContent = "No se pudieron cargar los datos: " + e; });

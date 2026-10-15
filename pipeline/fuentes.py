@@ -13,8 +13,16 @@ urllib3.disable_warnings()
 
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                     "(KHTML, like Gecko) Chrome/124 Safari/537.36"}
-DESDE = dt.date(2024, 1, 1)
 HOY = dt.date.today()
+# Modo histórico: baja todo lo que cada fuente tiene. Modo diario: solo una ventana reciente
+# (la base acumulada conserva la historia). run.py decide el modo.
+COMPLETO = True
+VENTANA = 120  # días que se vuelven a pedir en modo diario (cubre revisiones)
+
+
+def desde(primero):
+    """Primera fecha a pedir: la más antigua disponible en modo histórico, o la ventana reciente."""
+    return primero if COMPLETO else max(primero, HOY - dt.timedelta(days=VENTANA))
 COLS = ["fecha", "variable", "valor", "unidad", "fuente"]
 
 
@@ -57,21 +65,31 @@ BCRA_VARS = {
 }
 
 
+# Desde 2003 (salida de la convertibilidad); reservas y base monetaria, desde su primer dato.
+BCRA_DESDE = {1: dt.date(1996, 1, 1), 15: dt.date(1996, 1, 1)}
+
+
 def bcra():
+    """Series monetarias del BCRA desde su primer dato (1996 para reservas), paginando de a 3000."""
     filas = []
     for idv, (var, uni) in BCRA_VARS.items():
-        url = (f"https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/{idv}"
-               f"?desde={DESDE}&hasta={HOY}&limit=3000")
-        for r in _get(url).json()["results"]:
-            for d in r["detalle"]:
-                filas.append((d["fecha"], var, d["valor"], uni, f"BCRA API v4 (id {idv})"))
+        offset, total = 0, 1
+        while offset < total:
+            url = (f"https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/{idv}"
+                   f"?desde={desde(BCRA_DESDE.get(idv, dt.date(2003, 1, 1)))}&hasta={HOY}&limit=3000&offset={offset}")
+            j = _get(url).json()
+            total = j.get("metadata", {}).get("resultset", {}).get("count", 0)
+            for r in j["results"]:
+                for d in r["detalle"]:
+                    filas.append((d["fecha"], var, d["valor"], uni, f"BCRA API v4 (id {idv})"))
+            offset += 3000
     return _df(filas)
 
 
 def bcra_cny():
     """Tipo de pase USD por yuan, para valuar el swap con China. Se pide en ventanas cortas."""
     filas, errores = [], []
-    ini = DESDE
+    ini = desde(dt.date(2023, 12, 1))  # el swap entra en las reservas netas desde dic-23
     while ini <= HOY:
         fin = min(ini + dt.timedelta(days=89), HOY)
         url = (f"https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones/CNY"
@@ -106,7 +124,6 @@ def bcrd_embi():
     df = df[[c for c in df.columns if c in PAISES or c == "Fecha"]]
     df["Fecha"] = pd.to_datetime(df["Fecha"], errors="coerce")
     df = df.dropna(subset=["Fecha"])
-    df = df[df["Fecha"] >= "2020-01-01"]
     largo = df.melt(id_vars="Fecha", var_name="pais", value_name="valor")
     largo["valor"] = pd.to_numeric(largo["valor"], errors="coerce") * 100  # pp -> pb
     largo["variable"] = "riesgo_pais_" + largo["pais"].map(PAISES)
@@ -116,14 +133,35 @@ def bcrd_embi():
     return _df(largo[COLS].values.tolist())
 
 
+MESES_BCRP = {"Ene": 1, "Feb": 2, "Mar": 3, "Abr": 4, "May": 5, "Jun": 6, "Jul": 7, "Ago": 8,
+              "Set": 9, "Sep": 9, "Oct": 10, "Nov": 11, "Dic": 12}
+
+
+def bcrp_embig():
+    """EMBIG de JP Morgan publicado por el BCRP (Perú). Solo para empalmar antes de 2007, donde el
+    BCRD no tiene datos, y para comparar en el período común. Se baja en modo histórico."""
+    if not COMPLETO:
+        return _df([])
+    ids = {"PD04710XD": "riesgo_pais_argentina_bcrp", "PD04708XD": "riesgo_pais_latam_bcrp"}
+    j = _get(f"https://estadisticas.bcrp.gob.pe/estadisticas/series/api/{'-'.join(ids)}/json/1998-01-01/2012-12-31").json()
+    filas = []
+    for p in j.get("periods", []):
+        d, m, a = p["name"].split(".")
+        f = dt.date(2000 + int(a) if int(a) < 50 else 1900 + int(a), MESES_BCRP[m], int(d))
+        for var, v in zip(ids.values(), p["values"]):
+            if v not in ("n.d.", ""):
+                filas.append((f, var, v, "pb", "BCRP (JP Morgan EMBIG)"))
+    return _df(filas)
+
+
 def argentinadatos():
     filas = []
     for d in _get("https://api.argentinadatos.com/v1/finanzas/indices/riesgo-pais").json():
-        if d["fecha"] >= str(DESDE):
+        if True:
             filas.append((d["fecha"], "riesgo_pais_argentina_ad", d["valor"], "pb", "ArgentinaDatos (Ámbito)"))
     for casa, var in [("bolsa", "mep_ad"), ("contadoconliqui", "ccl_ad")]:
         for d in _get(f"https://api.argentinadatos.com/v1/cotizaciones/dolares/{casa}").json():
-            if d["fecha"] >= str(DESDE):
+            if d.get("venta"):
                 filas.append((d["fecha"], var, d["venta"], "ARS/USD", "ArgentinaDatos"))
     return _df(filas)
 
@@ -138,12 +176,13 @@ BYMA_SIMBOLOS = {"AL30 24HS": ("al30_ars", "ARS"), "AL30D 24HS": ("al30_usd_mep"
 
 
 def byma_historicos():
-    desde = int(dt.datetime.combine(DESDE, dt.time()).timestamp())
+    """BYMA ofrece unos dos años de historia diaria; lo anterior queda en la base acumulada."""
+    t0 = int(dt.datetime.combine(desde(HOY - dt.timedelta(days=800)), dt.time()).timestamp())
     hasta = int(dt.datetime.now().timestamp())
     filas = []
     for sym, (var, uni) in BYMA_SIMBOLOS.items():
         j = _get(f"{BYMA}/chart/historical-series/history", verify=False,
-                 params={"symbol": sym, "resolution": "D", "from": desde, "to": hasta}).json()
+                 params={"symbol": sym, "resolution": "D", "from": t0, "to": hasta}).json()
         for t, c in zip(j.get("t", []), j.get("c", [])):
             fecha = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
             filas.append((fecha, var, c, uni, f"BYMA ({sym})"))
@@ -157,10 +196,7 @@ def byma_snapshots():
                       "T0": False}, headers=BYMA_H, verify=False, timeout=90)
     cau = r.json()
     crudos["cauciones"] = cau
-    for c in cau if isinstance(cau, list) else []:
-        if str(c.get("symbol", "")).startswith("PESOS") and c.get("daysToMaturity", 99) <= 4 and c.get("vwap"):
-            filas.append((HOY, f"caucion_pesos_{c['daysToMaturity']}d", c["vwap"] * 100, "% TNA",
-                          f"BYMA cauciones ({c['symbol']}, precio promedio ponderado)"))
+    # La tasa de caución sale de A3/MAE (con historia); la foto de BYMA queda solo como crudo.
     r = requests.post(f"{BYMA}/lebacs", json={"excludeZeroPxAndQty": False, "T1": True, "T0": False,
                       "page_number": 1, "page_size": 500}, headers=BYMA_H, verify=False, timeout=90)
     let = r.json().get("data", [])
@@ -170,14 +206,23 @@ def byma_snapshots():
 
 # ---------------------------------------------------------------- Futuros
 def rofex_futuros():
+    """Precios de ajuste del dólar futuro. Hay datos desde 2019; se pide por trimestres y páginas de 1000."""
     filas = []
-    ini = max(DESDE, HOY - dt.timedelta(days=400))
-    url = ("https://apicem.matbarofex.com.ar/api/v2/closing-prices"
-           f"?product=DLR&from={ini}&to={HOY}&version=v2")
-    for d in _get(url).json().get("data", []):
-        sym = d["symbol"]
-        if re.fullmatch(r"DLR\d{6}", sym):
-            filas.append((d["dateTime"][:10], f"futuro_{sym}", d["settlement"], "ARS/USD", "Matba Rofex (A3)"))
+    ini = desde(dt.date(2019, 1, 1))
+    while ini <= HOY:
+        fin = min(ini + dt.timedelta(days=90), HOY)
+        pagina, total = 1, 1
+        while (pagina - 1) * 1000 < total:
+            j = _get("https://apicem.matbarofex.com.ar/api/v2/closing-prices",
+                     params={"product": "DLR", "from": str(ini), "to": str(fin), "version": "v2",
+                             "pageSize": 1000, "page": pagina}).json()
+            total = j.get("totalEntries", 0)
+            for d in j.get("data", []):
+                sym = d["symbol"]
+                if re.fullmatch(r"DLR\d{6}", sym):
+                    filas.append((d["dateTime"][:10], f"futuro_{sym}", d["settlement"], "ARS/USD", "Matba Rofex (A3)"))
+            pagina += 1
+        ini = fin + dt.timedelta(days=1)
     return _df(filas)
 
 
@@ -195,12 +240,14 @@ def cammesa():
 # ---------------------------------------------------------------- Internacional
 def treasury():
     filas = []
-    for anio in sorted({DESDE.year, HOY.year - 1, HOY.year}):
+    for anio in range(desde(dt.date(2000, 1, 1)).year, HOY.year + 1):
         url = ("https://home.treasury.gov/resource-center/data-chart-center/interest-rates/"
                f"daily-treasury-rates.csv/{anio}/all?type=daily_treasury_yield_curve"
                f"&field_tdr_date_value={anio}&page&_format=csv")
         df = pd.read_csv(io.StringIO(_get(url).text))
         for col, var in [("2 Yr", "ust_2y"), ("10 Yr", "ust_10y"), ("30 Yr", "ust_30y")]:
+            if col not in df:  # el bono a 30 años no se emitió entre 2002 y 2006
+                continue
             for f, v in zip(pd.to_datetime(df["Date"]), df[col]):
                 filas.append((f, var, v, "%", "US Treasury"))
     return _df(filas)
@@ -213,8 +260,10 @@ YAHOO = {"^VIX": ("vix", "índice"), "BZ=F": ("brent", "USD/bbl"), "DX-Y.NYB": (
 def yahoo():
     filas = []
     for t, (var, uni) in YAHOO.items():
+        p1 = int(dt.datetime.combine(desde(dt.date(2000, 1, 1)), dt.time()).timestamp())
         j = _get(f"https://query1.finance.yahoo.com/v8/finance/chart/{t}",
-                 params={"range": "3y", "interval": "1d"}).json()["chart"]["result"][0]
+                 params={"period1": p1, "period2": int(dt.datetime.now().timestamp()),
+                         "interval": "1d"}).json()["chart"]["result"][0]
         for ts, c in zip(j["timestamp"], j["indicators"]["quote"][0]["close"]):
             if c is not None:
                 filas.append((dt.datetime.utcfromtimestamp(ts).date(), var, c, uni, f"Yahoo Finance ({t})"))
@@ -233,20 +282,31 @@ DATOS_GOB = {
 
 
 def datos_gob():
-    """Una consulta por serie, para que un id que cambie no frene al resto."""
+    """Una consulta por serie, para que un id que cambie no frene al resto.
+    La API devuelve 100 filas por defecto y con limit=1000 a veces responde vacío: se pide en tramos
+    de 100 filas avanzando la fecha de inicio, con reintentos."""
     filas, errores = [], []
     for sid, (var, uni) in DATOS_GOB.items():
         try:
-            for ini in ["2020-01-01", "2022-01-01", "2024-01-01"]:  # la API a veces devuelve vacío
-                t = _get("https://apis.datos.gob.ar/series/api/series/",
-                         params={"ids": sid, "start_date": ini, "format": "csv"}).text
-                csv = pd.read_csv(io.StringIO(t))
-                if not csv.empty:
+            ini, n = "1990-01-01", 0
+            for _ in range(12):
+                csv = pd.DataFrame()
+                for _intento in range(3):
+                    t = _get("https://apis.datos.gob.ar/series/api/series/",
+                             params={"ids": sid, "start_date": ini, "format": "csv"}).text
+                    csv = pd.read_csv(io.StringIO(t))
+                    if not csv.empty:
+                        break
+                for f, v in zip(csv.iloc[:, 0], csv.iloc[:, 1]):
+                    filas.append((f, var, v, uni, f"datos.gob.ar ({sid})"))
+                n += len(csv)
+                if csv.empty and n:
+                    errores.append(f"{sid}: tramo vacío desde {ini}, la serie puede quedar incompleta")
+                if len(csv) < 100:
                     break
-            if csv.empty:
+                ini = str((pd.Timestamp(csv.iloc[-1, 0]) + pd.Timedelta(days=1)).date())
+            if not n:
                 errores.append(f"{sid}: sin datos")
-            for f, v in zip(csv.iloc[:, 0], csv.iloc[:, 1]):
-                filas.append((f, var, v, uni, f"datos.gob.ar ({sid})"))
         except Exception as e:  # noqa: BLE001
             errores.append(f"{sid}: {e}"[:120])
     df = _df(filas)
@@ -302,7 +362,6 @@ def itcrm():
     df = pd.read_excel(io.BytesIO(_get(F_ITCRM).content), sheet_name="ITCRM y bilaterales", header=1)
     df.columns = [str(c).strip() for c in df.columns]
     df["Período"] = pd.to_datetime(df["Período"], errors="coerce")
-    df = df[df["Período"] >= pd.Timestamp(DESDE)]
     filas = []
     for col, var in [("ITCRM", "tcrm"), ("ITCRB Brasil", "tcr_brasil"), ("ITCRB Estados Unidos", "tcr_eeuu")]:
         for f, v in zip(df["Período"], df[col]):
@@ -332,7 +391,7 @@ def balance_cambiario():
     codigos = b.iloc[10].tolist()
     filas = []
     meses = b[b[0].apply(lambda x: isinstance(x, (dt.datetime, pd.Timestamp)))]
-    meses = meses[pd.to_datetime(meses[0]) >= pd.Timestamp("2018-01-01")]
+    meses = meses[pd.to_datetime(meses[0]) >= pd.Timestamp("2003-01-01")]
     for col, cod in enumerate(codigos):
         if cod in BC_CODIGOS:
             for f, v in zip(meses[0], meses[col]):
@@ -344,7 +403,7 @@ def balance_cambiario():
         nombre = str(r[0]).strip()
         if nombre in BC_SECTORES:
             for f, v in zip(fechas[1:], r.tolist()[1:]):
-                if isinstance(f, (dt.datetime, pd.Timestamp)) and f >= dt.datetime(2018, 1, 1):
+                if isinstance(f, (dt.datetime, pd.Timestamp)) and f >= dt.datetime(2003, 1, 1):
                     filas.append((f, BC_SECTORES[nombre], pd.to_numeric(v, errors="coerce") / 1e6, "USD M",
                                   "BCRA mercado de cambios por sector (neto)"))
     return _df(filas)
@@ -413,7 +472,7 @@ def _mae(ruta, ini, fin):
 def a3_mae():
     """Volumen del mercado de cambios (FOREX MAE) y tasas de caución y repo a 1 día, por ventanas de 30 días."""
     filas = []
-    tope = max(DESDE, HOY - dt.timedelta(days=500))
+    tope = desde(dt.date(2016, 1, 1))  # volumen y repo desde 2016; cauciones desde 2023
     fin = HOY
     while fin >= tope:  # ventanas completas de 30 días hacia atrás (una ventana de 1 día devuelve otro agregado)
         ini = fin - dt.timedelta(days=29)

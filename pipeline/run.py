@@ -8,6 +8,7 @@ Salidas en data/:
 """
 import datetime as dt
 import json
+import os
 import pathlib
 import traceback
 
@@ -36,6 +37,14 @@ def vigente(lista, fechas):
     return t.reindex(t.index.union(fechas)).ffill().reindex(fechas)
 
 
+def empalmar(df, principal, previa):
+    """Serie principal completada hacia atrás con otra fuente (solo antes del primer dato propio)."""
+    a, b = serie(df, principal), serie(df, previa)
+    if a.empty:
+        return b
+    return pd.concat([b[b.index < a.index.min()], a])
+
+
 def largo(s, var, uni, fuente):
     s = s.dropna()
     return pd.DataFrame({"fecha": s.index.date, "variable": var, "valor": s.values,
@@ -53,8 +62,17 @@ def derivadas(df):
     ccl = al30 / serie(df, "al30_usd_ccl")
     out += [largo(mep, "mep", "ARS/USD", "Cálculo: AL30/AL30D (BYMA)"),
             largo(ccl, "ccl", "ARS/USD", "Cálculo: AL30/AL30C (BYMA)")]
-    out.append(largo((ccl / a3500.reindex(ccl.index) - 1) * 100, "brecha_ccl", "%", "Cálculo: CCL/A3500-1"))
-    out.append(largo((ccl / mep - 1) * 100, "canje_ccl_mep", "%", "Cálculo: CCL/MEP-1"))
+    # Series largas: antes del primer dato propio (BYMA da unos dos años), ArgentinaDatos
+    tmp = pd.concat([df, largo(mep, "mep", "", ""), largo(ccl, "ccl", "", "")], ignore_index=True)
+    ccl_l, mep_l = empalmar(tmp, "ccl", "ccl_ad"), empalmar(tmp, "mep", "mep_ad")
+    out += [largo(ccl_l, "ccl_largo", "ARS/USD", "Cálculo propio (AL30); antes, ArgentinaDatos"),
+            largo(mep_l, "mep_largo", "ARS/USD", "Cálculo propio (AL30); antes, ArgentinaDatos")]
+    out.append(largo((ccl_l / a3500.reindex(ccl_l.index) - 1) * 100, "brecha_ccl", "%", "Cálculo: CCL/A3500-1"))
+    out.append(largo((ccl_l / mep_l - 1) * 100, "canje_ccl_mep", "%", "Cálculo: CCL/MEP-1"))
+    out += [largo(empalmar(df, "riesgo_pais_argentina", "riesgo_pais_argentina_ad"), "riesgo_pais_argentina_largo", "pb",
+                  "BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)"),
+            largo(empalmar(df, "riesgo_pais_latam", "riesgo_pais_latam_bcrp"), "riesgo_pais_latam_largo", "pb",
+                  "BCRD (EMBIGD); antes de 2007, BCRP (EMBIG)")]
     techo = serie(df, "banda_techo")
     out.append(largo((techo / a3500 - 1) * 100, "distancia_techo_banda", "%", "Cálculo: techo/A3500-1"))
 
@@ -173,6 +191,24 @@ def validar(df, notas, estado):
     cruce("riesgo_pais_argentina", "riesgo_pais_argentina_ad", "2. Riesgo país: BCRD vs ArgentinaDatos", fmt="{:,.0f}")
     cruce("mep", "mep_ad", "3. MEP: cálculo propio (AL30) vs ArgentinaDatos")
     cruce("ccl", "ccl_ad", "4. CCL: cálculo propio (AL30) vs ArgentinaDatos")
+    def solape(a, b, titulo):
+        sa, sb = serie(df, a), serie(df, b)
+        j = pd.concat([sa, sb], axis=1, keys=[a, b]).dropna()
+        L.append(f"## {titulo}\n")
+        if j.empty:
+            L.append("Sin fechas en común.\n")
+            return
+        d = j[a] - j[b]
+        L.append(f"{len(j)} fechas en común ({j.index.min():%Y-%m-%d} a {j.index.max():%Y-%m-%d}). "
+                 f"Diferencia media {d.mean():+,.1f}, mediana absoluta {d.abs().median():,.1f}, máxima absoluta {d.abs().max():,.1f}.\n")
+        for anio, g in d.groupby(d.index.year):
+            L.append(f"- {anio}: media {g.mean():+,.1f} · máx. abs. {g.abs().max():,.1f}")
+        L.append("")
+
+    solape("riesgo_pais_argentina", "riesgo_pais_argentina_ad", "2b. Empalme riesgo país Argentina: BCRD vs ArgentinaDatos en el período común")
+    solape("riesgo_pais_latam", "riesgo_pais_latam_bcrp", "2c. Empalme riesgo país América Latina: BCRD (EMBIGD) vs BCRP (EMBIG)")
+    solape("ccl", "ccl_ad", "4b. Empalme CCL: propio vs ArgentinaDatos en el período común")
+    solape("mep", "mep_ad", "4c. Empalme MEP: propio vs ArgentinaDatos en el período común")
     cruce("tamar", "badlar", "5. Control de rango: TAMAR vs BADLAR", n=5)
     cruce("caucion_a3_pesos_1d", "tasa_pases_terceros_1d", "5b. Caución 1 día (A3) vs pases entre terceros (BCRA)", n=5)
     cruce("compras_bcra_mlc", "volumen_mlc", "5d. Compras del BCRA vs volumen del MLC (A3)", n=5)
@@ -201,9 +237,21 @@ def validar(df, notas, estado):
 
 
 # ---------------------------------------------------------------- main
+VERSION_HISTORIA = 2  # subir este número fuerza una descarga histórica completa en la próxima corrida
+
+
+def modo_completo():
+    """Histórico completo si nunca se hizo con esta versión, los sábados (para tomar revisiones) o a pedido."""
+    marca = RAW / "historia.json"
+    hecho = json.loads(marca.read_text())["version"] if marca.exists() else 0
+    return hecho < VERSION_HISTORIA or dt.date.today().weekday() == 5 or os.environ.get("HISTORIA") == "1"
+
+
 def main():
+    F.COMPLETO = modo_completo()
+    print("modo:", "histórico completo" if F.COMPLETO else f"diario (últimos {F.VENTANA} días)")
     estado, partes = {}, []
-    for nombre, fn in [("bcra", F.bcra), ("bcra_cny", F.bcra_cny), ("bcrd_embi", F.bcrd_embi),
+    for nombre, fn in [("bcra", F.bcra), ("bcra_cny", F.bcra_cny), ("bcrd_embi", F.bcrd_embi), ("bcrp_embig", F.bcrp_embig),
                        ("argentinadatos", F.argentinadatos), ("byma_historicos", F.byma_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
                        ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob),
@@ -245,10 +293,6 @@ def main():
         except Exception as e:  # noqa: BLE001
             estado[f"archivo_{nombre}"] = {"estado": "ERROR", "error": str(e)}
 
-    (RAW / "datos_gob_busqueda.json").write_text(json.dumps(F.datos_gob_buscar([
-        "ipc nucleo nivel nacional", "exportaciones total mensual intercambio comercial",
-        "importaciones total mensual intercambio comercial", "resultado primario base caja sector publico nacional",
-    ]), ensure_ascii=False, indent=1), encoding="utf-8")
 
     nuevo = pd.concat(partes, ignore_index=True)
     archivo = DATA / "series.csv"
@@ -269,8 +313,10 @@ def main():
         estado["derivadas"] = {"estado": "ERROR", "error": traceback.format_exc()[-1500:]}
     base = base.drop_duplicates(["fecha", "variable"], keep="last").sort_values(["variable", "fecha"])
     base[COLS].to_csv(archivo, index=False)
+    if F.COMPLETO and not any(v["estado"] == "ERROR" for v in estado.values()):
+        (RAW / "historia.json").write_text(json.dumps({"version": VERSION_HISTORIA, "fecha": str(dt.date.today())}))
 
-    (DATA / "estado.json").write_text(json.dumps({"corrida_utc": dt.datetime.utcnow().isoformat(),
+    (DATA / "estado.json").write_text(json.dumps({"corrida_utc": dt.datetime.utcnow().isoformat(), "modo": "completo" if F.COMPLETO else "diario",
                                                   "fuentes": estado, "notas": notas},
                                                  ensure_ascii=False, indent=1), encoding="utf-8")
     try:
