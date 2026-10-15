@@ -237,9 +237,12 @@ def datos_gob():
     filas, errores = [], []
     for sid, (var, uni) in DATOS_GOB.items():
         try:
-            t = _get("https://apis.datos.gob.ar/series/api/series/",
-                     params={"ids": sid, "start_date": "2020-01-01", "format": "csv"}).text
-            csv = pd.read_csv(io.StringIO(t))
+            for ini in ["2020-01-01", "2022-01-01", "2024-01-01"]:  # la API a veces devuelve vacío
+                t = _get("https://apis.datos.gob.ar/series/api/series/",
+                         params={"ids": sid, "start_date": ini, "format": "csv"}).text
+                csv = pd.read_csv(io.StringIO(t))
+                if not csv.empty:
+                    break
             if csv.empty:
                 errores.append(f"{sid}: sin datos")
             for f, v in zip(csv.iloc[:, 0], csv.iloc[:, 1]):
