@@ -68,19 +68,22 @@ def bcra():
 
 
 def bcra_cny():
-    """Tipo de pase USD por yuan, para valuar el swap con China."""
-    filas, offset = [], 0
-    while True:
+    """Tipo de pase USD por yuan, para valuar el swap con China. Se pide en ventanas cortas."""
+    filas, errores = [], []
+    ini = DESDE
+    while ini <= HOY:
+        fin = min(ini + dt.timedelta(days=89), HOY)
         url = (f"https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones/CNY"
-               f"?fechadesde={DESDE}&fechahasta={HOY}&limit=1000&offset={offset}")
-        j = _get(url).json()
-        res = j.get("results", [])
-        for r in res:
-            for d in r["detalle"]:
-                filas.append((r["fecha"], "usd_por_cny", d["tipoPase"], "USD/CNY", "BCRA API cambiaria"))
-        if len(res) < 1000:
-            break
-        offset += 1000
+               f"?fechadesde={ini}&fechahasta={fin}")
+        try:
+            for r in _get(url).json().get("results", []):
+                for d in r["detalle"]:
+                    filas.append((r["fecha"], "usd_por_cny", d["tipoPase"], "USD/CNY", "BCRA API cambiaria"))
+        except Exception as e:  # noqa: BLE001
+            errores.append(f"{ini}: {e}")
+        ini = fin + dt.timedelta(days=1)
+    if not filas:
+        raise RuntimeError("; ".join(errores[:3]))
     return _df(filas)
 
 
@@ -155,8 +158,8 @@ def byma_snapshots():
     crudos["cauciones"] = cau
     for c in cau if isinstance(cau, list) else []:
         if str(c.get("symbol", "")).startswith("PESOS") and c.get("daysToMaturity", 99) <= 4 and c.get("vwap"):
-            filas.append((HOY, f"caucion_pesos_{c['daysToMaturity']}d_vwap", c["vwap"], "crudo BYMA",
-                          f"BYMA cauciones ({c['symbol']})"))
+            filas.append((HOY, f"caucion_pesos_{c['daysToMaturity']}d", c["vwap"] * 100, "% TNA",
+                          f"BYMA cauciones ({c['symbol']}, precio promedio ponderado)"))
     r = requests.post(f"{BYMA}/lebacs", json={"excludeZeroPxAndQty": False, "T1": True, "T0": False,
                       "page_number": 1, "page_size": 500}, headers=BYMA_H, verify=False, timeout=90)
     let = r.json().get("data", [])
@@ -220,21 +223,22 @@ def yahoo():
 # ---------------------------------------------------------------- INDEC / datos.gob.ar
 DATOS_GOB = {
     "148.3_INIVELNAL_DICI_M_26": ("ipc_nivel_general", "índice dic-16=100"),
-    "148.3_INUCLNAL_DICI_M_19": ("ipc_nucleo", "índice dic-16=100"),
+    "148.3_INUCLEONAL_DICI_M_19": ("ipc_nucleo", "índice dic-16=100"),
     "143.3_NO_PR_2004_A_31": ("emae_desest", "índice 2004=100"),
 }
 
 
 def datos_gob():
     filas = []
-    for sid, (var, uni) in DATOS_GOB.items():
-        try:
-            j = _get("https://apis.datos.gob.ar/series/api/series/",
-                     params={"ids": sid, "start_date": "2018-01-01", "limit": 5000, "format": "json"}).json()
-            for f, v in j["data"]:
-                filas.append((f, var, v, uni, f"INDEC vía datos.gob.ar ({sid})"))
-        except Exception:  # noqa: BLE001  (un id mal no frena al resto)
-            pass
+    j = _get("https://apis.datos.gob.ar/series/api/series/",
+             params={"ids": ",".join(DATOS_GOB), "start_date": "2018-01-01", "limit": 1000,
+                     "format": "json"}).json()
+    ids = list(DATOS_GOB)
+    for fila in j["data"]:
+        f = fila[0]
+        for sid, v in zip(ids, fila[1:]):
+            var, uni = DATOS_GOB[sid]
+            filas.append((f, var, v, uni, f"INDEC vía datos.gob.ar ({sid})"))
     return _df(filas)
 
 
@@ -252,7 +256,45 @@ def datos_gob_buscar(consultas):
 
 # ---------------------------------------------------------------- Archivos para inspeccionar
 ARCHIVOS = {
-    "itcrm.xlsx": "https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/ITCRMSerie.xlsx",
-    "rem_historico.xlsx": "https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/relevamiento-expectativas-mercado-historico.xlsx",
     "balance_cambiario.xlsx": "https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/anexo-estadistico-mercado-cambios-balance-cambiario.xlsx",
 }
+
+
+# ---------------------------------------------------------------- BCRA: archivos Excel
+def rem():
+    """Expectativas del REM (mediana): inflación próximos 12 meses y del mes siguiente, TC fin de año."""
+    url = F_REM
+    df = pd.read_excel(io.BytesIO(_get(url).content), sheet_name="Base de Datos Completa", header=1)
+    df["Fecha de pronóstico"] = pd.to_datetime(df["Fecha de pronóstico"], errors="coerce")
+    filas = []
+    ipc = df[df["Variable"].eq("Precios minoristas (IPC nivel general; INDEC)")]
+    for _, r in ipc[ipc["Período"].astype(str).eq("Próx. 12 meses")].iterrows():
+        filas.append((r["Fecha de pronóstico"], "rem_inflacion_12m", r["Mediana"], "% i.a.", "BCRA REM (mediana)"))
+    men = ipc[ipc["Referencia"].astype(str).str.contains("mensual")].copy()
+    men["per"] = pd.to_datetime(men["Período"], errors="coerce")
+    men = men[men["per"] > men["Fecha de pronóstico"]].sort_values("per").groupby("Fecha de pronóstico").first()
+    for f, r in men.iterrows():
+        filas.append((f, "rem_inflacion_mes_siguiente", r["Mediana"], "% mensual", "BCRA REM (mediana)"))
+    tc = df[df["Variable"].eq("Tipo de cambio nominal")].copy()
+    tc["per"] = pd.to_datetime(tc["Período"], errors="coerce")
+    tc = tc[tc["per"].dt.month.eq(12) & tc["per"].dt.year.eq(tc["Fecha de pronóstico"].dt.year)]
+    for _, r in tc.iterrows():
+        filas.append((r["Fecha de pronóstico"], "rem_tc_fin_de_anio", r["Mediana"], "ARS/USD", "BCRA REM (mediana)"))
+    return _df(filas)
+
+
+F_REM = ("https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/"
+         "relevamiento-expectativas-mercado-historico.xlsx")
+F_ITCRM = "https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/ITCRMSerie.xlsx"
+
+
+def itcrm():
+    df = pd.read_excel(io.BytesIO(_get(F_ITCRM).content), sheet_name="ITCRM y bilaterales", header=1)
+    df.columns = [str(c).strip() for c in df.columns]
+    df["Período"] = pd.to_datetime(df["Período"], errors="coerce")
+    df = df[df["Período"] >= pd.Timestamp(DESDE)]
+    filas = []
+    for col, var in [("ITCRM", "tcrm"), ("ITCRB Brasil", "tcr_brasil"), ("ITCRB Estados Unidos", "tcr_eeuu")]:
+        for f, v in zip(df["Período"], df[col]):
+            filas.append((f, var, v, "índice 17-12-15=100", "BCRA ITCRM"))
+    return _df(filas)

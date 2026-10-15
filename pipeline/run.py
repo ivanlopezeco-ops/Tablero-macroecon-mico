@@ -71,11 +71,15 @@ def derivadas(df):
     cny = cny.reindex(f.union(cny.index)).ffill().reindex(f)
     sw = PARAM["swap_china"]
     monto_cny = sw["monto_cny_millones"]
-    if monto_cny is None:
-        fa = pd.Timestamp(sw["ancla"]["fecha"])
-        monto_cny = sw["ancla"]["usd_millones"] / cny.loc[:fa].dropna().iloc[-1]
-    notas["swap_cny_millones_usado"] = round(float(monto_cny), 1)
-    swap = cny * monto_cny
+    fa = pd.Timestamp(sw["ancla"]["fecha"])
+    if cny.loc[:fa].dropna().empty:
+        swap = pd.Series(float(sw["ancla"]["usd_millones"]), index=f)
+        notas["swap"] = "SIN tipo de pase CNY: se usa el monto fijo del ancla en USD"
+    else:
+        if monto_cny is None:
+            monto_cny = sw["ancla"]["usd_millones"] / cny.loc[:fa].dropna().iloc[-1]
+        notas["swap_cny_millones_usado"] = round(float(monto_cny), 1)
+        swap = cny * monto_cny
     bis = vigente(PARAM["bis"], f)
     repos = vigente(PARAM["repos_bcra"], f)
     netas = brutas - encajes - swap - bis - repos
@@ -101,6 +105,15 @@ def derivadas(df):
         out += [largo(corto, "futuro_fin_mes", "ARS/USD", "Matba Rofex: contrato más corto"),
                 largo(dic, "futuro_diciembre", "ARS/USD", "Matba Rofex: próximo diciembre")]
 
+    # Tasa real ex ante: TAMAR efectiva mensual contra inflación esperada del mes siguiente (REM)
+    tamar = serie(df, "tamar")
+    rem_m = serie(df, "rem_inflacion_mes_siguiente")
+    if not rem_m.empty and not tamar.empty:
+        rem_d = rem_m.reindex(tamar.index.union(rem_m.index)).ffill().reindex(tamar.index)
+        tem = ((1 + tamar / 100 * 30 / 365) - 1) * 100
+        out.append(largo(((1 + tem / 100) / (1 + rem_d / 100) - 1) * 100, "tasa_real_ex_ante_tamar",
+                         "% mensual", "Cálculo: TEM TAMAR vs inflación esperada próx. mes (REM)"))
+
     return pd.concat(out, ignore_index=True), notas
 
 
@@ -120,7 +133,7 @@ def validar(df, notas, estado):
                 L.append(f"| {ref['fecha']} | {k} | s/d | {ref[k]:,} | |")
             else:
                 L.append(f"| {ref['fecha']} | {k} | {v:,.0f} | {ref[k]:,} | {v - ref[k]:+,.0f} |")
-    L.append(f"\nMonto del swap usado: {notas.get('swap_cny_millones_usado')} millones de CNY.\n")
+    L.append(f"\nSwap: {notas.get('swap_cny_millones_usado')} millones de CNY. {notas.get('swap', '')}\n")
 
     def cruce(a, b, titulo, n=10, fmt="{:,.1f}"):
         sa, sb = serie(df, a), serie(df, b)
@@ -138,6 +151,7 @@ def validar(df, notas, estado):
     cruce("mep", "mep_ad", "3. MEP: cálculo propio (AL30) vs ArgentinaDatos")
     cruce("ccl", "ccl_ad", "4. CCL: cálculo propio (AL30) vs ArgentinaDatos")
     cruce("tamar", "badlar", "5. Control de rango: TAMAR vs BADLAR", n=5)
+    cruce("caucion_pesos_1d", "tasa_pases_terceros_1d", "5b. Caución 1 día (BYMA) vs pases entre terceros (BCRA)", n=5)
 
     L.append("## 6. Último dato por variable\n\n| variable | último dato | valor | días de rezago |\n|---|---|---:|---:|")
     ult = df.sort_values("fecha").groupby("variable").last()
@@ -159,7 +173,8 @@ def main():
     for nombre, fn in [("bcra", F.bcra), ("bcra_cny", F.bcra_cny), ("bcrd_embi", F.bcrd_embi),
                        ("argentinadatos", F.argentinadatos), ("byma_historicos", F.byma_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
-                       ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob)]:
+                       ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob),
+                       ("rem", F.rem), ("itcrm", F.itcrm)]:
         try:
             d = fn()
             partes.append(d)
