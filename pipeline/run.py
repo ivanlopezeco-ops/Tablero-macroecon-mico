@@ -134,13 +134,16 @@ def derivadas(df):
                 largo(dic, "futuro_diciembre", "ARS/USD", "Matba Rofex: próximo diciembre")]
 
     # Tasa real ex ante: TAMAR efectiva mensual contra inflación esperada del mes siguiente (REM)
-    tamar = serie(df, "tamar")
     rem_m = serie(df, "rem_inflacion_mes_siguiente")
-    if not rem_m.empty and not tamar.empty:
-        rem_d = rem_m.reindex(tamar.index.union(rem_m.index)).ffill().reindex(tamar.index)
-        tem = ((1 + tamar / 100 * 30 / 365) - 1) * 100
-        out.append(largo(((1 + tem / 100) / (1 + rem_d / 100) - 1) * 100, "tasa_real_ex_ante_tamar",
-                         "% mensual", "Cálculo: TEM TAMAR vs inflación esperada próx. mes (REM)"))
+    for tasa in ["tamar", "badlar"]:  # BADLAR da la historia larga (REM desde 2016); TAMAR existe desde oct-24
+        t = serie(df, tasa)
+        if rem_m.empty or t.empty:
+            continue
+        t = t[t.index >= rem_m.index.min()]
+        rem_d = rem_m.reindex(t.index.union(rem_m.index)).ffill().reindex(t.index)
+        tem = t / 100 * 30 / 365 * 100
+        out.append(largo(((1 + tem / 100) / (1 + rem_d / 100) - 1) * 100, f"tasa_real_ex_ante_{tasa}",
+                         "% mensual", f"Cálculo: TEM {tasa.upper()} vs inflación esperada próx. mes (REM)"))
 
     return pd.concat(out, ignore_index=True), notas
 

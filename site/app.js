@@ -111,7 +111,7 @@ function grafico(el, cfg) {
   let techo;   // recorte de picos: si unos pocos días aplastan la escala, el eje se corta en el percentil 97
   if (cfg.recortePicos && visibles.length > 20) {
     const o = [...visibles].sort((a, b) => a - b); const p97 = o[Math.floor(o.length * 0.97)];
-    if (o.at(-1) > p97 * 1.5) techo = Math.ceil((p97 * 1.25) / 10) * 10;
+    if (p97 > 0 && o.at(-1) > p97 * 1.5) techo = Math.ceil((p97 * 1.25) / 10) * 10;
   }
   el.dataset.recorte = techo ?? "";
   // niveles de precios en pesos: si en el período el valor se multiplica más de 10 veces, escala logarítmica
@@ -338,8 +338,8 @@ function tasas(main) {
     bajada: "Tasas de corto plazo en pesos · En % TNA", fuente: F.a3 + " Pases entre terceros del BCRA.", dec: 1, recortePicos: true,
     series: [{ v: "caucion_a3_pesos_1d", nombre: "Caución" }, { v: "tasa_pases_terceros_1d", nombre: "Pases" }, { v: "repo_a3_pesos_1d", nombre: "Repo", color: "celeste" }] });
   tarjeta(g, { titulo: () => `La tasa real esperada es de ${fmt(ult("tasa_real_ex_ante_tamar")[1], 2)}% mensual`,
-    bajada: "TAMAR efectiva mensual contra inflación esperada del mes siguiente (REM) · En %", fuente: F.bcra, dec: 2, decEje: 1, cero: true,
-    series: [{ v: "tasa_real_ex_ante_tamar", nombre: "Tasa real" }] });
+    bajada: "TAMAR y BADLAR efectivas mensuales contra inflación esperada del mes siguiente (REM) · En %", fuente: F.bcra, dec: 2, decEje: 1, cero: true, recortePicos: true,
+    series: [{ v: "tasa_real_ex_ante_tamar", nombre: "TAMAR" }, { v: "tasa_real_ex_ante_badlar", nombre: "BADLAR" }] });
   tarjeta(g, { titulo: "Curva de tasa fija", badge: "en validación",
     bajada: () => `TEM de mercado de LECAP y BONCAP al ${fechaCorta(Object.keys(D.series).filter((k) => k.startsWith("lecap_tem_")).map((k) => ult(k)[0]).sort().pop() || "2000-01-01")}, ordenadas por vencimiento · En % mensual`, fuente: F.byma + " Pago final según TEM de emisión de la ficha técnica.",
     render: (el) => {
