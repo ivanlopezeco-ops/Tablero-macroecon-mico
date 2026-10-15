@@ -1,0 +1,31 @@
+{
+  "_nota": "Parámetros que no tienen fuente automática. Cada uno lleva fecha de vigencia y origen. Si cambia, se agrega una entrada nueva con la fecha desde la que rige (no se borra la anterior).",
+
+  "swap_china": {
+    "_nota": "El swap está pactado en yuanes. Si 'monto_cny_millones' es null, se calibra contra el ancla (dato publicado por Machado) y se valúa cada día con el tipo de pase CNY del BCRA.",
+    "monto_cny_millones": null,
+    "ancla": {"fecha": "2026-10-02", "usd_millones": 19386, "origen": "Machado (@fede_machado_b), tabla del 2/10/26"}
+  },
+
+  "bis": [
+    {"desde": "2026-06-30", "usd_millones": 148, "origen": "Machado, tabla 30/9 y 2/10/26"}
+  ],
+
+  "repos_bcra": [
+    {"desde": "2026-01-15", "usd_millones": 2484, "origen": "Machado, tabla 30/9 y 2/10/26 (repos a 1 año)"}
+  ],
+
+  "bopreal_1_anio": [
+    {"desde": "2026-09-30", "usd_millones": 1444, "origen": "Machado, tabla 30/9 y 2/10/26. Pendiente: reemplazar por cálculo con cronograma de amortizaciones"}
+  ],
+
+  "depositos_usd_tesoro_bcra": [
+    {"desde": "2026-09-29", "usd_millones": 1125, "origen": "Machado, tabla 30/9 y 2/10/26. Pendiente: fuente automática (balance semanal BCRA)"},
+    {"desde": "2026-10-05", "usd_millones": 1177, "origen": "1816 Informe semanal 8/10/26, dato BCRA al 5/10"}
+  ],
+
+  "validacion_machado": [
+    {"fecha": "2026-09-30", "brutas": 46090, "encajes": 13293, "swap": 19377, "bis": 148, "repos": 2484, "netas": 10788, "bopreal": 1444, "dep_tesoro": 1125, "super_netas": 8219},
+    {"fecha": "2026-10-02", "brutas": 48653, "encajes": 15793, "swap": 19386, "bis": 148, "repos": 2484, "netas": 10842, "bopreal": 1444, "dep_tesoro": 1125, "super_netas": 8273}
+  ]
+}
