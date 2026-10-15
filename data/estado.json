@@ -1,21 +1,26 @@
 {
- "corrida_utc": "2026-10-15T02:17:04.440531",
+ "corrida_utc": "2026-10-15T02:42:45.446978",
+ "modo": "completo",
  "fuentes": {
   "bcra": {
    "estado": "ok",
-   "filas": 11315
+   "filas": 81301
   },
   "bcra_cny": {
    "estado": "ok",
-   "filas": 658
+   "filas": 655
   },
   "bcrd_embi": {
    "estado": "ok",
-   "filas": 32223
+   "filas": 83686
+  },
+  "bcrp_embig": {
+   "estado": "ok",
+   "filas": 7824
   },
   "argentinadatos": {
    "estado": "ok",
-   "filas": 2863
+   "filas": 15667
   },
   "byma_historicos": {
    "estado": "ok",
@@ -23,7 +28,7 @@
   },
   "rofex_futuros": {
    "estado": "ok",
-   "filas": 100
+   "filas": 19144
   },
   "cammesa": {
    "estado": "ok",
@@ -31,15 +36,16 @@
   },
   "treasury": {
    "estado": "ok",
-   "filas": 2088
+   "filas": 19103
   },
   "yahoo": {
    "estado": "ok",
-   "filas": 4553
+   "filas": 36921
   },
   "datos_gob": {
    "estado": "ok",
-   "filas": 348
+   "filas": 861,
+   "error": "143.3_NO_PR_2004_A_31: tramo vacío desde 2012-04-02, la serie puede quedar incompleta | 74.3_IET_0_M_16: tramo vacío desde 2000-04-02, la serie puede quedar incompleta | 74.3_IIT_0_M_25: tramo vacío desde 2025-04-02, la serie puede quedar incompleta"
   },
   "rem": {
    "estado": "ok",
@@ -47,15 +53,15 @@
   },
   "itcrm": {
    "estado": "ok",
-   "filas": 3054
+   "filas": 32637
   },
   "balance_cambiario": {
    "estado": "ok",
-   "filas": 2184
+   "filas": 5964
   },
   "a3_mae": {
    "estado": "ok",
-   "filas": 1085
+   "filas": 5630
   },
   "lecaps": {
    "estado": "ok",
@@ -63,7 +69,7 @@
   },
   "byma_snapshots": {
    "estado": "ok",
-   "filas": 1
+   "filas": 0
   }
  },
  "notas": {

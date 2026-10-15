@@ -1,4 +1,4 @@
-# Validación — corrida 2026-10-15 02:17 UTC
+# Validación — corrida 2026-10-15 02:42 UTC
 
 ## 1. Reservas vs tabla de Machado
 
@@ -110,6 +110,58 @@ Swap: 130004.4 millones de CNY.
 | 2026-10-09 | 1,611.2 | 1,613.6 | -2.4 |
 | 2026-10-13 | 1,612.4 | 1,606.6 | 5.8 |
 
+## 2b. Empalme riesgo país Argentina: BCRD vs ArgentinaDatos en el período común
+
+4729 fechas en común (2007-10-29 a 2026-10-13). Diferencia media -0.2, mediana absoluta 0.3, máxima absoluta 174.1.
+
+- 2007: media -0.1 · máx. abs. 0.5
+- 2008: media +0.0 · máx. abs. 0.6
+- 2009: media -0.1 · máx. abs. 36.2
+- 2010: media +7.7 · máx. abs. 24.5
+- 2011: media +1.0 · máx. abs. 27.2
+- 2012: media +0.0 · máx. abs. 10.6
+- 2013: media +0.0 · máx. abs. 0.5
+- 2014: media -0.0 · máx. abs. 0.5
+- 2015: media +0.1 · máx. abs. 9.9
+- 2016: media -6.1 · máx. abs. 33.6
+- 2017: media +0.1 · máx. abs. 11.1
+- 2018: media -0.4 · máx. abs. 3.5
+- 2019: media +0.0 · máx. abs. 0.5
+- 2020: media -0.3 · máx. abs. 127.2
+- 2021: media -0.0 · máx. abs. 2.4
+- 2022: media +0.4 · máx. abs. 57.5
+- 2023: media -1.3 · máx. abs. 174.1
+- 2024: media -0.7 · máx. abs. 69.5
+- 2025: media -4.0 · máx. abs. 169.6
+- 2026: media -0.4 · máx. abs. 12.6
+
+## 2c. Empalme riesgo país América Latina: BCRD (EMBIGD) vs BCRP (EMBIG)
+
+1293 fechas en común (2007-10-29 a 2012-12-31). Diferencia media -470.9, mediana absoluta 400.0, máxima absoluta 1,240.2.
+
+- 2007: media -119.7 · máx. abs. 153.5
+- 2008: media -418.4 · máx. abs. 1,193.1
+- 2009: media -675.3 · máx. abs. 1,240.2
+- 2010: media -344.5 · máx. abs. 462.7
+- 2011: media -334.0 · máx. abs. 574.3
+- 2012: media -643.8 · máx. abs. 1,018.8
+
+## 4b. Empalme CCL: propio vs ArgentinaDatos en el período común
+
+486 fechas en común (2024-10-14 a 2026-10-13). Diferencia media -0.4, mediana absoluta 2.0, máxima absoluta 37.4.
+
+- 2024: media -1.0 · máx. abs. 21.0
+- 2025: media -0.8 · máx. abs. 37.4
+- 2026: media +0.2 · máx. abs. 18.0
+
+## 4c. Empalme MEP: propio vs ArgentinaDatos en el período común
+
+486 fechas en común (2024-10-14 a 2026-10-13). Diferencia media -3.0, mediana absoluta 2.7, máxima absoluta 37.7.
+
+- 2024: media -0.7 · máx. abs. 12.3
+- 2025: media -3.5 · máx. abs. 37.7
+- 2026: media -3.2 · máx. abs. 20.7
+
 ## 5. Control de rango: TAMAR vs BADLAR
 
 | fecha | tamar | badlar | dif |
@@ -176,14 +228,15 @@ Swap: 130004.4 millones de CNY.
 | bc_utilidades_dividendos | 2026-08-01 | -475.16 | 75 |
 | bc_var_reservas_transacciones | 2026-08-01 | -249.79 | 75 |
 | brecha_ccl | 2026-10-13 | 6.37 | 2 |
-| brent | 2026-10-15 | 104.35 | 0 |
-| brl_usd | 2026-10-13 | 5.03 | 2 |
+| brent | 2026-10-15 | 104.41 | 0 |
+| brl_usd | 2026-10-15 | 5.05 | 0 |
 | canje_ccl_mep | 2026-10-13 | 4.71 | 2 |
 | caucion_a3_pesos_1d | 2026-10-14 | 22.43 | 1 |
 | caucion_a3_usd_1d | 2026-10-14 | 1.14 | 1 |
 | caucion_pesos_1d | 2026-10-15 | 22.24 | 0 |
 | ccl | 2026-10-13 | 1,612.40 | 2 |
 | ccl_ad | 2026-10-15 | 1,617.30 | 0 |
+| ccl_largo | 2026-10-13 | 1,612.40 | 2 |
 | compras_bcra_acum_anio | 2026-10-08 | 14,852.41 | 7 |
 | compras_bcra_mlc | 2026-10-08 | 43.00 | 7 |
 | compras_bcra_pct_volumen | 2026-10-08 | 8.15 | 7 |
@@ -191,12 +244,12 @@ Swap: 130004.4 millones de CNY.
 | depositos_gobierno_bcra_me_ars | 2026-10-09 | 1,869,903.00 | 6 |
 | depositos_privados_usd | 2026-10-08 | 42,377.00 | 7 |
 | distancia_techo_banda | 2026-10-14 | 27.70 | 1 |
-| dxy | 2026-10-15 | 102.09 | 0 |
+| dxy | 2026-10-15 | 102.06 | 0 |
 | emae_desest | 2026-07-01 | 149.65 | 106 |
 | encajes_usd_bcra | 2026-10-09 | 16,446.60 | 6 |
 | exportaciones | 2026-08-01 | 8,882.58 | 75 |
-| futuro_diciembre | 2025-09-22 | 1,530.00 | 388 |
-| futuro_fin_mes | 2025-09-22 | 1,397.50 | 388 |
+| futuro_diciembre | 2026-10-14 | 1,583.50 | 1 |
+| futuro_fin_mes | 2026-10-14 | 1,527.00 | 1 |
 | gd30_ars | 2026-10-13 | 88,610.00 | 2 |
 | gd30_usd_ccl | 2026-10-13 | 55.07 | 2 |
 | gd35_usd_ccl | 2026-10-13 | 72.13 | 2 |
@@ -212,7 +265,8 @@ Swap: 130004.4 millones de CNY.
 | mc_total | 2026-08-01 | 271.53 | 75 |
 | mep | 2026-10-13 | 1,539.94 | 2 |
 | mep_ad | 2026-10-15 | 1,539.70 | 0 |
-| oro | 2026-10-15 | 4,161.30 | 0 |
+| mep_largo | 2026-10-13 | 1,539.94 | 2 |
+| oro | 2026-10-15 | 4,162.60 | 0 |
 | prestamos_privados_pesos | 2026-10-08 | 107,444,201.00 | 7 |
 | prestamos_privados_usd | 2026-10-08 | 25,929.00 | 7 |
 | rem_inflacion_12m | 2026-09-30 | 21.05 | 15 |
@@ -231,6 +285,8 @@ Swap: 130004.4 millones de CNY.
 | resultado_primario_spn | 2026-08-01 | 1,990,321.80 | 75 |
 | riesgo_pais_argentina | 2026-10-13 | 599.10 | 2 |
 | riesgo_pais_argentina_ad | 2026-10-14 | 611.00 | 1 |
+| riesgo_pais_argentina_bcrp | 2012-12-31 | 326.00 | 5036 |
+| riesgo_pais_argentina_largo | 2026-10-13 | 599.10 | 2 |
 | riesgo_pais_bolivia | 2026-10-13 | 481.13 | 2 |
 | riesgo_pais_brasil | 2026-10-13 | 156.55 | 2 |
 | riesgo_pais_chile | 2026-10-13 | 93.23 | 2 |
@@ -242,6 +298,8 @@ Swap: 130004.4 millones de CNY.
 | riesgo_pais_guatemala | 2026-10-13 | 123.45 | 2 |
 | riesgo_pais_honduras | 2026-10-13 | 173.42 | 2 |
 | riesgo_pais_latam | 2026-10-13 | 185.09 | 2 |
+| riesgo_pais_latam_bcrp | 2012-12-31 | 991.00 | 5036 |
+| riesgo_pais_latam_largo | 2026-10-13 | 185.09 | 2 |
 | riesgo_pais_mexico | 2026-10-13 | 206.63 | 2 |
 | riesgo_pais_panama | 2026-10-13 | 122.67 | 2 |
 | riesgo_pais_paraguay | 2026-10-13 | 113.01 | 2 |
@@ -269,19 +327,20 @@ Swap: 130004.4 millones de CNY.
 
 | fuente | estado | filas | detalle |
 |---|---|---:|---|
-| bcra | ok | 11315 |  |
-| bcra_cny | ok | 658 |  |
-| bcrd_embi | ok | 32223 |  |
-| argentinadatos | ok | 2863 |  |
+| bcra | ok | 81301 |  |
+| bcra_cny | ok | 655 |  |
+| bcrd_embi | ok | 83686 |  |
+| bcrp_embig | ok | 7824 |  |
+| argentinadatos | ok | 15667 |  |
 | byma_historicos | ok | 2916 |  |
-| rofex_futuros | ok | 100 |  |
+| rofex_futuros | ok | 19144 |  |
 | cammesa | ok | 1 |  |
-| treasury | ok | 2088 |  |
-| yahoo | ok | 4553 |  |
-| datos_gob | ok | 348 |  |
+| treasury | ok | 19103 |  |
+| yahoo | ok | 36921 |  |
+| datos_gob | ok | 861 | 143.3_NO_PR_2004_A_31: tramo vacío desde 2012-04-02, la serie puede quedar incompleta | 74.3_IET_0_M_16: tramo vacío desde 2000-04-02, la serie puede  |
 | rem | ok | 312 |  |
-| itcrm | ok | 3054 |  |
-| balance_cambiario | ok | 2184 |  |
-| a3_mae | ok | 1085 |  |
+| itcrm | ok | 32637 |  |
+| balance_cambiario | ok | 5964 |  |
+| a3_mae | ok | 5630 |  |
 | lecaps | ok | 88 |  |
-| byma_snapshots | ok | 1 |  |
+| byma_snapshots | ok | 0 |  |
