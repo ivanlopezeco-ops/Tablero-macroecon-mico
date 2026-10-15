@@ -141,6 +141,17 @@ def validar(df, notas, estado):
                 L.append(f"| {ref['fecha']} | {k} | {v:,.0f} | {ref[k]:,} | {v - ref[k]:+,.0f} |")
     L.append(f"\nSwap: {notas.get('swap_cny_millones_usado')} millones de CNY. {notas.get('swap', '')}\n")
 
+    dig = BASE / "config" / "machado_digitalizado_mensual.csv"
+    if dig.exists():
+        g = pd.read_csv(dig, parse_dates=["fecha"]).set_index("fecha")
+        nuestro = pd.DataFrame({"netas": serie(df, "reservas_netas"), "super": serie(df, "reservas_super_netas")}).resample("ME").mean()
+        j = g.join(nuestro, lsuffix="_machado", rsuffix="_nuestro", how="inner").dropna()
+        L.append("## 1c. Historia: promedio mensual nuestro vs gráfico de Machado (digitalizado)\n")
+        L.append("| mes | netas nuestro | netas Machado | súper nuestro | súper Machado |\n|---|---:|---:|---:|---:|")
+        for f, r in j.iterrows():
+            L.append(f"| {f:%Y-%m} | {r['netas_nuestro']:,.0f} | {r['netas_machado']:,.0f} | {r['super_nuestro']:,.0f} | {r['super_machado']:,.0f} |")
+        L.append("")
+
     def cruce(a, b, titulo, n=10, fmt="{:,.1f}"):
         sa, sb = serie(df, a), serie(df, b)
         j = pd.concat([sa, sb], axis=1, keys=[a, b]).dropna().tail(n)

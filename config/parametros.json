@@ -1,31 +1,387 @@
 {
   "_nota": "Parámetros que no tienen fuente automática. Cada uno lleva fecha de vigencia y origen. Si cambia, se agrega una entrada nueva con la fecha desde la que rige (no se borra la anterior).",
-
   "swap_china": {
     "_nota": "El swap está pactado en yuanes. Si 'monto_cny_millones' es null, se calibra contra el ancla (dato publicado por Machado) y se valúa cada día con el tipo de pase CNY del BCRA.",
     "monto_cny_millones": null,
-    "ancla": {"fecha": "2026-10-02", "usd_millones": 19386, "origen": "Machado (@fede_machado_b), tabla del 2/10/26"}
+    "ancla": {
+      "fecha": "2026-10-02",
+      "usd_millones": 19386,
+      "origen": "Machado (@fede_machado_b), tabla del 2/10/26"
+    }
   },
-
   "bis": [
-    {"desde": "2026-06-30", "usd_millones": 148, "origen": "Machado, tabla 30/9 y 2/10/26"}
+    {
+      "desde": "2024-01-01",
+      "usd_millones": 0,
+      "origen": "Hasta jun-26 el BIS va incluido en el ajuste calibrado de repos"
+    },
+    {
+      "desde": "2026-07-01",
+      "usd_millones": 148,
+      "origen": "Machado, tabla 30/9 y 2/10/26"
+    }
   ],
-
   "repos_bcra": [
-    {"desde": "2026-01-15", "usd_millones": 2484, "origen": "Machado, tabla 30/9 y 2/10/26 (repos a 1 año)"}
+    {
+      "desde": "2024-01-01",
+      "usd_millones": 2628,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-02-01",
+      "usd_millones": 3050,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-03-01",
+      "usd_millones": 1955,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-04-01",
+      "usd_millones": 1990,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-05-01",
+      "usd_millones": 1547,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-06-01",
+      "usd_millones": 1960,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-07-01",
+      "usd_millones": 3014,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-08-01",
+      "usd_millones": 2025,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-09-01",
+      "usd_millones": 2250,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-10-01",
+      "usd_millones": 2038,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-11-01",
+      "usd_millones": 1746,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2024-12-01",
+      "usd_millones": 1628,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-01-01",
+      "usd_millones": 2678,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-02-01",
+      "usd_millones": 2096,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-03-01",
+      "usd_millones": 2892,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-04-01",
+      "usd_millones": 2542,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-05-01",
+      "usd_millones": 2192,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-06-01",
+      "usd_millones": 1228,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-07-01",
+      "usd_millones": 2385,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-08-01",
+      "usd_millones": 2614,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-09-01",
+      "usd_millones": 2485,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-10-01",
+      "usd_millones": 3389,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-11-01",
+      "usd_millones": 3816,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2025-12-01",
+      "usd_millones": 4694,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2026-01-01",
+      "usd_millones": 8646,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2026-02-01",
+      "usd_millones": 9319,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2026-03-01",
+      "usd_millones": 9515,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2026-04-01",
+      "usd_millones": 8238,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2026-05-01",
+      "usd_millones": 9183,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2026-06-01",
+      "usd_millones": 8586,
+      "origen": "Estimado: calibrado al gráfico de reservas netas de Machado (digitalizado, precisión aprox. ±500 M). Incluye BIS + repos a 1 año y otros pasivos de corto plazo."
+    },
+    {
+      "desde": "2026-07-01",
+      "usd_millones": 2484,
+      "origen": "Machado, tabla 30/9 y 2/10/26 (repos a 1 año)"
+    }
   ],
-
   "bopreal_1_anio": [
-    {"desde": "2026-09-30", "usd_millones": 1444, "origen": "Machado, tabla 30/9 y 2/10/26. Pendiente: reemplazar por cálculo con cronograma de amortizaciones"}
+    {
+      "desde": "2024-01-01",
+      "usd_millones": 558,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-02-01",
+      "usd_millones": 1011,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-03-01",
+      "usd_millones": 1012,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-04-01",
+      "usd_millones": 1920,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-05-01",
+      "usd_millones": 1998,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-06-01",
+      "usd_millones": 1998,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-07-01",
+      "usd_millones": 1929,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-08-01",
+      "usd_millones": 1929,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-09-01",
+      "usd_millones": 1977,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-10-01",
+      "usd_millones": 1977,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-11-01",
+      "usd_millones": 1977,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2024-12-01",
+      "usd_millones": 1586,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-01-01",
+      "usd_millones": 2142,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-02-01",
+      "usd_millones": 2142,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-03-01",
+      "usd_millones": 2881,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-04-01",
+      "usd_millones": 2881,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-05-01",
+      "usd_millones": 3839,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-06-01",
+      "usd_millones": 3385,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-07-01",
+      "usd_millones": 3385,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-08-01",
+      "usd_millones": 3345,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-09-01",
+      "usd_millones": 3018,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-10-01",
+      "usd_millones": 3330,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-11-01",
+      "usd_millones": 3330,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2025-12-01",
+      "usd_millones": 3330,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2026-01-01",
+      "usd_millones": 2582,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2026-02-01",
+      "usd_millones": 2328,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2026-03-01",
+      "usd_millones": 1714,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2026-04-01",
+      "usd_millones": 1714,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2026-05-01",
+      "usd_millones": 1714,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2026-06-01",
+      "usd_millones": 1691,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2026-07-01",
+      "usd_millones": 1493,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2026-08-01",
+      "usd_millones": 1399,
+      "origen": "Estimado: calibrado al gráfico de súper netas de Machado (digitalizado, mediana móvil de 3 meses, precisión aprox. ±700 M)."
+    },
+    {
+      "desde": "2026-09-30",
+      "usd_millones": 1444,
+      "origen": "Machado, tabla 30/9 y 2/10/26"
+    }
   ],
-
   "depositos_usd_tesoro_bcra": [
-    {"desde": "2026-09-29", "usd_millones": 1125, "origen": "Machado, tabla 30/9 y 2/10/26. Pendiente: fuente automática (balance semanal BCRA)"},
-    {"desde": "2026-10-05", "usd_millones": 1177, "origen": "1816 Informe semanal 8/10/26, dato BCRA al 5/10"}
+    {
+      "desde": "2026-09-29",
+      "usd_millones": 1125,
+      "origen": "Machado, tabla 30/9 y 2/10/26. Pendiente: fuente automática (balance semanal BCRA)"
+    },
+    {
+      "desde": "2026-10-05",
+      "usd_millones": 1177,
+      "origen": "1816 Informe semanal 8/10/26, dato BCRA al 5/10"
+    }
   ],
-
   "validacion_machado": [
-    {"fecha": "2026-09-30", "brutas": 46090, "encajes": 13293, "swap": 19377, "bis": 148, "repos": 2484, "netas": 10788, "bopreal": 1444, "dep_tesoro": 1125, "super_netas": 8219},
-    {"fecha": "2026-10-02", "brutas": 48653, "encajes": 15793, "swap": 19386, "bis": 148, "repos": 2484, "netas": 10842, "bopreal": 1444, "dep_tesoro": 1125, "super_netas": 8273}
-  ]
+    {
+      "fecha": "2026-09-30",
+      "brutas": 46090,
+      "encajes": 13293,
+      "swap": 19377,
+      "bis": 148,
+      "repos": 2484,
+      "netas": 10788,
+      "bopreal": 1444,
+      "dep_tesoro": 1125,
+      "super_netas": 8219
+    },
+    {
+      "fecha": "2026-10-02",
+      "brutas": 48653,
+      "encajes": 15793,
+      "swap": 19386,
+      "bis": 148,
+      "repos": 2484,
+      "netas": 10842,
+      "bopreal": 1444,
+      "dep_tesoro": 1125,
+      "super_netas": 8273
+    }
+  ],
+  "_nota_historia": "La historia anterior a jul-26 (repos/BIS) y a sep-26 (Bopreal) es estimada por calibración contra el gráfico publicado por Machado. Los datos diarios de brutas, encajes, swap y depósitos del Tesoro son del BCRA."
 }
