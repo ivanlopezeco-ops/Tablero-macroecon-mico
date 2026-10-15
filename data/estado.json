@@ -1,9 +1,9 @@
 {
- "corrida_utc": "2026-10-15T01:02:20.593256",
+ "corrida_utc": "2026-10-15T01:10:57.157384",
  "fuentes": {
   "bcra": {
    "estado": "ok",
-   "filas": 10642
+   "filas": 11315
   },
   "bcra_cny": {
    "estado": "ok",
@@ -39,7 +39,7 @@
   },
   "datos_gob": {
    "estado": "ok",
-   "filas": 311
+   "filas": 415
   },
   "rem": {
    "estado": "ok",
@@ -49,15 +49,17 @@
    "estado": "ok",
    "filas": 3054
   },
+  "balance_cambiario": {
+   "estado": "ok",
+   "filas": 2184
+  },
   "byma_snapshots": {
    "estado": "ok",
    "filas": 1
-  },
-  "archivo_balance_cambiario.xlsx": {
-   "estado": "ok"
   }
  },
  "notas": {
-  "swap_cny_millones_usado": 130004.4
+  "swap_cny_millones_usado": 130004.4,
+  "dep_tesoro": "BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
  }
 }
