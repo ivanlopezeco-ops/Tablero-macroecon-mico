@@ -1,0 +1,32 @@
+{
+ "S13N6": {
+  "tem": null,
+  "emision": "2026-06-30",
+  "vencimiento": "2026-11-13",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 13 DE NOVIEMBRE DE 2026"
+ },
+ "S16O6": {
+  "tem": 0.020499999999999997,
+  "emision": "2026-07-31",
+  "vencimiento": "2026-10-16",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 16 DE OCTUBRE DE 2026"
+ },
+ "S29E7": {
+  "tem": null,
+  "emision": "2026-08-31",
+  "vencimiento": "2027-01-29",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 29 DE ENERO DE 2027"
+ },
+ "S30N6": {
+  "tem": 0.023,
+  "emision": "2025-12-15",
+  "vencimiento": "2026-11-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE NOVIEMBRE DE 2026"
+ },
+ "S30O6": {
+  "tem": 0.0255,
+  "emision": "2025-10-31",
+  "vencimiento": "2026-10-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE OCTUBRE DE 2026"
+ }
+}

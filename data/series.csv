@@ -7103,7 +7103,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,brent,104.72000122070312,USD/bbl,Yahoo Finance (BZ=F)
 2026-10-12,brent,106.6500015258789,USD/bbl,Yahoo Finance (BZ=F)
 2026-10-13,brent,105.69000244140625,USD/bbl,Yahoo Finance (BZ=F)
-2026-10-15,brent,104.3499984741211,USD/bbl,Yahoo Finance (BZ=F)
+2026-10-15,brent,104.80000305175781,USD/bbl,Yahoo Finance (BZ=F)
 2023-10-15,brl_usd,5.0482001304626465,BRL/USD,Yahoo Finance (BRL=X)
 2023-10-16,brl_usd,5.037600040435791,BRL/USD,Yahoo Finance (BRL=X)
 2023-10-17,brl_usd,5.037399768829346,BRL/USD,Yahoo Finance (BRL=X)
@@ -17076,6 +17076,99 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,lebac_lediv_bopreal_usd,4889.69,USD M,BCRA API v4 (id 158)
 2026-10-09,lebac_lediv_bopreal_usd,4889.69,USD M,BCRA API v4 (id 158)
 2026-10-13,lebac_lediv_bopreal_usd,4889.69,USD M,BCRA API v4 (id 158)
+2026-08-31,lecap_tem_S16O6,2.5885453662598756,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-01,lecap_tem_S16O6,2.6071120948946147,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-02,lecap_tem_S16O6,2.7596316290196654,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-03,lecap_tem_S16O6,2.643407036831946,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-04,lecap_tem_S16O6,2.6993070482188353,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-07,lecap_tem_S16O6,2.6962976722533005,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-08,lecap_tem_S16O6,2.7053421174091596,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-09,lecap_tem_S16O6,2.7415641153369252,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-10,lecap_tem_S16O6,2.7550748495215993,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-11,lecap_tem_S16O6,2.8580138067979988,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-14,lecap_tem_S16O6,2.835759860885312,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-15,lecap_tem_S16O6,2.861920743805646,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-16,lecap_tem_S16O6,2.8899420417036303,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-17,lecap_tem_S16O6,2.9146949632852914,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-18,lecap_tem_S16O6,3.051358415555261,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-21,lecap_tem_S16O6,3.0822791454933496,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-22,lecap_tem_S16O6,3.175608786031403,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-23,lecap_tem_S16O6,3.2544713325249663,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-24,lecap_tem_S16O6,3.3196302697585,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-25,lecap_tem_S16O6,3.5427207728467858,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-28,lecap_tem_S16O6,3.6319527123630513,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-29,lecap_tem_S16O6,3.7325184265332823,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-30,lecap_tem_S16O6,3.786985384035768,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-10-01,lecap_tem_S16O6,3.943305526805041,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-10-02,lecap_tem_S16O6,4.490311726515106,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-10-05,lecap_tem_S16O6,4.73681991510051,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-10-06,lecap_tem_S16O6,5.032372123501494,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-10-07,lecap_tem_S16O6,5.463547067349017,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-10-08,lecap_tem_S16O6,6.003316553500793,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-10-09,lecap_tem_S16O6,8.772791704438587,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-10-13,lecap_tem_S16O6,17.289840033267367,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-08-31,lecap_tem_S30N6,1.6908143144402477,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-01,lecap_tem_S30N6,1.6692983817825802,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-02,lecap_tem_S30N6,1.6558408600800156,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-03,lecap_tem_S30N6,1.6438235749959285,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-04,lecap_tem_S30N6,1.6198313095877825,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-07,lecap_tem_S30N6,1.600633842075383,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-08,lecap_tem_S30N6,1.623336308919665,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-09,lecap_tem_S30N6,1.6588624233236038,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-10,lecap_tem_S30N6,1.6186893276818104,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-11,lecap_tem_S30N6,1.600935882980603,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-14,lecap_tem_S30N6,1.5377005701251667,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-15,lecap_tem_S30N6,1.5156495254244229,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-16,lecap_tem_S30N6,1.501029966902867,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-17,lecap_tem_S30N6,1.4631602127228582,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-18,lecap_tem_S30N6,1.4369668384972778,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-21,lecap_tem_S30N6,1.4526170809307848,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-22,lecap_tem_S30N6,1.4705323574305984,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-23,lecap_tem_S30N6,1.4670494636648268,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-24,lecap_tem_S30N6,1.4412357441302204,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-25,lecap_tem_S30N6,1.405668894792944,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-28,lecap_tem_S30N6,1.4344057686743295,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-29,lecap_tem_S30N6,1.4033147778543142,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-09-30,lecap_tem_S30N6,1.3749089483676924,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-10-01,lecap_tem_S30N6,1.3036082169371355,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-10-02,lecap_tem_S30N6,1.2725581852831125,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-10-05,lecap_tem_S30N6,1.262380727851542,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-10-06,lecap_tem_S30N6,1.2814244370387584,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-10-07,lecap_tem_S30N6,1.2464132909477899,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-10-08,lecap_tem_S30N6,1.228706096236265,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-10-09,lecap_tem_S30N6,1.1581887018405679,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-10-13,lecap_tem_S30N6,1.191882565334934,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-08-31,lecap_tem_S30O6,1.9498456442108347,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-01,lecap_tem_S30O6,1.9623348579167033,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-02,lecap_tem_S30O6,1.9312410913397748,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-03,lecap_tem_S30O6,1.9660643714315418,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-04,lecap_tem_S30O6,1.9679331334496286,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-07,lecap_tem_S30O6,1.9162105272948482,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-08,lecap_tem_S30O6,1.9115632780272174,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-09,lecap_tem_S30O6,1.9240234464522166,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-10,lecap_tem_S30O6,1.9060753716549916,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-11,lecap_tem_S30O6,1.940428805104455,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-14,lecap_tem_S30O6,1.8511627505877204,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-15,lecap_tem_S30O6,1.8287520455806616,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-16,lecap_tem_S30O6,1.7881318744953356,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-17,lecap_tem_S30O6,1.6796979620896435,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-18,lecap_tem_S30O6,1.7271845256697338,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-21,lecap_tem_S30O6,1.6820331522501508,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-22,lecap_tem_S30O6,1.7528005054926021,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-23,lecap_tem_S30O6,1.7827085261382214,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-24,lecap_tem_S30O6,1.8472904817412594,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-25,lecap_tem_S30O6,1.8131927890190802,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-28,lecap_tem_S30O6,1.8046716584138478,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-29,lecap_tem_S30O6,1.6724538318972249,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-09-30,lecap_tem_S30O6,1.6539553634540294,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-10-01,lecap_tem_S30O6,1.7135284703469589,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-10-02,lecap_tem_S30O6,1.6562856654306124,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-10-05,lecap_tem_S30O6,1.680167875802252,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-10-06,lecap_tem_S30O6,1.7598215628430447,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-10-07,lecap_tem_S30O6,1.653571438029755,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-10-08,lecap_tem_S30O6,1.75582957404683,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-10-09,lecap_tem_S30O6,1.500212471260487,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-10-13,lecap_tem_S30O6,1.8416536054867816,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
 2024-01-02,m2_transaccional_privado,20233948.74,ARS M,BCRA API v4 (id 197)
 2024-01-03,m2_transaccional_privado,20224622.768,ARS M,BCRA API v4 (id 197)
 2024-01-04,m2_transaccional_privado,20356061.145,ARS M,BCRA API v4 (id 197)
@@ -20527,7 +20620,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,oro,4216.2998046875,USD/oz,Yahoo Finance (GC=F)
 2026-10-12,oro,4190.60009765625,USD/oz,Yahoo Finance (GC=F)
 2026-10-13,oro,4177.2998046875,USD/oz,Yahoo Finance (GC=F)
-2026-10-15,oro,4168.7001953125,USD/oz,Yahoo Finance (GC=F)
+2026-10-15,oro,4168.10009765625,USD/oz,Yahoo Finance (GC=F)
 2024-01-02,prestamos_privados_pesos,15946857.0,ARS M,BCRA API v4 (id 117)
 2024-01-03,prestamos_privados_pesos,15875149.0,ARS M,BCRA API v4 (id 117)
 2024-01-04,prestamos_privados_pesos,15588681.0,ARS M,BCRA API v4 (id 117)
@@ -62145,7 +62238,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,soja_cbot,1292.0,USc/bu,Yahoo Finance (ZS=F)
 2026-10-12,soja_cbot,1287.75,USc/bu,Yahoo Finance (ZS=F)
 2026-10-13,soja_cbot,1283.75,USc/bu,Yahoo Finance (ZS=F)
-2026-10-15,soja_cbot,1271.0,USc/bu,Yahoo Finance (ZS=F)
+2026-10-15,soja_cbot,1272.25,USc/bu,Yahoo Finance (ZS=F)
 2024-10-01,tamar,44.1875,% TNA,BCRA API v4 (id 44)
 2024-10-02,tamar,43.6875,% TNA,BCRA API v4 (id 44)
 2024-10-03,tamar,43.6875,% TNA,BCRA API v4 (id 44)

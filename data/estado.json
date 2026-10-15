@@ -1,5 +1,5 @@
 {
- "corrida_utc": "2026-10-15T01:32:56.178410",
+ "corrida_utc": "2026-10-15T01:48:21.475853",
  "fuentes": {
   "bcra": {
    "estado": "ok",
@@ -52,6 +52,10 @@
   "balance_cambiario": {
    "estado": "ok",
    "filas": 2184
+  },
+  "lecaps": {
+   "estado": "ok",
+   "filas": 93
   },
   "byma_snapshots": {
    "estado": "ok",
