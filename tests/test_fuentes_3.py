@@ -1,18 +1,15 @@
-"""A3/MAE: rutas de API dentro de los chunks JS de forex, cauciones e historia."""
-import pathlib, re, requests
+"""A3/MAE: probar rutas históricas encontradas en el JS."""
+import json, pathlib, requests
 UA = {"User-Agent": "Mozilla/5.0", "Origin": "https://marketdata.mae.com.ar", "Referer": "https://marketdata.mae.com.ar/"}
-html = requests.get("https://marketdata.mae.com.ar/", headers=UA, timeout=40).text
+B = "https://api.marketdata.mae.com.ar/api/"
 out = []
-idx = [s for s in re.findall(r'src="([^"]+\.js)"', html)]
-chunks = set()
-for s in idx:
-    js = requests.get("https://marketdata.mae.com.ar/" + s.lstrip("/"), headers=UA, timeout=60).text
-    chunks |= set(re.findall(r'assets/(?:forex|history-service|cauciones|boletin-diario-service|historicARS|forexWidgets|index)[A-Za-z0-9_\-]*\.js', js))
-for c in sorted(chunks):
-    js = requests.get("https://marketdata.mae.com.ar/" + c, headers=UA, timeout=60).text
-    hits = set(re.findall(r'["`\'](/?[a-z][A-Za-z0-9_\-]*/[A-Za-z0-9_\-/${}]*)["`\']', js))
-    hits = [h for h in hits if not h.startswith("assets/") and "/" in h and len(h) < 70]
-    ctx = [js[max(0, m.start()-80):m.end()+160] for m in re.finditer(r'get\(|fetch\(', js)][:8]
-    out.append(f"## {c}\n" + "\n".join(sorted(hits)) + "\n--- ctx ---\n" + "\n...\n".join(ctx))
+for ruta in ["mercado/titulo/historicoforex", "mercado/titulo/historicoforex/volumenoperado",
+             "mercado/titulo/historicocauciones", "mercado/titulo/historicorepo"]:
+    for fd, fh in [("2026-10-01", "2026-10-14"), ("01/10/2026", "14/10/2026")]:
+        try:
+            r = requests.get(B + ruta, params={"oTitulo": json.dumps({"fechaDesde": fd, "fechaHasta": fh})}, headers=UA, timeout=40)
+            out.append(f"## {ruta} {fd}\n{r.status_code} {r.text[:1200]}\n")
+        except Exception as e:
+            out.append(f"## {ruta} {fd}\nERROR {e}\n")
 pathlib.Path("results").mkdir(exist_ok=True)
-pathlib.Path("results/test_report_3.md").write_text("\n\n".join(out)[:60000], encoding="utf-8")
+pathlib.Path("results/test_report_3.md").write_text("\n".join(out), encoding="utf-8")
