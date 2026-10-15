@@ -65,7 +65,8 @@ def derivadas(df):
 
     vol = serie(df, "volumen_mlc")
     if not vol.empty:
-        out.append(largo(comp / vol * 100, "compras_bcra_pct_volumen", "%", "Cálculo: compras BCRA / volumen MLC (A3)"))
+        pct = comp / vol.where(vol > 100) * 100
+        out.append(largo(pct.where(pct.abs() < 100), "compras_bcra_pct_volumen", "%", "Cálculo: compras BCRA / volumen MLC (A3)"))
 
     # Reservas netas y súper netas (método Machado)
     brutas = serie(df, "reservas_brutas")
@@ -257,7 +258,7 @@ def main():
         base = pd.concat([viejo, nuevo], ignore_index=True)  # lo nuevo pisa a lo viejo en la misma fecha
     else:
         base = nuevo
-    base = base[~base["variable"].isin(["reservas_netas", "reservas_super_netas", "caucion_pesos_1d_vwap"])]
+    base = base[~base["variable"].isin(["reservas_netas", "reservas_super_netas", "caucion_pesos_1d_vwap", "compras_bcra_pct_volumen"])]
     base = base.drop_duplicates(["fecha", "variable"], keep="last")
 
     notas = {}
@@ -277,6 +278,8 @@ def main():
     except Exception:  # noqa: BLE001
         (DATA / "validacion.md").write_text("ERROR en validación\n\n" + traceback.format_exc(), encoding="utf-8")
     print("filas totales:", len(base), "variables:", base["variable"].nunique())
+    import exportar
+    exportar.exportar()
 
 
 if __name__ == "__main__":

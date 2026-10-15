@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tablero macro · Argentina</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    try { const t = localStorage.getItem("tema"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="marca">
+        <h1>Tablero macro</h1>
+        <p class="sub" id="actualizado">Cargando datos…</p>
+      </div>
+      <div class="acciones">
+        <div class="rangos" id="rangos" role="group" aria-label="Período de los gráficos diarios">
+          <button data-r="30">1M</button><button data-r="90">3M</button><button data-r="180">6M</button>
+          <button data-r="365" class="on">1A</button><button data-r="730">2A</button><button data-r="0">Todo</button>
+        </div>
+        <button class="tema" id="tema" aria-label="Cambiar entre modo claro y oscuro" title="Modo claro / oscuro">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+        </button>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs" aria-label="Secciones"></nav>
+  </header>
+
+  <main id="main"></main>
+
+  <footer class="pie">
+    <details>
+      <summary>Estado de las fuentes y metodología</summary>
+      <div id="estado"></div>
+      <p class="nota">Reservas netas y súper netas: método de Federico Machado. Brutas, encajes, swap con China (130.000 M de yuanes al tipo de pase del día) y depósitos del Tesoro surgen de datos diarios del BCRA. BIS, repos y Bopreal a un año: datos de Machado desde jul-26 (Bopreal desde sep-26); antes, estimados por calibración contra su gráfico publicado (trazo discontinuo). Riesgo país: EMBI Global Diversified de JP Morgan publicado por el Banco Central de la República Dominicana; desde el 4/9/26 JP Morgan cambió la metodología y los agregados regionales tienen un quiebre. MEP y CCL: AL30 en pesos sobre AL30D y AL30C (BYMA).</p>
+    </details>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

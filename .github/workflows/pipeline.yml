@@ -9,10 +9,13 @@ on:
     paths:
       - "pipeline/**"
       - "config/**"
+      - "site/**"
       - ".github/workflows/pipeline.yml"
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: pipeline
@@ -22,6 +25,9 @@ jobs:
   actualizar:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -37,3 +43,9 @@ jobs:
           git commit -m "Datos $(date -u +%Y-%m-%d)" || echo "sin cambios"
           git pull --rebase
           git push
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
