@@ -1,17 +1,40 @@
-## volumenoperado 2026-10-14..2026-10-15
-{"fecha": "2026-10-14T00:00:00", "volumen": 879207.01356, "cant_Millones": 588.23916}
-
-## volumenoperado 2026-10-14..2026-10-16
-{"fecha": "2026-10-14T00:00:00", "volumen": 879207.01356, "cant_Millones": 588.23916}
-
-## volumenoperado 2026-09-16..2026-10-15
-{"fecha": "2026-10-06T00:00:00", "volumen": 774887.788, "cant_Millones": 547.588}
-{"fecha": "2026-10-07T00:00:00", "volumen": 639345.335515, "cant_Millones": 425.11683}
-{"fecha": "2026-10-08T00:00:00", "volumen": 761999.905, "cant_Millones": 527.3445}
-{"fecha": "2026-10-09T00:00:00", "volumen": 993945.321757, "cant_Millones": 717.057345}
-{"fecha": "2026-10-13T00:00:00", "volumen": 815050.4835, "cant_Millones": 539.0335}
-{"fecha": "2026-10-14T00:00:00", "volumen": 3516828.05424, "cant_Millones": 2352.95664}
-
-## volumenoperado 2026-10-13..2026-10-20
-{"fecha": "2026-10-13T00:00:00", "volumen": 815050.4835, "cant_Millones": 539.0335}
-{"fecha": "2026-10-14T00:00:00", "volumen": 3516828.05424, "cant_Millones": 2352.95664}
+143.3_NO_PR_2004_A_31 | csv lim1000 | intento 0 | 200 | n=271 | 'indice_tiempo,emae_desestacionalizada\r\n2004-01-01,98.5318118721329\r\n2004-02-01,98.02704245284784\r\n2004-03-01,97.51832921'
+143.3_NO_PR_2004_A_31 | csv lim1000 | intento 1 | 200 | n=271 | 'indice_tiempo,emae_desestacionalizada\r\n2004-01-01,98.5318118721329\r\n2004-02-01,98.02704245284784\r\n2004-03-01,97.51832921'
+143.3_NO_PR_2004_A_31 | json lim1000 | intento 0 | 200 | n=271 | '{"data": [["2004-01-01", 98.5318118721329], ["2004-02-01", 98.02704245284784], ["2004-03-01", 97.51832921205929], ["2004'
+143.3_NO_PR_2004_A_31 | json lim1000 | intento 1 | 200 | n=271 | '{"data": [["2004-01-01", 98.5318118721329], ["2004-02-01", 98.02704245284784], ["2004-03-01", 97.51832921205929], ["2004'
+143.3_NO_PR_2004_A_31 | csv lim500 | intento 0 | 200 | n=271 | 'indice_tiempo,emae_desestacionalizada\r\n2004-01-01,98.5318118721329\r\n2004-02-01,98.02704245284784\r\n2004-03-01,97.51832921'
+143.3_NO_PR_2004_A_31 | csv lim500 | intento 1 | 200 | n=271 | 'indice_tiempo,emae_desestacionalizada\r\n2004-01-01,98.5318118721329\r\n2004-02-01,98.02704245284784\r\n2004-03-01,97.51832921'
+143.3_NO_PR_2004_A_31 | csv start2012-05 | intento 0 | 200 | n=100 | 'indice_tiempo,emae_desestacionalizada\r\n2012-05-01,140.20358082737647\r\n2012-06-01,140.83845890702304\r\n2012-07-01,144.6503'
+143.3_NO_PR_2004_A_31 | csv start2012-05 | intento 1 | 200 | n=100 | 'indice_tiempo,emae_desestacionalizada\r\n2012-05-01,140.20358082737647\r\n2012-06-01,140.83845890702304\r\n2012-07-01,144.6503'
+143.3_NO_PR_2004_A_31 | csv start2012-05 end2020 | intento 0 | 200 | n=0 | 'indice_tiempo,emae_desestacionalizada\r\n'
+143.3_NO_PR_2004_A_31 | csv start2012-05 end2020 | intento 1 | 200 | n=0 | 'indice_tiempo,emae_desestacionalizada\r\n'
+143.3_NO_PR_2004_A_31 | csv start2012 | intento 0 | 200 | n=100 | 'indice_tiempo,emae_desestacionalizada\r\n2012-01-01,147.62762416221165\r\n2012-02-01,144.77987693060948\r\n2012-03-01,145.4242'
+143.3_NO_PR_2004_A_31 | csv start2012 | intento 1 | 200 | n=100 | 'indice_tiempo,emae_desestacionalizada\r\n2012-01-01,147.62762416221165\r\n2012-02-01,144.77987693060948\r\n2012-03-01,145.4242'
+143.3_NO_PR_2004_A_31 | csv desc | intento 0 | 200 | n=0 | 'indice_tiempo,emae_desestacionalizada\r\n'
+143.3_NO_PR_2004_A_31 | csv desc | intento 1 | 200 | n=0 | 'indice_tiempo,emae_desestacionalizada\r\n'
+143.3_NO_PR_2004_A_31 | csv lim1000 start2004 | intento 0 | 200 | n=271 | 'indice_tiempo,emae_desestacionalizada\r\n2004-01-01,98.5318118721329\r\n2004-02-01,98.02704245284784\r\n2004-03-01,97.51832921'
+143.3_NO_PR_2004_A_31 | csv lim1000 start2004 | intento 1 | 200 | n=271 | 'indice_tiempo,emae_desestacionalizada\r\n2004-01-01,98.5318118721329\r\n2004-02-01,98.02704245284784\r\n2004-03-01,97.51832921'
+143.3_NO_PR_2004_A_31 | csv offset100 | intento 0 | 200 | n=0 | 'indice_tiempo,emae_desestacionalizada\r\n'
+143.3_NO_PR_2004_A_31 | csv offset100 | intento 1 | 200 | n=0 | 'indice_tiempo,emae_desestacionalizada\r\n'
+143.3_NO_PR_2004_A_31 | csv offset200 | intento 0 | 200 | n=71 | 'indice_tiempo,emae_desestacionalizada\r\n2020-09-01,130.59946668347575\r\n2020-10-01,133.44789400258284\r\n2020-11-01,134.6844'
+143.3_NO_PR_2004_A_31 | csv offset200 | intento 1 | 200 | n=71 | 'indice_tiempo,emae_desestacionalizada\r\n2020-09-01,130.59946668347575\r\n2020-10-01,133.44789400258284\r\n2020-11-01,134.6844'
+74.3_IET_0_M_16 | csv lim1000 | intento 0 | 200 | n=0 | 'indice_tiempo,ica_expo_totales\r\n'
+74.3_IET_0_M_16 | csv lim1000 | intento 1 | 200 | n=0 | 'indice_tiempo,ica_expo_totales\r\n'
+74.3_IET_0_M_16 | json lim1000 | intento 0 | 200 | n=416 | '{"data": [["1992-01-01", 725.798174], ["1992-02-01", 851.896974], ["1992-03-01", 984.648674], ["1992-04-01", 998.051464]'
+74.3_IET_0_M_16 | json lim1000 | intento 1 | 200 | n=416 | '{"data": [["1992-01-01", 725.798174], ["1992-02-01", 851.896974], ["1992-03-01", 984.648674], ["1992-04-01", 998.051464]'
+74.3_IET_0_M_16 | csv lim500 | intento 0 | 200 | n=416 | 'indice_tiempo,ica_expo_totales\r\n1992-01-01,725.798174\r\n1992-02-01,851.896974\r\n1992-03-01,984.648674\r\n1992-04-01,998.0514'
+74.3_IET_0_M_16 | csv lim500 | intento 1 | 200 | n=416 | 'indice_tiempo,ica_expo_totales\r\n1992-01-01,725.798174\r\n1992-02-01,851.896974\r\n1992-03-01,984.648674\r\n1992-04-01,998.0514'
+74.3_IET_0_M_16 | csv start2012-05 | intento 0 | 200 | n=100 | 'indice_tiempo,ica_expo_totales\r\n2012-05-01,7080.828074680002\r\n2012-06-01,6822.1708296900015\r\n2012-07-01,7655.11477342999'
+74.3_IET_0_M_16 | csv start2012-05 | intento 1 | 200 | n=100 | 'indice_tiempo,ica_expo_totales\r\n2012-05-01,7080.828074680002\r\n2012-06-01,6822.1708296900015\r\n2012-07-01,7655.11477342999'
+74.3_IET_0_M_16 | csv start2012-05 end2020 | intento 0 | 200 | n=100 | 'indice_tiempo,ica_expo_totales\r\n2012-05-01,7080.828074680002\r\n2012-06-01,6822.1708296900015\r\n2012-07-01,7655.11477342999'
+74.3_IET_0_M_16 | csv start2012-05 end2020 | intento 1 | 200 | n=100 | 'indice_tiempo,ica_expo_totales\r\n2012-05-01,7080.828074680002\r\n2012-06-01,6822.1708296900015\r\n2012-07-01,7655.11477342999'
+74.3_IET_0_M_16 | csv start2012 | intento 0 | 200 | n=100 | 'indice_tiempo,ica_expo_totales\r\n2012-01-01,5399.283104390001\r\n2012-02-01,6004.528606770001\r\n2012-03-01,6199.971771770000'
+74.3_IET_0_M_16 | csv start2012 | intento 1 | 200 | n=100 | 'indice_tiempo,ica_expo_totales\r\n2012-01-01,5399.283104390001\r\n2012-02-01,6004.528606770001\r\n2012-03-01,6199.971771770000'
+74.3_IET_0_M_16 | csv desc | intento 0 | 200 | n=100 | 'indice_tiempo,ica_expo_totales\r\n2026-08-01,8882.58249877\r\n2026-07-01,8853.85953346\r\n2026-06-01,9111.84980674\r\n2026-05-01'
+74.3_IET_0_M_16 | csv desc | intento 1 | 200 | n=100 | 'indice_tiempo,ica_expo_totales\r\n2026-08-01,8882.58249877\r\n2026-07-01,8853.85953346\r\n2026-06-01,9111.84980674\r\n2026-05-01'
+74.3_IET_0_M_16 | csv lim1000 start2004 | intento 0 | 200 | n=272 | 'indice_tiempo,ica_expo_totales\r\n2004-01-01,2322.450679\r\n2004-02-01,2395.035139\r\n2004-03-01,2657.573743\r\n2004-04-01,3039.'
+74.3_IET_0_M_16 | csv lim1000 start2004 | intento 1 | 200 | n=272 | 'indice_tiempo,ica_expo_totales\r\n2004-01-01,2322.450679\r\n2004-02-01,2395.035139\r\n2004-03-01,2657.573743\r\n2004-04-01,3039.'
+74.3_IET_0_M_16 | csv offset100 | intento 0 | 200 | n=0 | 'indice_tiempo,ica_expo_totales\r\n'
+74.3_IET_0_M_16 | csv offset100 | intento 1 | 200 | n=0 | 'indice_tiempo,ica_expo_totales\r\n'
+74.3_IET_0_M_16 | csv offset200 | intento 0 | 200 | n=0 | 'indice_tiempo,ica_expo_totales\r\n'
+74.3_IET_0_M_16 | csv offset200 | intento 1 | 200 | n=0 | 'indice_tiempo,ica_expo_totales\r\n'
