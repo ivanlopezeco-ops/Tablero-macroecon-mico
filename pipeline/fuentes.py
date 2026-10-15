@@ -238,7 +238,7 @@ def datos_gob():
     for sid, (var, uni) in DATOS_GOB.items():
         try:
             t = _get("https://apis.datos.gob.ar/series/api/series/",
-                     params={"ids": sid, "start_date": "2018-01-01", "limit": 1000, "format": "csv"}).text
+                     params={"ids": sid, "start_date": "2020-01-01", "format": "csv"}).text
             csv = pd.read_csv(io.StringIO(t))
             if csv.empty:
                 errores.append(f"{sid}: sin datos")
