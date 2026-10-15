@@ -222,7 +222,7 @@ def main():
         base = pd.concat([viejo, nuevo], ignore_index=True)  # lo nuevo pisa a lo viejo en la misma fecha
     else:
         base = nuevo
-    base = base[~base["variable"].isin(["reservas_netas", "reservas_super_netas"])]  # se recalculan
+    base = base[~base["variable"].isin(["reservas_netas", "reservas_super_netas", "caucion_pesos_1d_vwap"])]
     base = base.drop_duplicates(["fecha", "variable"], keep="last")
 
     notas = {}

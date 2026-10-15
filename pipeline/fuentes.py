@@ -237,9 +237,12 @@ def datos_gob():
     filas, errores = [], []
     for sid, (var, uni) in DATOS_GOB.items():
         try:
-            j = _get("https://apis.datos.gob.ar/series/api/series/",
-                     params={"ids": sid, "start_date": "2018-01-01", "limit": 1000, "format": "json"}).json()
-            for f, v in j["data"]:
+            t = _get("https://apis.datos.gob.ar/series/api/series/",
+                     params={"ids": sid, "start_date": "2018-01-01", "limit": 1000, "format": "csv"}).text
+            csv = pd.read_csv(io.StringIO(t))
+            if csv.empty:
+                errores.append(f"{sid}: sin datos")
+            for f, v in zip(csv.iloc[:, 0], csv.iloc[:, 1]):
                 filas.append((f, var, v, uni, f"datos.gob.ar ({sid})"))
         except Exception as e:  # noqa: BLE001
             errores.append(f"{sid}: {e}"[:120])
