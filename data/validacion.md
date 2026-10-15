@@ -1,4 +1,4 @@
-# Validación — corrida 2026-10-15 03:07 UTC
+# Validación — corrida 2026-10-15 16:58 UTC
 
 ## 1. Reservas vs tabla de Machado
 
@@ -69,7 +69,6 @@ Swap: 130010.5 millones de CNY.
 
 | fecha | riesgo_pais_argentina | riesgo_pais_argentina_ad | dif |
 |---|---:|---:|---:|
-| 2026-09-29 | 609 | 607 | 2 |
 | 2026-09-30 | 606 | 607 | -1 |
 | 2026-10-01 | 649 | 636 | 13 |
 | 2026-10-02 | 649 | 655 | -6 |
@@ -79,6 +78,7 @@ Swap: 130010.5 millones de CNY.
 | 2026-10-08 | 588 | 588 | -0 |
 | 2026-10-09 | 592 | 589 | 3 |
 | 2026-10-13 | 599 | 597 | 2 |
+| 2026-10-14 | 616 | 611 | 5 |
 
 ## 3. MEP: cálculo propio (AL30) vs ArgentinaDatos
 
@@ -112,7 +112,7 @@ Swap: 130010.5 millones de CNY.
 
 ## 2b. Empalme riesgo país Argentina: BCRD vs ArgentinaDatos en el período común
 
-4729 fechas en común (2007-10-29 a 2026-10-13). Diferencia media -0.2, mediana absoluta 0.3, máxima absoluta 174.1.
+4730 fechas en común (2007-10-29 a 2026-10-14). Diferencia media -0.2, mediana absoluta 0.3, máxima absoluta 174.1.
 
 - 2007: media -0.1 · máx. abs. 0.5
 - 2008: media +0.0 · máx. abs. 0.6
@@ -217,11 +217,11 @@ Swap: 130010.5 millones de CNY.
 | bc_utilidades_dividendos | 2026-08-01 | -475.16 | 75 |
 | bc_var_reservas_transacciones | 2026-08-01 | -249.79 | 75 |
 | brecha_ccl | 2026-10-14 | 6.85 | 1 |
-| brent | 2026-10-15 | 104.25 | 0 |
-| brl_usd | 2026-10-15 | 5.05 | 0 |
+| brent | 2026-10-15 | 106.06 | 0 |
+| brl_usd | 2026-10-15 | 5.06 | 0 |
 | canje_ccl_mep | 2026-10-14 | 5.44 | 1 |
-| caucion_a3_pesos_1d | 2026-10-14 | 22.43 | 1 |
-| caucion_a3_usd_1d | 2026-10-14 | 1.14 | 1 |
+| caucion_a3_pesos_1d | 2026-10-15 | 23.39 | 0 |
+| caucion_a3_usd_1d | 2026-10-15 | 1.13 | 0 |
 | ccl | 2026-10-14 | 1,618.39 | 1 |
 | ccl_ad | 2026-10-15 | 1,617.30 | 0 |
 | ccl_largo | 2026-10-14 | 1,618.39 | 1 |
@@ -232,7 +232,7 @@ Swap: 130010.5 millones de CNY.
 | depositos_gobierno_bcra_me_ars | 2026-10-09 | 1,869,903.00 | 6 |
 | depositos_privados_usd | 2026-10-08 | 42,377.00 | 7 |
 | distancia_techo_banda | 2026-10-14 | 27.70 | 1 |
-| dxy | 2026-10-15 | 101.92 | 0 |
+| dxy | 2026-10-15 | 102.09 | 0 |
 | emae_desest | 2026-07-01 | 149.65 | 106 |
 | encajes_usd_bcra | 2026-10-09 | 16,446.60 | 6 |
 | exportaciones | 2026-08-01 | 8,882.58 | 75 |
@@ -254,13 +254,13 @@ Swap: 130010.5 millones de CNY.
 | mep | 2026-10-14 | 1,534.88 | 1 |
 | mep_ad | 2026-10-15 | 1,539.70 | 0 |
 | mep_largo | 2026-10-14 | 1,534.88 | 1 |
-| oro | 2026-10-15 | 4,178.40 | 0 |
+| oro | 2026-10-15 | 4,168.40 | 0 |
 | prestamos_privados_pesos | 2026-10-08 | 107,444,201.00 | 7 |
 | prestamos_privados_usd | 2026-10-08 | 25,929.00 | 7 |
 | rem_inflacion_12m | 2026-09-30 | 21.05 | 15 |
 | rem_inflacion_mes_siguiente | 2026-09-30 | 1.70 | 15 |
 | rem_tc_fin_de_anio | 2026-09-30 | 1,614.32 | 15 |
-| repo_a3_pesos_1d | 2026-10-14 | 21.66 | 1 |
+| repo_a3_pesos_1d | 2026-10-15 | 23.35 | 0 |
 | res_bis | 2026-10-09 | 148.00 | 6 |
 | res_bopreal_1a | 2026-10-09 | 1,444.00 | 6 |
 | res_dep_tesoro | 2026-10-09 | 1,233.55 | 6 |
@@ -271,28 +271,28 @@ Swap: 130010.5 millones de CNY.
 | reservas_netas | 2026-10-09 | 11,209.04 | 6 |
 | reservas_super_netas | 2026-10-09 | 8,531.49 | 6 |
 | resultado_primario_spn | 2026-08-01 | 1,990,321.80 | 75 |
-| riesgo_pais_argentina | 2026-10-13 | 599.10 | 2 |
+| riesgo_pais_argentina | 2026-10-14 | 616.01 | 1 |
 | riesgo_pais_argentina_ad | 2026-10-14 | 611.00 | 1 |
-| riesgo_pais_argentina_largo | 2026-10-13 | 599.10 | 2 |
-| riesgo_pais_bolivia | 2026-10-13 | 481.13 | 2 |
-| riesgo_pais_brasil | 2026-10-13 | 156.55 | 2 |
-| riesgo_pais_chile | 2026-10-13 | 93.23 | 2 |
-| riesgo_pais_colombia | 2026-10-13 | 214.89 | 2 |
-| riesgo_pais_costa_rica | 2026-10-13 | 138.47 | 2 |
-| riesgo_pais_ecuador | 2026-10-13 | 521.36 | 2 |
-| riesgo_pais_el_salvador | 2026-10-13 | 287.66 | 2 |
-| riesgo_pais_global | 2026-10-13 | 187.74 | 2 |
-| riesgo_pais_guatemala | 2026-10-13 | 123.45 | 2 |
-| riesgo_pais_honduras | 2026-10-13 | 173.42 | 2 |
-| riesgo_pais_latam | 2026-10-13 | 185.09 | 2 |
-| riesgo_pais_mexico | 2026-10-13 | 206.63 | 2 |
-| riesgo_pais_panama | 2026-10-13 | 122.67 | 2 |
-| riesgo_pais_paraguay | 2026-10-13 | 113.01 | 2 |
-| riesgo_pais_peru | 2026-10-13 | 112.79 | 2 |
-| riesgo_pais_rep_dominicana | 2026-10-13 | 178.59 | 2 |
-| riesgo_pais_uruguay | 2026-10-13 | 75.32 | 2 |
-| riesgo_pais_venezuela | 2026-10-13 | 4,129.95 | 2 |
-| soja_cbot | 2026-10-15 | 1,272.50 | 0 |
+| riesgo_pais_argentina_largo | 2026-10-14 | 616.01 | 1 |
+| riesgo_pais_bolivia | 2026-10-14 | 499.96 | 1 |
+| riesgo_pais_brasil | 2026-10-14 | 160.73 | 1 |
+| riesgo_pais_chile | 2026-10-14 | 96.11 | 1 |
+| riesgo_pais_colombia | 2026-10-14 | 216.33 | 1 |
+| riesgo_pais_costa_rica | 2026-10-14 | 144.13 | 1 |
+| riesgo_pais_ecuador | 2026-10-14 | 524.99 | 1 |
+| riesgo_pais_el_salvador | 2026-10-14 | 293.45 | 1 |
+| riesgo_pais_global | 2026-10-14 | 192.73 | 1 |
+| riesgo_pais_guatemala | 2026-10-14 | 128.07 | 1 |
+| riesgo_pais_honduras | 2026-10-14 | 179.74 | 1 |
+| riesgo_pais_latam | 2026-10-14 | 189.33 | 1 |
+| riesgo_pais_mexico | 2026-10-14 | 211.66 | 1 |
+| riesgo_pais_panama | 2026-10-14 | 126.00 | 1 |
+| riesgo_pais_paraguay | 2026-10-14 | 118.10 | 1 |
+| riesgo_pais_peru | 2026-10-14 | 115.91 | 1 |
+| riesgo_pais_rep_dominicana | 2026-10-14 | 183.75 | 1 |
+| riesgo_pais_uruguay | 2026-10-14 | 77.08 | 1 |
+| riesgo_pais_venezuela | 2026-10-14 | 4,167.65 | 1 |
+| soja_cbot | 2026-10-15 | 1,266.75 | 0 |
 | tamar | 2026-10-13 | 23.81 | 2 |
 | tasa_pases_terceros_1d | 2026-10-13 | 21.09 | 2 |
 | tasa_plazo_fijo_30d | 2026-10-13 | 20.65 | 2 |
@@ -306,8 +306,8 @@ Swap: 130010.5 millones de CNY.
 | ust_10y | 2026-10-14 | 5.19 | 1 |
 | ust_2y | 2026-10-14 | 4.82 | 1 |
 | ust_30y | 2026-10-14 | 5.52 | 1 |
-| vix | 2026-10-14 | 16.87 | 1 |
-| volumen_mlc | 2026-10-14 | 588.24 | 1 |
+| vix | 2026-10-15 | 16.86 | 0 |
+| volumen_mlc | 2026-10-15 | 366.82 | 0 |
 
 ## 7. Estado de fuentes
 
@@ -315,17 +315,17 @@ Swap: 130010.5 millones de CNY.
 |---|---|---:|---|
 | bcra | ok | 1449 |  |
 | bcra_cny | ok | 82 |  |
-| bcrd_embi | ok | 83686 |  |
+| bcrd_embi | ok | 83705 |  |
 | argentinadatos | ok | 15667 |  |
 | byma_historicos | ok | 498 |  |
 | rofex_futuros | ok | 983 |  |
 | cammesa | ok | 1 |  |
 | treasury | ok | 591 |  |
-| yahoo | ok | 507 |  |
+| yahoo | ok | 508 |  |
 | datos_gob | ok | 1465 |  |
 | rem | ok | 312 |  |
 | itcrm | ok | 32637 |  |
 | balance_cambiario | ok | 5964 |  |
-| a3_mae | ok | 341 |  |
+| a3_mae | ok | 345 |  |
 | lecaps | ok | 212 |  |
 | byma_snapshots | ok | 0 |  |
