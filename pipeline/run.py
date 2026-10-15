@@ -200,17 +200,29 @@ def main():
     base = base[~base["variable"].isin(["reservas_netas", "reservas_super_netas"])]  # se recalculan
     base = base.drop_duplicates(["fecha", "variable"], keep="last")
 
-    der, notas = derivadas(base)
-    base = pd.concat([base[~base["variable"].isin(der["variable"].unique())], der], ignore_index=True)
+    notas = {}
+    try:
+        der, notas = derivadas(base)
+        base = pd.concat([base[~base["variable"].isin(der["variable"].unique())], der], ignore_index=True)
+    except Exception:  # noqa: BLE001
+        estado["derivadas"] = {"estado": "ERROR", "error": traceback.format_exc()[-1500:]}
     base = base.drop_duplicates(["fecha", "variable"], keep="last").sort_values(["variable", "fecha"])
     base[COLS].to_csv(archivo, index=False)
 
     (DATA / "estado.json").write_text(json.dumps({"corrida_utc": dt.datetime.utcnow().isoformat(),
                                                   "fuentes": estado, "notas": notas},
                                                  ensure_ascii=False, indent=1), encoding="utf-8")
-    validar(base, notas, estado)
+    try:
+        validar(base, notas, estado)
+    except Exception:  # noqa: BLE001
+        (DATA / "validacion.md").write_text("ERROR en validación\n\n" + traceback.format_exc(), encoding="utf-8")
     print("filas totales:", len(base), "variables:", base["variable"].nunique())
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:  # noqa: BLE001
+        DATA.mkdir(exist_ok=True)
+        (DATA / "error.txt").write_text(traceback.format_exc(), encoding="utf-8")
+        print(traceback.format_exc())
