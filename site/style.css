@@ -53,7 +53,7 @@ button { font: inherit; color: inherit; }
 main { max-width: 1280px; margin: 0 auto; padding: 18px 20px 40px; }
 .seccion-intro { color: var(--texto2); font-size: 13px; margin: 0 0 14px; }
 
-.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(170px, 45%), 1fr)); gap: 12px; margin-bottom: 18px; }
 .kpi { background: var(--card); border: 1px solid var(--borde); border-radius: 12px; padding: 12px 14px 8px; box-shadow: var(--sombra); }
 .kpi .lbl { font-size: 12px; color: var(--texto2); }
 .kpi .val { font-size: 22px; font-weight: 600; letter-spacing: -.01em; margin-top: 2px; }
@@ -76,7 +76,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 18px 20px 40px; }
 table.tabla { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
 .tabla th, .tabla td { padding: 6px 8px; border-bottom: 1px solid var(--grilla); text-align: right; }
 .tabla th:first-child, .tabla td:first-child { text-align: left; }
-.tabla th { font-weight: 500; color: var(--texto2); font-size: 12px; }
+.tabla th { white-space: nowrap; font-weight: 500; color: var(--texto2); font-size: 12px; }
 .tabla tr.total td { font-weight: 600; border-bottom: 1px solid var(--eje); }
 
 .pie { max-width: 1280px; margin: 0 auto; padding: 0 20px 40px; color: var(--texto2); font-size: 12px; }
@@ -84,9 +84,29 @@ table.tabla { width: 100%; border-collapse: collapse; font-size: 13px; margin-to
 .pie .nota { color: var(--nota); max-width: 900px; }
 
 @media (max-width: 860px) {
+  .top { position: static; }
+  .kpi { padding: 10px 10px 6px; }
+  .kpi .val { font-size: 18px; }
+  .kpi .lbl { font-size: 11px; }
+  .tabla th, .tabla td { padding: 6px 4px; }
   .grilla { grid-template-columns: 1fr; }
   .card .chart { height: 260px; }
   .top-inner { padding: 10px 16px 4px; }
   .tabs, main, .pie { padding-left: 16px; padding-right: 16px; }
   .rangos button { padding: 4px 7px; }
 }
+.kpi .meta .viejo { color: var(--naranja); }
+
+/* selector de período */
+.periodo { max-width: 1280px; margin: 0 auto; padding: 0 20px 2px; }
+.periodo .nav { height: 38px; }
+.reserva-fechas { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 8px; font-size: 12px; color: var(--texto2); }
+.reserva-fechas label { display: flex; gap: 6px; align-items: center; }
+.reserva-fechas input { font: inherit; font-size: 12px; color: var(--tinta); background: var(--card); border: 1px solid var(--borde); border-radius: 6px; padding: 2px 6px; }
+.reserva-fechas button { border: 1px solid var(--borde); background: var(--card); border-radius: 999px; padding: 2px 10px; font-size: 12px; cursor: pointer; color: var(--texto2); }
+.tabla td.neg { color: var(--texto2); }
+.tabla td.dif-pos { color: var(--azul); }
+.tabla td.dif-neg { color: var(--naranja); }
+.tabla .est { color: var(--nota); font-size: 11px; }
+@media (max-width: 860px) { .periodo { padding: 0 12px 2px; } }
+.card .bajada .viejo { color: var(--naranja); }

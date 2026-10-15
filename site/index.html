@@ -20,15 +20,16 @@
         <p class="sub" id="actualizado">Cargando datos…</p>
       </div>
       <div class="acciones">
-        <div class="rangos" id="rangos" role="group" aria-label="Período de los gráficos diarios">
+        <div class="rangos" id="rangos" role="group" aria-label="Período de los gráficos">
           <button data-r="30">1M</button><button data-r="90">3M</button><button data-r="180">6M</button>
-          <button data-r="365" class="on">1A</button><button data-r="730">2A</button><button data-r="0">Todo</button>
+          <button data-r="365" class="on">1A</button><button data-r="730">2A</button><button data-r="1095">3A</button><button data-r="1826">5A</button><button data-r="0">Todo</button>
         </div>
         <button class="tema" id="tema" aria-label="Cambiar entre modo claro y oscuro" title="Modo claro / oscuro">
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
         </button>
       </div>
     </div>
+    <div class="periodo"><div class="nav" id="nav" aria-label="Selector de período: arrastrá los extremos"></div></div>
     <nav class="tabs" id="tabs" aria-label="Secciones"></nav>
   </header>
 
@@ -38,7 +39,7 @@
     <details>
       <summary>Estado de las fuentes y metodología</summary>
       <div id="estado"></div>
-      <p class="nota">Reservas netas y súper netas: método de Federico Machado. Brutas, encajes, swap con China (130.000 M de yuanes al tipo de pase del día) y depósitos del Tesoro surgen de datos diarios del BCRA. BIS, repos y Bopreal a un año: datos de Machado desde jul-26 (Bopreal desde sep-26); antes, estimados por calibración contra su gráfico publicado (trazo discontinuo). Riesgo país: EMBI Global Diversified de JP Morgan publicado por el Banco Central de la República Dominicana; desde el 4/9/26 JP Morgan cambió la metodología y los agregados regionales tienen un quiebre. MEP y CCL: AL30 en pesos sobre AL30D y AL30C (BYMA).</p>
+      <p class="nota">Reservas netas y súper netas: método de Federico Machado. Brutas, encajes, swap con China (130.000 M de yuanes al tipo de pase del día) y depósitos del Tesoro surgen de datos diarios del BCRA. BIS, repos y Bopreal a un año: datos de Machado desde jul-26 (Bopreal desde sep-26); antes, estimados por calibración contra su gráfico publicado (trazo discontinuo). Riesgo país: EMBI Global Diversified de JP Morgan publicado por el Banco Central de la República Dominicana; desde el 4/9/26 JP Morgan cambió la metodología y los agregados regionales tienen un quiebre. MEP y CCL: AL30 en pesos sobre AL30D y AL30C (BYMA); BYMA publica dos años de historia, así que antes se usan las cotizaciones de ArgentinaDatos (tramo punteado). Riesgo país antes de oct-07: ArgentinaDatos (Ámbito), que coincide con el BCRD en el período común. Historia: reservas y base monetaria desde 1996; resto de las series del BCRA desde 2003; tipo de cambio real desde 1997; volumen del MLC y repo desde 2016; caución A3 desde 2022; futuros desde 2020; series en términos reales desde dic-16 (inicio del IPC nacional). En períodos de más de dos años, las barras diarias se agrupan por mes.</p>
     </details>
   </footer>
 

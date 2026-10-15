@@ -2,7 +2,7 @@
 "use strict";
 
 let D = null;              // series
-let RANGO = 365;           // días visibles en gráficos diarios (0 = todo)
+const R = { dias: 365, desde: null, hasta: null };   // período visible: botones (dias, 0 = todo) o selector (desde/hasta)
 let TAB = "resumen";
 const charts = [];         // instancias ECharts vivas
 
@@ -22,54 +22,78 @@ const S = (v) => (D.series[v] ? D.series[v].d : []);
 const meta = (v) => D.series[v] || { u: "", f: "" };
 const ult = (v) => { const s = S(v); return s.length ? s[s.length - 1] : [null, null]; };
 const prev = (v) => { const s = S(v); return s.length > 1 ? s[s.length - 2] : [null, null]; };
-function recortar(serie, mensual) {
-  if (!RANGO || mensual) return mensual && RANGO ? serie.filter((p) => p[0] >= desde(Math.max(RANGO, 730))) : serie;
-  return serie.filter((p) => p[0] >= desde(RANGO));
+const iso = (t) => new Date(t).toISOString().slice(0, 10);
+const hoy = () => iso(Date.now());
+function rango() {                 // [desde, hasta] en ISO
+  if (R.desde) return [R.desde, R.hasta || hoy()];
+  return [R.dias ? iso(Date.now() - R.dias * 864e5) : "1900-01-01", hoy()];
 }
-function desde(dias) { const f = new Date(Date.now() - dias * 864e5); return f.toISOString().slice(0, 10); }
+function recortar(serie, mensual) {
+  let [a, b] = rango();
+  if (mensual && (Date.parse(b) - Date.parse(a)) / 864e5 < 730) a = iso(Date.parse(b) - 730 * 864e5);  // mensuales: al menos dos años
+  return serie.filter((p) => p[0] >= a && p[0] <= b);
+}
+function aMensual(serie, modo) {   // diaria -> mensual (suma o promedio), fechada el día 1
+  const g = new Map();
+  serie.forEach(([f, x]) => { if (x == null) return; const k = f.slice(0, 7) + "-01"; const o = g.get(k) || [0, 0]; o[0] += x; o[1]++; g.set(k, o); });
+  return [...g].map(([k, [s, n]]) => [k, modo === "suma" ? s : s / n]);
+}
 function varMensual(v) {           // índice -> variación % mensual
   const s = S(v); const out = [];
   for (let i = 1; i < s.length; i++) out.push([s[i][0], (s[i][1] / s[i - 1][1] - 1) * 100]);
   return out;
 }
-function deflactar(v) {            // serie diaria nominal -> a precios del último IPC
-  const ipc = S("ipc_nivel_general"); if (!ipc.length) return S(v);
+function deflactar(v) {            // serie diaria nominal -> a precios del último IPC (solo desde el inicio del IPC, dic-16)
+  const ipc = S("ipc_nivel_general"); if (!ipc.length) return [];
   const base = ipc[ipc.length - 1][1]; let j = 0;
-  return S(v).map(([f, x]) => {
+  return S(v).filter(([f]) => f.slice(0, 7) >= ipc[0][0].slice(0, 7)).map(([f, x]) => {
     while (j + 1 < ipc.length && ipc[j + 1][0].slice(0, 7) <= f.slice(0, 7)) j++;
     return [f, x * base / ipc[j][1]];
   });
 }
 
 // ------------------------------------------------------------------ gráfico de líneas / barras
+// cfg.series: [{v | datos, nombre, color, escala, estimadoAntes}] · cfg.agregar: "suma" | "prom" pasa barras diarias
+// a mensuales cuando el período supera dos años · cfg.desdeEmpalme: v cuyo primer dato marca el fin del tramo de otra fuente
 function grafico(el, cfg) {
   const c = COL();
   const ch = echarts.init(el, null, { renderer: "canvas" });
   charts.push(ch);
   const paleta = [c.azul, c.gris, c.celeste, c.naranja];
   const series = [];
+  const [ra, rb] = rango();
+  const agregado = cfg.agregar && !cfg.mensual && (Date.parse(rb) - Date.parse(ra)) / 864e5 > 730;
+  const mensual = cfg.mensual || agregado;
   const muestra = Math.abs(((cfg.series[0].datos || S(cfg.series[0].v)).slice(-1)[0] || [0, 0])[1] * (cfg.series[0].escala || 1));
   const dec = cfg.dec ?? (muestra >= 1000 ? 0 : 1);
+  const ancho = el.clientWidth || 600;
+  const margen = cfg.sinEtiquetas ? 16 : Math.round(Math.min(cfg.margenDer || 150, Math.max(84, ancho * 0.3)));
+  const chica = ancho < 420;
+  let fMin = null, fMax = null; const visibles = [];
   cfg.series.forEach((s, i) => {
     let datos = s.datos || S(s.v);
     if (s.escala) datos = datos.map(([f, x]) => [f, x * s.escala]);
     datos = recortar(datos, cfg.mensual);
+    if (agregado) datos = aMensual(datos, cfg.agregar);
+    datos.forEach((p) => { if (p[1] != null) visibles.push(p[1]); });
+    if (datos.length) { fMin = fMin && fMin < datos[0][0] ? fMin : datos[0][0]; fMax = fMax && fMax > datos.at(-1)[0] ? fMax : datos.at(-1)[0]; }
     const color = s.color ? c[s.color] : paleta[i];
-    const ancho = i === 0 ? 2.4 : 1.6;
+    const grosor = i === 0 ? 2.4 : 1.6;
     const etiqueta = {
-      show: !cfg.sinEtiquetas, formatter: (p) => `${s.nombre} ${fmt(p.value[1], dec)}${s.est ? "*" : ""}`,
-      color, fontWeight: 600, fontSize: 11, fontFamily: "Poppins", distance: 6,
+      show: !cfg.sinEtiquetas, formatter: (p) => `${s.nombre} ${fmt(p.value[1], dec)}`,
+      color, fontWeight: 600, fontSize: chica ? 10 : 11, fontFamily: "Poppins", distance: 6,
     };
     const base = {
-      name: s.nombre, type: s.tipo || cfg.tipo || "line", showSymbol: !!cfg.mensual && (s.tipo || cfg.tipo) !== "bar",
-      symbol: "emptyCircle", symbolSize: 5, itemStyle: { color, borderColor: color }, lineStyle: { width: ancho, color },
+      name: s.nombre, type: s.tipo || cfg.tipo || "line", showSymbol: !!cfg.mensual && (s.tipo || cfg.tipo) !== "bar" && datos.length < 80,
+      symbol: "emptyCircle", symbolSize: 5, itemStyle: { color, borderColor: color }, lineStyle: { width: grosor, color },
       emphasis: { disabled: true }, z: 10 - i, barMaxWidth: 14, labelLayout: { moveOverlap: "shiftY" },
+      sampling: datos.length > 1500 ? "lttb" : undefined, large: datos.length > 1500,
     };
     if (base.type === "bar") base.itemStyle = { color: (p) => (p.value[1] < 0 && cfg.negGris ? c.gris : color) };
-    if (s.estimadoAntes) {     // tramo estimado punteado
+    if (s.estimadoAntes) {     // tramo estimado u otra fuente, punteado
       const a = datos.filter((p) => p[0] < s.estimadoAntes), b = datos.filter((p) => p[0] >= s.estimadoAntes);
       if (a.length && b.length) a.push(b[0]);
-      series.push({ ...base, name: s.nombre + " (estimado)", data: a, lineStyle: { ...base.lineStyle, type: [5, 4] }, endLabel: { show: false } });
+      series.push({ ...base, name: s.nombre + " (estimado)", data: a, lineStyle: { ...base.lineStyle, type: [5, 4] }, endLabel: { ...etiqueta, show: !b.length && !cfg.sinEtiquetas } });
       series.push({ ...base, data: b, endLabel: etiqueta });
     } else {
       series.push({ ...base, data: datos, endLabel: base.type === "line" ? etiqueta : undefined });
@@ -78,28 +102,41 @@ function grafico(el, cfg) {
   if (cfg.cero || cfg.lineas) {
     const ml = [];
     if (cfg.cero) ml.push({ yAxis: 0, lineStyle: { color: c.eje, type: "solid", width: 1 }, label: { show: false } });
-    (cfg.lineas || []).forEach((l) => ml.push({ xAxis: l.x, lineStyle: { color: c.nota, type: [3, 3] },
+    (cfg.lineas || []).filter((l) => l.x >= (fMin || "") && l.x <= (fMax || "9")).forEach((l) => ml.push({ xAxis: l.x, lineStyle: { color: c.nota, type: [3, 3] },
       label: { formatter: l.txt, color: c.nota, fontSize: 10, position: "insideEndTop" } }));
     series[0].markLine = { symbol: "none", silent: true, data: ml, animation: false };
   }
+  const anios = fMin ? (Date.parse(fMax) - Date.parse(fMin)) / 864e5 / 365 : 0;
+  el.dataset.agregado = agregado ? cfg.agregar : "";
+  let techo;   // recorte de picos: si unos pocos días aplastan la escala, el eje se corta en el percentil 97
+  if (cfg.recortePicos && visibles.length > 20) {
+    const o = [...visibles].sort((a, b) => a - b); const p97 = o[Math.floor(o.length * 0.97)];
+    if (o.at(-1) > p97 * 1.5) techo = Math.ceil((p97 * 1.25) / 10) * 10;
+  }
+  el.dataset.recorte = techo ?? "";
+  // niveles de precios en pesos: si en el período el valor se multiplica más de 10 veces, escala logarítmica
+  const log = cfg.logAuto && visibles.length && Math.min(...visibles) > 0 && Math.max(...visibles) / Math.min(...visibles) > 10;
+  el.dataset.log = log ? "1" : "";
   ch.setOption({
     animation: false, textStyle: { fontFamily: "Poppins" },
-    grid: { left: 8, right: cfg.sinEtiquetas ? 16 : (cfg.margenDer || 150), top: 14, bottom: 22, containLabel: true },
+    grid: { left: 8, right: margen, top: 14, bottom: 22, containLabel: true },
     tooltip: {
-      trigger: "axis", backgroundColor: c.card, borderColor: c.eje, textStyle: { color: c.tinta, fontSize: 12 },
+      trigger: "axis", backgroundColor: c.card, borderColor: c.eje, textStyle: { color: c.tinta, fontSize: 12 }, confine: true,
       formatter: (ps) => {
         const f = ps[0].value[0];
-        const filas = ps.filter((p) => !p.seriesName.endsWith("(estimado)") || ps.length === 1)
+        const filas = ps.filter((p) => !p.seriesName.endsWith("(estimado)") || !ps.some((q) => q.seriesName === p.seriesName.replace(" (estimado)", "") && q.value[0] === f))
           .map((p) => `<span style="color:${p.color}">●</span> ${p.seriesName.replace(" (estimado)", "*")}: <b>${fmt(p.value[1], dec)}</b>`);
-        return `<div style="font-size:11px;color:${c.texto2}">${cfg.mensual ? mesCorto(f) : fechaCorta(f)}</div>${filas.join("<br>")}`;
+        return `<div style="font-size:11px;color:${c.texto2}">${mensual ? mesCorto(f) : fechaCorta(f)}</div>${filas.join("<br>")}`;
       },
     },
     xAxis: {
       type: "time", axisLine: { lineStyle: { color: c.eje } }, axisTick: { show: false }, splitLine: { show: false },
-      axisLabel: { color: c.texto2, fontSize: 11, hideOverlap: true, formatter: (v) => { const d = new Date(v); return `${MESES[d.getMonth()]}-${String(d.getFullYear()).slice(2)}`; } },
+      splitNumber: Math.max(3, Math.floor((ancho - margen) / 95)),
+      axisLabel: { color: c.texto2, fontSize: 11, hideOverlap: true, formatter: (v) => { const d = new Date(v);
+        return anios > 4 ? String(d.getFullYear()) : `${MESES[d.getMonth()]}-${String(d.getFullYear()).slice(2)}`; } },
     },
     yAxis: {
-      type: "value", scale: !cfg.desdeCero, axisLine: { show: false }, axisTick: { show: false },
+      type: log ? "log" : "value", logBase: 10, scale: !cfg.desdeCero, max: techo, axisLine: { show: false }, axisTick: { show: false },
       splitLine: { lineStyle: { color: c.grilla } }, axisLabel: { color: c.texto2, fontSize: 11, formatter: (v) => fmt(v, cfg.decEje ?? 0) },
     },
     series,
@@ -120,6 +157,14 @@ function tarjeta(cont, cfg) {
   const el = card.querySelector(".chart");
   if (cfg.alto) el.style.height = cfg.alto + "px";
   if (cfg.render) cfg.render(el, card); else grafico(el, cfg);
+  const baj = card.querySelector(".bajada");
+  if (el.dataset.log) baj.textContent += " · Escala logarítmica";
+  if (el.dataset.recorte) baj.textContent += ` · Eje cortado en ${el.dataset.recorte}: hay picos fuera de escala`;
+  if (el.dataset.agregado) baj.textContent += el.dataset.agregado === "suma" ? " · Sumas mensuales" : " · Promedios mensuales";
+  if (cfg.series && cfg.series[0].v) {   // aviso si la serie principal dejó de actualizarse
+    const f = ult(cfg.series[0].v)[0]; const dias = f ? (Date.now() - Date.parse(f)) / 864e5 : 0;
+    if (f && dias > (cfg.mensual ? 75 : 10)) baj.insertAdjacentHTML("beforeend", ` · <span class="viejo">último dato: ${cfg.mensual ? mesCorto(f) : fechaCorta(f)}</span>`);
+  }
   return card;
 }
 
@@ -130,8 +175,10 @@ function kpi(cont, k) {
   el.className = "kpi";
   const val = k.valor ? k.valor(v) : fmt(v, k.dec ?? 0);
   const dt = d == null ? "" : `${d > 0 ? "▲" : d < 0 ? "▼" : "="} ${fmt(Math.abs(d), k.decD ?? k.dec ?? 0)}`;
+  const atraso = f ? Math.round((Date.now() - Date.parse(f)) / 864e5) : 0;
+  const viejo = f && atraso > (k.mensual ? 75 : 9);
   el.innerHTML = `<div class="lbl">${k.lbl}</div><div class="val">${val}<small>${k.u || ""}</small></div>
-    <div class="meta"><span>${dt}</span><span>${f ? (k.mensual ? mesCorto(f) : fechaCorta(f)) : ""}</span></div><div class="spark"></div>`;
+    <div class="meta"><span>${dt}</span><span class="${viejo ? "viejo" : ""}" title="${viejo ? `Último dato hace ${atraso} días` : ""}">${f ? (k.mensual ? mesCorto(f) : fechaCorta(f)) : ""}</span></div><div class="spark"></div>`;
   cont.appendChild(el);
   const s = S(k.v).slice(-(k.n || 90)); const c = COL();
   const ch = echarts.init(el.querySelector(".spark")); charts.push(ch);
@@ -141,7 +188,51 @@ function kpi(cont, k) {
       areaStyle: { color: c.azul, opacity: 0.06 } }] });
 }
 
+// ------------------------------------------------------------------ tabla de reservas con fechas a elección
+const FILAS_RES = [["Reservas brutas", "reservas_brutas", 1], ["Encajes", "res_encajes", -1], ["Swap China", "res_swap_china", -1],
+  ["OOII (BIS)", "res_bis", -1, "2026-07-01"], ["Repos a 1 año", "res_repos", -1, "2026-07-01"], ["Reservas netas", "reservas_netas", 0],
+  ["Bopreal a 1 año", "res_bopreal_1a", -1, "2026-09-30"], ["Depósitos USD del Tesoro", "res_dep_tesoro", -1], ["Súper netas", "reservas_super_netas", 0]];
+const RES_SEL = { a: null, b: null };   // fechas elegidas, compartidas entre Resumen y Reservas
+
+function tablaReservas(el) {
+  const fechas = S("reservas_netas").map((p) => p[0]);
+  el.style.height = "auto";
+  if (!fechas.length) { el.textContent = "Sin datos."; return; }
+  const ultima = fechas.at(-1);
+  const snap = (f) => fechas.filter((x) => x <= f).at(-1) || fechas[0];
+  const finMesAnt = (f) => snap(f.slice(0, 7) + "-00");
+  const finAnioAnt = (f) => snap(f.slice(0, 4) + "-00");
+  const diaAnt = (f) => fechas.filter((x) => x < f).at(-1) || fechas[0];
+  RES_SEL.a = RES_SEL.a || ultima; RES_SEL.b = RES_SEL.b || finMesAnt(ultima);
+  el.innerHTML = `<div class="reserva-fechas">
+      <label>Fecha <input type="date" data-k="a" min="${fechas[0]}" max="${ultima}"></label>
+      <label>Contra <input type="date" data-k="b" min="${fechas[0]}" max="${ultima}"></label>
+      <span><button data-c="dia">Día anterior</button> <button data-c="mes">Fin de mes anterior</button> <button data-c="anio">Fin de año anterior</button></span>
+    </div><div class="tw"></div>`;
+  const val = (v, f) => { const s = S(v); for (let i = s.length - 1; i >= 0; i--) if (s[i][0] <= f) return s[i][1]; return null; };
+  const dibujar = () => {
+    const a = snap(RES_SEL.a), b = snap(RES_SEL.b);
+    el.querySelector('[data-k="a"]').value = a; el.querySelector('[data-k="b"]').value = b;
+    let hayEst = false;
+    const celdas = FILAS_RES.map(([n, v, sg, real]) => {
+      const x = (f) => { const y = val(v, f); return y == null ? null : sg === -1 ? -y : y; };
+      const est = (f) => (real && f < real ? (hayEst = true, '<span class="est">*</span>') : "");
+      const va = x(a), vb = x(b), d = va != null && vb != null ? va - vb : null;
+      const cls = d == null || Math.abs(d) < 0.5 ? "" : d > 0 ? "dif-pos" : "dif-neg";
+      return `<tr class="${sg === 0 ? "total" : ""}"><td>${n}</td><td>${fmt(vb)}${est(b)}</td><td>${fmt(va)}${est(a)}</td><td class="${cls}">${d == null ? "" : (d > 0 ? "+" : "") + fmt(d)}</td></tr>`;
+    }).join("");
+    el.querySelector(".tw").innerHTML = `<table class="tabla"><tr><th>Millones de USD</th><th>${fechaCorta(b)}</th><th>${fechaCorta(a)}</th><th>Dif.</th></tr>${celdas}</table>` +
+      (hayEst ? '<p class="fuente">*Estimado por calibración contra el gráfico de F. Machado.</p>' : "");
+  };
+  el.querySelectorAll("input").forEach((i) => i.onchange = () => { if (i.value) { RES_SEL[i.dataset.k] = i.value; dibujar(); } });
+  el.querySelectorAll("button").forEach((btn) => btn.onclick = () => {
+    const a = snap(RES_SEL.a); RES_SEL.b = { dia: diaAnt, mes: finMesAnt, anio: finAnioAnt }[btn.dataset.c](a); dibujar(); });
+  dibujar();
+}
+
 // ------------------------------------------------------------------ secciones
+const inicio = (v) => (S(v)[0] || [""])[0];
+const NOTA_AD = "*Tramo punteado: ArgentinaDatos, antes del primer dato propio con AL30.";
 const F = {
   bcra: "Fuente: elaboración propia en base a BCRA.",
   byma: "Fuente: elaboración propia en base a BYMA.",
@@ -149,6 +240,9 @@ const F = {
   bcrd: "Fuente: elaboración propia en base a JP Morgan (EMBI Global Diversified) publicado por el BCRD.",
   indec: "Fuente: elaboración propia en base a INDEC.",
 };
+
+const CARD_TABLA_RES = { titulo: "De reservas brutas a súper netas", bajada: "Composición por fecha, método Machado · En millones de USD",
+  fuente: F.bcra + " Swap, encajes y depósitos del Tesoro valuados al día.", render: tablaReservas };
 
 const SECCIONES = [
   { id: "resumen", nombre: "Resumen", armar: resumen },
@@ -186,27 +280,32 @@ function resumen(main) {
     bajada: "Netas y súper netas, método Machado · En millones de USD", fuente: F.bcra + " *Tramo estimado por calibración.",
     cero: true, series: [{ v: "reservas_netas", nombre: "Netas", estimadoAntes: "2026-07-01" },
       { v: "reservas_super_netas", nombre: "Súper netas", estimadoAntes: "2026-09-30", color: "celeste" }] });
+  tarjeta(g, CARD_TABLA_RES);
   tarjeta(g, { titulo: () => `La brecha con el contado con liqui es de ${fmt(ult("brecha_ccl")[1], 1)}%`,
-    bajada: "Tipo de cambio mayorista, MEP y CCL · En pesos por dólar", fuente: F.byma + " A3500 del BCRA.",
-    series: [{ v: "ccl", nombre: "CCL" }, { v: "tc_mayorista_a3500", nombre: "A3500" }, { v: "mep", nombre: "MEP", color: "celeste" }] });
+    bajada: "Tipo de cambio mayorista, MEP y CCL · En pesos por dólar", fuente: F.byma + " A3500 del BCRA. " + NOTA_AD, logAuto: true,
+    series: [{ v: "ccl_largo", nombre: "CCL", estimadoAntes: inicio("ccl") }, { v: "tc_mayorista_a3500", nombre: "A3500" }, { v: "mep_largo", nombre: "MEP", color: "celeste", estimadoAntes: inicio("mep") }] });
+  tarjeta(g, { titulo: () => `El riesgo país está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
+    bajada: "EMBI Global Diversified · Argentina y América Latina · En puntos básicos", fuente: F.bcrd + " *Antes de oct-07, ArgentinaDatos.",
+    lineas: [{ x: "2026-09-04", txt: "cambio metodológico" }],
+    dec: 0, series: [{ v: "riesgo_pais_argentina_largo", nombre: "Argentina", estimadoAntes: inicio("riesgo_pais_argentina") }, { v: "riesgo_pais_latam", nombre: "América Latina" }] });
 }
 
 function cambiario(main) {
   const g = grilla(main);
   tarjeta(g, { titulo: () => `El mayorista está ${fmt(ult("distancia_techo_banda")[1], 1)}% por debajo del techo de la banda`,
-    bajada: "A3500 y límites de la banda cambiaria · En pesos por dólar", fuente: F.bcra,
+    bajada: "A3500 y límites de la banda cambiaria · En pesos por dólar", fuente: F.bcra, logAuto: true,
     series: [{ v: "tc_mayorista_a3500", nombre: "A3500" }, { v: "banda_techo", nombre: "Techo" }, { v: "banda_piso", nombre: "Piso", color: "gris" }] });
   tarjeta(g, { titulo: () => `El CCL cotiza a $${fmt(ult("ccl")[1], 0)} y el MEP a $${fmt(ult("mep")[1], 0)}`,
-    bajada: "Dólares financieros calculados con el AL30 · En pesos por dólar", fuente: F.byma,
-    series: [{ v: "ccl", nombre: "CCL" }, { v: "mep", nombre: "MEP", color: "celeste" }, { v: "tc_mayorista_a3500", nombre: "A3500", color: "gris" }] });
+    bajada: "Dólares financieros calculados con el AL30 · En pesos por dólar", fuente: F.byma + " " + NOTA_AD, logAuto: true,
+    series: [{ v: "ccl_largo", nombre: "CCL", estimadoAntes: inicio("ccl") }, { v: "mep_largo", nombre: "MEP", color: "celeste", estimadoAntes: inicio("mep") }, { v: "tc_mayorista_a3500", nombre: "A3500", color: "gris" }] });
   tarjeta(g, { titulo: () => `La brecha es de ${fmt(ult("brecha_ccl")[1], 1)}% y el canje de ${fmt(ult("canje_ccl_mep")[1], 1)}%`,
-    bajada: "Brecha CCL / A3500 y canje CCL / MEP · En %", fuente: F.byma, cero: true,
+    bajada: "Brecha CCL / A3500 y canje CCL / MEP · En %", fuente: F.byma + ` Antes de ${mesCorto(inicio("ccl") || "2024-10")}, CCL y MEP de ArgentinaDatos.`, cero: true,
     series: [{ v: "brecha_ccl", nombre: "Brecha" }, { v: "canje_ccl_mep", nombre: "Canje", color: "celeste" }] });
   tarjeta(g, { titulo: () => `El mercado paga $${fmt(ult("futuro_diciembre")[1], 0)} por el dólar de diciembre`,
-    bajada: "Dólar futuro: contrato más corto y diciembre, contra el A3500 · En pesos por dólar", fuente: F.a3,
+    bajada: "Dólar futuro: contrato más corto y diciembre, contra el A3500 · En pesos por dólar", fuente: F.a3, logAuto: true,
     series: [{ v: "futuro_diciembre", nombre: "Diciembre" }, { v: "futuro_fin_mes", nombre: "Fin de mes", color: "celeste" }, { v: "tc_mayorista_a3500", nombre: "A3500", color: "gris" }] });
   tarjeta(g, { ancha: true, titulo: () => `En el MLC se operaron USD ${fmt(ult("volumen_mlc")[1])} millones en la última rueda`,
-    bajada: "Volumen diario operado en el mercado de cambios · En millones de USD", fuente: F.a3, tipo: "bar", sinEtiquetas: true, desdeCero: true,
+    bajada: "Volumen diario operado en el mercado de cambios · En millones de USD", fuente: F.a3, tipo: "bar", sinEtiquetas: true, desdeCero: true, agregar: "prom",
     series: [{ v: "volumen_mlc", nombre: "Volumen" }] });
 }
 
@@ -216,26 +315,16 @@ function reservas(main) {
     bajada: "Método Machado · En millones de USD", fuente: F.bcra + " *Tramo discontinuo: BIS, repos y Bopreal estimados por calibración contra el gráfico de F. Machado.",
     cero: true, series: [{ v: "reservas_netas", nombre: "Netas", estimadoAntes: "2026-07-01" },
       { v: "reservas_super_netas", nombre: "Súper netas", estimadoAntes: "2026-09-30", color: "celeste" }] });
-  tarjeta(g, { titulo: "Composición de las reservas netas", bajada: () => "", fuente: F.bcra + " Swap, encajes y Tesoro valuados al día.",
-    render: (el) => {
-      const filas = [["Reservas brutas", "reservas_brutas", 1], ["Encajes", "res_encajes", -1], ["Swap China", "res_swap_china", -1],
-        ["OOII (BIS)", "res_bis", -1], ["Repos a 1 año", "res_repos", -1], ["Reservas netas", "reservas_netas", 0],
-        ["Bopreal a 1 año", "res_bopreal_1a", -1], ["Depósitos USD del Tesoro", "res_dep_tesoro", -1], ["Súper netas", "reservas_super_netas", 0]];
-      const f = ult("reservas_netas")[0];
-      const val = (v) => { const p = S(v).filter((x) => x[0] <= f); return p.length ? p[p.length - 1][1] : null; };
-      el.style.height = "auto";
-      el.innerHTML = `<table class="tabla"><tr><th>Millones de USD</th><th>${f ? fechaCorta(f) : ""}</th></tr>` +
-        filas.map(([n, v, s]) => `<tr class="${s === 0 ? "total" : ""}"><td>${n}</td><td>${fmt(s === -1 ? -val(v) : val(v))}</td></tr>`).join("") + "</table>";
-    } });
+  tarjeta(g, CARD_TABLA_RES);
   tarjeta(g, { titulo: () => `Las reservas brutas suman USD ${fmt(ult("reservas_brutas")[1])} millones`,
     bajada: "Stock diario · En millones de USD", fuente: F.bcra, series: [{ v: "reservas_brutas", nombre: "Brutas" }] });
   tarjeta(g, { titulo: () => `El BCRA compró USD ${fmt(ult("compras_bcra_acum_anio")[1])} millones en el año`,
-    bajada: "Compras diarias en el mercado de cambios · En millones de USD", fuente: F.bcra, tipo: "bar", sinEtiquetas: true, cero: true,
+    bajada: "Compras diarias en el mercado de cambios · En millones de USD", fuente: F.bcra, tipo: "bar", sinEtiquetas: true, cero: true, agregar: "suma", negGris: true,
     series: [{ v: "compras_bcra_mlc", nombre: "Compras" }] });
   tarjeta(g, { titulo: () => `Las compras equivalen al ${fmt(ult("compras_bcra_pct_volumen")[1], 1)}% del volumen del MLC`,
-    bajada: "Compras del BCRA sobre volumen operado · En %", fuente: F.bcra + " Volumen de A3 Mercados.", tipo: "bar", sinEtiquetas: true, cero: true,
+    bajada: "Compras del BCRA sobre volumen operado · En %", fuente: F.bcra + " Volumen de A3 Mercados.", tipo: "bar", sinEtiquetas: true, cero: true, agregar: "prom",
     series: [{ v: "compras_bcra_pct_volumen", nombre: "Compras / volumen" }] });
-  tarjeta(g, { titulo: () => `El Tesoro tiene USD ${fmt(ult("res_dep_tesoro")[1])} millones depositados en el BCRA`,
+  tarjeta(g, { ancha: true, titulo: () => `El Tesoro tiene USD ${fmt(ult("res_dep_tesoro")[1])} millones depositados en el BCRA`,
     bajada: "Depósitos del gobierno en moneda extranjera · En millones de USD", fuente: F.bcra,
     series: [{ v: "res_dep_tesoro", nombre: "Depósitos" }] });
 }
@@ -243,20 +332,21 @@ function reservas(main) {
 function tasas(main) {
   const g = grilla(main);
   tarjeta(g, { titulo: () => `La TAMAR se ubica en ${fmt(ult("tamar")[1], 1)}% anual`,
-    bajada: "Tasas de bancos privados · En % TNA", fuente: F.bcra, dec: 1,
+    bajada: "Tasas de bancos privados · En % TNA", fuente: F.bcra, dec: 1, recortePicos: true,
     series: [{ v: "tamar", nombre: "TAMAR" }, { v: "badlar", nombre: "BADLAR" }, { v: "tasa_plazo_fijo_30d", nombre: "Plazo fijo", color: "celeste" }, { v: "baibar", nombre: "BAIBAR", color: "naranja" }] });
   tarjeta(g, { titulo: () => `La caución a un día rinde ${fmt(ult("caucion_a3_pesos_1d")[1], 1)}% anual`,
-    bajada: "Tasas de corto plazo en pesos · En % TNA", fuente: F.a3 + " Pases entre terceros del BCRA.", dec: 1,
+    bajada: "Tasas de corto plazo en pesos · En % TNA", fuente: F.a3 + " Pases entre terceros del BCRA.", dec: 1, recortePicos: true,
     series: [{ v: "caucion_a3_pesos_1d", nombre: "Caución" }, { v: "tasa_pases_terceros_1d", nombre: "Pases" }, { v: "repo_a3_pesos_1d", nombre: "Repo", color: "celeste" }] });
   tarjeta(g, { titulo: () => `La tasa real esperada es de ${fmt(ult("tasa_real_ex_ante_tamar")[1], 2)}% mensual`,
     bajada: "TAMAR efectiva mensual contra inflación esperada del mes siguiente (REM) · En %", fuente: F.bcra, dec: 2, decEje: 1, cero: true,
     series: [{ v: "tasa_real_ex_ante_tamar", nombre: "Tasa real" }] });
   tarjeta(g, { titulo: "Curva de tasa fija", badge: "en validación",
-    bajada: "TEM de mercado de LECAP y BONCAP en la última rueda · En % mensual", fuente: F.byma + " Pago final según TEM de emisión de la ficha técnica.",
+    bajada: () => `TEM de mercado de LECAP y BONCAP al ${fechaCorta(Object.keys(D.series).filter((k) => k.startsWith("lecap_tem_")).map((k) => ult(k)[0]).sort().pop() || "2000-01-01")}, ordenadas por vencimiento · En % mensual`, fuente: F.byma + " Pago final según TEM de emisión de la ficha técnica.",
     render: (el) => {
       const ls = Object.keys(D.series).filter((k) => k.startsWith("lecap_tem_"));
       const f = ls.map((k) => ult(k)[0]).sort().pop();
-      const pts = ls.map((k) => [k.slice(10), ult(k)]).filter(([, p]) => p[0] === f).sort();
+      const venc = (k) => ((meta(k).f.match(/vence (\d{4}-\d{2}-\d{2})/) || [])[1] || k);
+      const pts = ls.filter((k) => ult(k)[0] === f).sort((a, b) => (venc(a) < venc(b) ? -1 : 1)).map((k) => [k.slice(10), ult(k)]);
       const c = COL(); const ch = echarts.init(el); charts.push(ch);
       ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" }, grid: { left: 8, right: 16, top: 14, bottom: 22, containLabel: true },
         tooltip: { trigger: "axis", formatter: (p) => `${p[0].name}: <b>${fmt(p[0].value, 2)}%</b>` },
@@ -270,9 +360,9 @@ function tasas(main) {
 function riesgo(main) {
   const g = grilla(main);
   tarjeta(g, { titulo: () => `El riesgo país de Argentina está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
-    bajada: "EMBI Global Diversified · Argentina y América Latina · En puntos básicos", fuente: F.bcrd + " Desde el 4/9/26 cambió la metodología de JP Morgan.",
+    bajada: "EMBI Global Diversified · Argentina y América Latina · En puntos básicos", fuente: F.bcrd + " Desde el 4/9/26 cambió la metodología de JP Morgan. *Tramo punteado (antes de oct-07): ArgentinaDatos (Ámbito), que coincide con el BCRD en el período común.",
     lineas: [{ x: "2026-09-04", txt: "cambio metodológico" }],
-    series: [{ v: "riesgo_pais_argentina", nombre: "Argentina" }, { v: "riesgo_pais_latam", nombre: "América Latina" }] });
+    dec: 0, series: [{ v: "riesgo_pais_argentina_largo", nombre: "Argentina", estimadoAntes: inicio("riesgo_pais_argentina") }, { v: "riesgo_pais_latam", nombre: "América Latina" }] });
   const paises = { brasil: "Brasil", chile: "Chile", colombia: "Colombia", ecuador: "Ecuador", mexico: "México", peru: "Perú",
     uruguay: "Uruguay", paraguay: "Paraguay", bolivia: "Bolivia", el_salvador: "El Salvador", panama: "Panamá",
     costa_rica: "Costa Rica", guatemala: "Guatemala", honduras: "Honduras", rep_dominicana: "Rep. Dominicana", venezuela: "Venezuela" };
@@ -283,7 +373,7 @@ function riesgo(main) {
       const chips = card.querySelector(".chips");
       const dibujar = () => {
         const viejo = echarts.getInstanceByDom(el); if (viejo) viejo.dispose();
-        grafico(el, { series: [{ v: "riesgo_pais_argentina", nombre: "Argentina" },
+        grafico(el, { dec: 0, series: [{ v: "riesgo_pais_argentina", nombre: "Argentina" },
           ...sel.map((p, i) => ({ v: "riesgo_pais_" + p, nombre: paises[p], color: ["gris", "celeste", "naranja"][i] }))] });
       };
       Object.entries(paises).forEach(([k, n]) => {
@@ -297,7 +387,7 @@ function riesgo(main) {
   tarjeta(g, { ancha: true, titulo: "Ranking regional de riesgo país", alto: 380,
     bajada: () => "", fuente: F.bcrd + " Venezuela fuera de escala, excluida del gráfico.",
     render: (el) => {
-      const ks = Object.keys(D.series).filter((k) => k.startsWith("riesgo_pais_") && !["riesgo_pais_venezuela", "riesgo_pais_argentina_ad", "riesgo_pais_global"].includes(k));
+      const ks = Object.keys(D.series).filter((k) => k.startsWith("riesgo_pais_") && !["riesgo_pais_venezuela", "riesgo_pais_global"].includes(k) && !/_(ad|bcrp|largo)$/.test(k));
       const pts = ks.map((k) => [k === "riesgo_pais_latam" ? "América Latina" : (paises[k.slice(12)] || "Argentina"), ult(k)[1]]).sort((a, b) => a[1] - b[1]);
       const c = COL(); const ch = echarts.init(el); charts.push(ch);
       ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" }, grid: { left: 16, right: 50, top: 6, bottom: 6, containLabel: true },
@@ -310,7 +400,7 @@ function riesgo(main) {
 function dinero(main) {
   const g = grilla(main);
   const ultIpc = ult("ipc_nivel_general")[0];
-  const aPrecios = ultIpc ? `a precios de ${mesCorto(ultIpc)}` : "";
+  const aPrecios = ultIpc ? `a precios de ${mesCorto(ultIpc)} · Desde dic-16 (inicio del IPC nacional)` : "";
   D.series._m2r = { u: "", f: "", d: deflactar("m2_transaccional_privado").map(([f, x]) => [f, x / 1e6]) };
   D.series._bmr = { u: "", f: "", d: deflactar("base_monetaria").map(([f, x]) => [f, x / 1e6]) };
   D.series._prr = { u: "", f: "", d: deflactar("prestamos_privados_pesos").map(([f, x]) => [f, x / 1e6]) };
@@ -401,6 +491,41 @@ function render() {
   SECCIONES.find((s) => s.id === TAB).armar(main);
 }
 
+// ------------------------------------------------------------------ selector de período (navegador con asas)
+let NAV = null, navSilencio = false;
+function dibujarNav() {
+  if (NAV) NAV.dispose();
+  const c = COL(); const el = document.getElementById("nav");
+  const fondo = S("reservas_brutas");
+  const t0 = Date.parse(fondo[0][0]), t1 = Date.now();
+  NAV = echarts.init(el);
+  NAV.setOption({
+    animation: false, grid: { left: 0, right: 0, top: 0, height: 0 },
+    xAxis: { type: "time", min: t0, max: t1, show: false }, yAxis: { type: "value", show: false, scale: true },
+    series: [{ type: "line", data: fondo.map((p) => [p[0], p[1]]), showSymbol: false, lineStyle: { opacity: 0 }, sampling: "lttb" }],
+    dataZoom: [{ type: "slider", xAxisIndex: 0, realtime: false, top: 4, bottom: 4, left: 46, right: 46, filterMode: "none",
+      borderColor: c.borde || c.eje, backgroundColor: "transparent", fillerColor: c.azul + "22",
+      dataBackground: { lineStyle: { color: c.gris, width: 1 }, areaStyle: { color: c.gris, opacity: 0.12 } },
+      selectedDataBackground: { lineStyle: { color: c.azul, width: 1 }, areaStyle: { color: c.azul, opacity: 0.15 } },
+      handleStyle: { color: c.card, borderColor: c.azul }, moveHandleStyle: { color: c.azul, opacity: 0.5 }, moveHandleSize: 5,
+      textStyle: { color: c.texto2, fontSize: 10, fontFamily: "Poppins" }, labelFormatter: (v) => (v ? mesCorto(iso(v)) : ""),
+      brushSelect: false, ...navVentana() }],
+  });
+  NAV.on("datazoom", () => {
+    if (navSilencio) return;
+    const z = NAV.getOption().dataZoom[0];
+    const a = iso(z.startValue), b = iso(z.endValue);
+    R.desde = a; R.hasta = b >= iso(Date.now() - 3 * 864e5) ? null : b;
+    document.querySelectorAll("#rangos button").forEach((x) => x.classList.remove("on"));
+    render();
+  });
+}
+function navVentana() { const [a, b] = rango(); return { startValue: Math.max(Date.parse(a), Date.parse(S("reservas_brutas")[0][0])), endValue: Date.parse(b) }; }
+function moverNav() {
+  if (!NAV) return;
+  navSilencio = true; NAV.dispatchAction({ type: "dataZoom", ...navVentana() }); navSilencio = false;
+}
+
 function estado() {
   const e = D.estado; const gen = new Date(D.generado);
   document.getElementById("actualizado").textContent =
@@ -414,20 +539,30 @@ function iniciar() {
   SECCIONES.forEach((s) => { const b = document.createElement("button"); b.textContent = s.nombre; b.dataset.id = s.id;
     if (s.id === TAB) b.className = "on"; b.onclick = () => { TAB = s.id; tabs.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
       try { history.replaceState(null, "", "#" + TAB); } catch (e) {} render(); window.scrollTo(0, 0); }; tabs.appendChild(b); });
+  document.querySelectorAll("#rangos button").forEach((b) => b.classList.toggle("on", !R.desde && +b.dataset.r === R.dias));
   document.querySelectorAll("#rangos button").forEach((b) => b.onclick = () => {
-    RANGO = +b.dataset.r; document.querySelectorAll("#rangos button").forEach((x) => x.classList.toggle("on", x === b)); render(); });
+    R.dias = +b.dataset.r; R.desde = R.hasta = null;
+    document.querySelectorAll("#rangos button").forEach((x) => x.classList.toggle("on", x === b)); moverNav(); render(); });
   document.getElementById("tema").onclick = () => {
     const oscuro = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark"
       : matchMedia("(prefers-color-scheme: dark)").matches;
     document.documentElement.dataset.theme = oscuro ? "light" : "dark";
     try { localStorage.setItem("tema", document.documentElement.dataset.theme); } catch (e) {}
-    render();
+    dibujarNav(); render();
   };
-  window.addEventListener("resize", () => charts.forEach((c) => c.resize()));
+  let tr = null;   // al cambiar el ancho se redibuja (márgenes y etiquetas dependen del ancho)
+  let anchoPrevio = window.innerWidth;   // en el celular el scroll cambia el alto: solo cuenta el ancho
+  window.addEventListener("resize", () => { if (window.innerWidth === anchoPrevio) return; anchoPrevio = window.innerWidth;
+    if (NAV) NAV.resize(); clearTimeout(tr); tr = setTimeout(render, 250); });
 }
 
 const h = location.hash.slice(1); if (h) TAB = h;
+try {   // ?r=días (0 = todo) o ?desde=AAAA-MM-DD&hasta=AAAA-MM-DD
+  const q = new URLSearchParams(location.search);
+  if (q.has("r")) R.dias = +q.get("r");
+  if (q.get("desde")) { R.desde = q.get("desde"); R.hasta = q.get("hasta"); }
+} catch (e) {}
 fetch("data.json", { cache: "no-cache" }).then((r) => r.json()).then((j) => {
   D = decodificar(j); if (!SECCIONES.some((s) => s.id === TAB)) TAB = "resumen";
-  iniciar(); estado(); render();
+  iniciar(); estado(); dibujarNav(); render();
 }).catch((e) => { document.getElementById("main").textContent = "No se pudieron cargar los datos: " + e; });

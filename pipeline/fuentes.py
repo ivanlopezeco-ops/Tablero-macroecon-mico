@@ -4,6 +4,7 @@ fecha (date) | variable | valor | unidad | fuente
 import datetime as dt
 import io
 import re
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import requests
@@ -13,7 +14,7 @@ urllib3.disable_warnings()
 
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                     "(KHTML, like Gecko) Chrome/124 Safari/537.36"}
-HOY = dt.date.today()
+HOY = dt.datetime.now(ZoneInfo("America/Argentina/Buenos_Aires")).date()  # el runner está en UTC
 # Modo histórico: baja todo lo que cada fuente tiene. Modo diario: solo una ventana reciente
 # (la base acumulada conserva la historia). run.py decide el modo.
 COMPLETO = True
@@ -103,7 +104,9 @@ def bcra_cny():
         ini = fin + dt.timedelta(days=1)
     if not filas:
         raise RuntimeError("; ".join(errores[:3]))
-    return _df(filas)
+    df = _df(filas)
+    df.attrs["errores"] = errores[:5]
+    return df
 
 
 # ---------------------------------------------------------------- Riesgo país
@@ -131,27 +134,6 @@ def bcrd_embi():
     largo["fuente"] = "BCRD (JP Morgan EMBIGD)"
     largo = largo.rename(columns={"Fecha": "fecha"})
     return _df(largo[COLS].values.tolist())
-
-
-MESES_BCRP = {"Ene": 1, "Feb": 2, "Mar": 3, "Abr": 4, "May": 5, "Jun": 6, "Jul": 7, "Ago": 8,
-              "Set": 9, "Sep": 9, "Oct": 10, "Nov": 11, "Dic": 12}
-
-
-def bcrp_embig():
-    """EMBIG de JP Morgan publicado por el BCRP (Perú). Solo para empalmar antes de 2007, donde el
-    BCRD no tiene datos, y para comparar en el período común. Se baja en modo histórico."""
-    if not COMPLETO:
-        return _df([])
-    ids = {"PD04710XD": "riesgo_pais_argentina_bcrp", "PD04708XD": "riesgo_pais_latam_bcrp"}
-    j = _get(f"https://estadisticas.bcrp.gob.pe/estadisticas/series/api/{'-'.join(ids)}/json/1998-01-01/2012-12-31").json()
-    filas = []
-    for p in j.get("periods", []):
-        d, m, a = p["name"].split(".")
-        f = dt.date(2000 + int(a) if int(a) < 50 else 1900 + int(a), MESES_BCRP[m], int(d))
-        for var, v in zip(ids.values(), p["values"]):
-            if v not in ("n.d.", ""):
-                filas.append((f, var, v, "pb", "BCRP (JP Morgan EMBIG)"))
-    return _df(filas)
 
 
 def argentinadatos():
@@ -304,7 +286,8 @@ def datos_gob():
                     errores.append(f"{sid}: tramo vacío desde {ini}, la serie puede quedar incompleta")
                 if len(csv) < 100:
                     break
-                ini = str((pd.Timestamp(csv.iloc[-1, 0]) + pd.Timedelta(days=1)).date())
+                # el inicio tiene que caer en el primer día del período (si no, la API responde vacío)
+                ini = str((pd.Timestamp(csv.iloc[-1, 0]) + pd.offsets.MonthBegin(1)).date())
             if not n:
                 errores.append(f"{sid}: sin datos")
         except Exception as e:  # noqa: BLE001
@@ -421,30 +404,37 @@ def _ficha(sym):
     m = re.search(r"(\d+[.,]\d+)\s*%", d.get("interes", ""))
     return {"tem": float(m.group(1).replace(",", ".")) / 100 if m else None,
             "emision": d["fechaEmision"][:10], "vencimiento": d["fechaVencimiento"][:10],
-            "denominacion": d.get("denominacion", "")}
+            "denominacion": d.get("denominacion", ""), "interes": d.get("interes", "")[:300]}
+
+
+def _dias360(a, b):
+    """Convención 30E/360, la que usa el Tesoro para contar los meses de capitalización de las LECAP."""
+    d1, d2 = min(a.day, 30), min(b.day, 30)
+    return (b.year - a.year) * 360 + (b.month - a.month) * 30 + (d2 - d1)
 
 
 def lecaps(fichas):
     """TEM de mercado de cada LECAP/BONCAP: pago final (100 capitalizado a la TEM de emisión) vs precio."""
     r = requests.post(f"{BYMA}/lebacs", json={"excludeZeroPxAndQty": False, "T1": True, "T0": False,
                       "page_number": 1, "page_size": 500}, headers=BYMA_H, verify=False, timeout=90)
-    syms = sorted({x["symbol"] for x in r.json().get("data", [])
-                   if re.fullmatch(r"[ST]\d{2}[A-Z]\d", x["symbol"]) and x.get("denominationCcy") == "ARS"
-                   and x.get("maturityDate") and x["maturityDate"] > str(HOY)})
+    syms = {x["symbol"] for x in r.json().get("data", [])
+            if re.fullmatch(r"[ST]\d{2}[A-Z]\d", x["symbol"]) and x.get("denominationCcy") == "ARS"
+            and x.get("maturityDate") and x["maturityDate"] > str(HOY)}
+    # De noche el panel lista pocas letras: se suman las ya conocidas que no vencieron
+    syms = sorted(syms | {k for k, v in fichas.items() if v.get("vencimiento", "") > str(HOY)})
     filas = []
-    desde = int(dt.datetime.combine(HOY - dt.timedelta(days=45), dt.time()).timestamp())
+    t0 = int(dt.datetime.combine(desde(HOY - dt.timedelta(days=800)), dt.time()).timestamp())
     for sym in syms:
         try:
-            if sym not in fichas:
+            if sym not in fichas or not fichas[sym].get("tem"):
                 fichas[sym] = _ficha(sym)
             fi = fichas[sym]
             if not fi["tem"]:
                 continue
             emi, ven = pd.Timestamp(fi["emision"]), pd.Timestamp(fi["vencimiento"])
-            meses = round((ven - emi).days / 30.4375)
-            pago = 100 * (1 + fi["tem"]) ** meses
+            pago = 100 * (1 + fi["tem"]) ** (_dias360(emi, ven) / 30)
             j = _get(f"{BYMA}/chart/historical-series/history", verify=False,
-                     params={"symbol": f"{sym} 24HS", "resolution": "D", "from": desde,
+                     params={"symbol": f"{sym} 24HS", "resolution": "D", "from": t0,
                              "to": int(dt.datetime.now().timestamp())}).json()
             for t, c in zip(j.get("t", []), j.get("c", [])):
                 f = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
@@ -488,4 +478,14 @@ def a3_mae():
                 if x.get("plazo") == "001" and x.get("rueda") == "REPO" and x.get("moneda") == "$" and x.get("tasaPP"):
                     filas.append((x["fecha"][:10], "repo_a3_pesos_1d", x["tasaPP"], "% TNA", "A3/MAE repo (rueda REPO)"))
         fin = ini - dt.timedelta(days=1)
-    return _df(filas).drop_duplicates(["fecha", "variable"], keep="first")
+    df = _df(filas).drop_duplicates(["fecha", "variable"], keep="first")
+    # Control: una ventana de varios días a veces devuelve el último día multiplicado (visto el 14/10/26:
+    # 4 x 588). Los últimos días se vuelven a pedir de a uno, que da el valor correcto.
+    for f in sorted(df.loc[df["variable"] == "volumen_mlc", "fecha"].unique())[-5:]:
+        try:
+            uno = _mae("mercado/titulo/historicoforex/volumenoperado", f, f) or []
+            if uno:
+                df.loc[(df["variable"] == "volumen_mlc") & (df["fecha"] == f), "valor"] = uno[0]["cant_Millones"]
+        except Exception:  # noqa: BLE001
+            pass
+    return df

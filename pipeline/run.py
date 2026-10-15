@@ -71,8 +71,7 @@ def derivadas(df):
     out.append(largo((ccl_l / mep_l - 1) * 100, "canje_ccl_mep", "%", "Cálculo: CCL/MEP-1"))
     out += [largo(empalmar(df, "riesgo_pais_argentina", "riesgo_pais_argentina_ad"), "riesgo_pais_argentina_largo", "pb",
                   "BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)"),
-            largo(empalmar(df, "riesgo_pais_latam", "riesgo_pais_latam_bcrp"), "riesgo_pais_latam_largo", "pb",
-                  "BCRD (EMBIGD); antes de 2007, BCRP (EMBIG)")]
+]
     techo = serie(df, "banda_techo")
     out.append(largo((techo / a3500 - 1) * 100, "distancia_techo_banda", "%", "Cálculo: techo/A3500-1"))
 
@@ -206,7 +205,6 @@ def validar(df, notas, estado):
         L.append("")
 
     solape("riesgo_pais_argentina", "riesgo_pais_argentina_ad", "2b. Empalme riesgo país Argentina: BCRD vs ArgentinaDatos en el período común")
-    solape("riesgo_pais_latam", "riesgo_pais_latam_bcrp", "2c. Empalme riesgo país América Latina: BCRD (EMBIGD) vs BCRP (EMBIG)")
     solape("ccl", "ccl_ad", "4b. Empalme CCL: propio vs ArgentinaDatos en el período común")
     solape("mep", "mep_ad", "4c. Empalme MEP: propio vs ArgentinaDatos en el período común")
     cruce("tamar", "badlar", "5. Control de rango: TAMAR vs BADLAR", n=5)
@@ -224,7 +222,7 @@ def validar(df, notas, estado):
 
     L.append("## 6. Último dato por variable\n\n| variable | último dato | valor | días de rezago |\n|---|---|---:|---:|")
     ult = df.sort_values("fecha").groupby("variable").last()
-    hoy = dt.date.today()
+    hoy = F.HOY
     for var, r in ult.iterrows():
         if var.startswith("futuro_DLR") or var.startswith("lecap_tem_"):
             continue
@@ -237,21 +235,21 @@ def validar(df, notas, estado):
 
 
 # ---------------------------------------------------------------- main
-VERSION_HISTORIA = 2  # subir este número fuerza una descarga histórica completa en la próxima corrida
+VERSION_HISTORIA = 3  # subir este número fuerza una descarga histórica completa en la próxima corrida
 
 
 def modo_completo():
     """Histórico completo si nunca se hizo con esta versión, los sábados (para tomar revisiones) o a pedido."""
     marca = RAW / "historia.json"
     hecho = json.loads(marca.read_text())["version"] if marca.exists() else 0
-    return hecho < VERSION_HISTORIA or dt.date.today().weekday() == 5 or os.environ.get("HISTORIA") == "1"
+    return hecho < VERSION_HISTORIA or F.HOY.weekday() == 5 or os.environ.get("HISTORIA") == "1"
 
 
 def main():
     F.COMPLETO = modo_completo()
     print("modo:", "histórico completo" if F.COMPLETO else f"diario (últimos {F.VENTANA} días)")
     estado, partes = {}, []
-    for nombre, fn in [("bcra", F.bcra), ("bcra_cny", F.bcra_cny), ("bcrd_embi", F.bcrd_embi), ("bcrp_embig", F.bcrp_embig),
+    for nombre, fn in [("bcra", F.bcra), ("bcra_cny", F.bcra_cny), ("bcrd_embi", F.bcrd_embi),
                        ("argentinadatos", F.argentinadatos), ("byma_historicos", F.byma_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
                        ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob),
@@ -302,6 +300,10 @@ def main():
         base = pd.concat([viejo, nuevo], ignore_index=True)  # lo nuevo pisa a lo viejo en la misma fecha
     else:
         base = nuevo
+    if F.COMPLETO:  # la curva LECAP se recalcula entera con la historia de cada letra
+        base = base[~base["variable"].str.startswith("lecap_tem_") | base.index.isin(base.index[len(base) - len(nuevo):])]
+    # Variables descartadas: foto de caución de BYMA (la reemplaza A3) y EMBIG del BCRP (no empalma con el EMBIGD)
+    base = base[~base["variable"].str.match(r"caucion_pesos_\d+d$|riesgo_pais_.*_bcrp$|riesgo_pais_latam_largo$")]
     base = base[~base["variable"].isin(["reservas_netas", "reservas_super_netas", "caucion_pesos_1d_vwap", "compras_bcra_pct_volumen"])]
     base = base.drop_duplicates(["fecha", "variable"], keep="last")
 
@@ -314,7 +316,7 @@ def main():
     base = base.drop_duplicates(["fecha", "variable"], keep="last").sort_values(["variable", "fecha"])
     base[COLS].to_csv(archivo, index=False)
     if F.COMPLETO and not any(v["estado"] == "ERROR" for v in estado.values()):
-        (RAW / "historia.json").write_text(json.dumps({"version": VERSION_HISTORIA, "fecha": str(dt.date.today())}))
+        (RAW / "historia.json").write_text(json.dumps({"version": VERSION_HISTORIA, "fecha": str(F.HOY)}))
 
     (DATA / "estado.json").write_text(json.dumps({"corrida_utc": dt.datetime.utcnow().isoformat(), "modo": "completo" if F.COMPLETO else "diario",
                                                   "fuentes": estado, "notas": notas},
