@@ -1,5 +1,5 @@
 {
- "corrida_utc": "2026-10-15T02:01:17.171014",
+ "corrida_utc": "2026-10-15T02:04:19.350076",
  "fuentes": {
   "bcra": {
    "estado": "ok",
@@ -35,7 +35,7 @@
   },
   "yahoo": {
    "estado": "ok",
-   "filas": 4550
+   "filas": 4553
   },
   "datos_gob": {
    "estado": "ok",
@@ -55,7 +55,7 @@
   },
   "a3_mae": {
    "estado": "ok",
-   "filas": 1072
+   "filas": 1085
   },
   "lecaps": {
    "estado": "ok",

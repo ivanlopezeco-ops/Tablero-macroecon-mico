@@ -1,4 +1,4 @@
-# Validación — corrida 2026-10-15 02:01 UTC
+# Validación — corrida 2026-10-15 02:04 UTC
 
 ## 1. Reservas vs tabla de Machado
 
@@ -177,7 +177,7 @@ Swap: 130004.4 millones de CNY.
 | bc_utilidades_dividendos | 2026-08-01 | -475.16 | 75 |
 | bc_var_reservas_transacciones | 2026-08-01 | -249.79 | 75 |
 | brecha_ccl | 2026-10-13 | 6.37 | 2 |
-| brent | 2026-10-15 | 104.67 | 0 |
+| brent | 2026-10-15 | 104.35 | 0 |
 | brl_usd | 2026-10-13 | 5.03 | 2 |
 | canje_ccl_mep | 2026-10-13 | 4.71 | 2 |
 | caucion_a3_pesos_1d | 2026-10-14 | 22.43 | 1 |
@@ -213,7 +213,7 @@ Swap: 130004.4 millones de CNY.
 | mc_total | 2026-08-01 | 271.53 | 75 |
 | mep | 2026-10-13 | 1,539.94 | 2 |
 | mep_ad | 2026-10-15 | 1,539.70 | 0 |
-| oro | 2026-10-15 | 4,158.40 | 0 |
+| oro | 2026-10-15 | 4,165.10 | 0 |
 | prestamos_privados_pesos | 2026-10-08 | 107,444,201.00 | 7 |
 | prestamos_privados_usd | 2026-10-08 | 25,929.00 | 7 |
 | rem_inflacion_12m | 2026-09-30 | 21.05 | 15 |
@@ -250,7 +250,7 @@ Swap: 130004.4 millones de CNY.
 | riesgo_pais_rep_dominicana | 2026-10-13 | 178.59 | 2 |
 | riesgo_pais_uruguay | 2026-10-13 | 75.32 | 2 |
 | riesgo_pais_venezuela | 2026-10-13 | 4,129.95 | 2 |
-| soja_cbot | 2026-10-15 | 1,272.25 | 0 |
+| soja_cbot | 2026-10-15 | 1,271.75 | 0 |
 | tamar | 2026-10-13 | 23.81 | 2 |
 | tasa_pases_terceros_1d | 2026-10-13 | 21.09 | 2 |
 | tasa_plazo_fijo_30d | 2026-10-13 | 20.65 | 2 |
@@ -278,11 +278,11 @@ Swap: 130004.4 millones de CNY.
 | rofex_futuros | ok | 100 |  |
 | cammesa | ok | 1 |  |
 | treasury | ok | 2088 |  |
-| yahoo | ok | 4550 |  |
+| yahoo | ok | 4553 |  |
 | datos_gob | ok | 348 |  |
 | rem | ok | 312 |  |
 | itcrm | ok | 3054 |  |
 | balance_cambiario | ok | 2184 |  |
-| a3_mae | ok | 1072 |  |
+| a3_mae | ok | 1085 |  |
 | lecaps | ok | 88 |  |
 | byma_snapshots | ok | 1 |  |
