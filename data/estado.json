@@ -1,14 +1,14 @@
 {
- "corrida_utc": "2026-10-15T16:58:16.580474",
+ "corrida_utc": "2026-10-15T23:52:22.676771",
  "modo": "diario",
  "fuentes": {
   "bcra": {
    "estado": "ok",
-   "filas": 1449
+   "filas": 1465
   },
   "bcra_cny": {
    "estado": "ok",
-   "filas": 82
+   "filas": 83
   },
   "bcrd_embi": {
    "estado": "ok",
@@ -24,7 +24,7 @@
   },
   "rofex_futuros": {
    "estado": "ok",
-   "filas": 983
+   "filas": 996
   },
   "cammesa": {
    "estado": "ok",
@@ -32,7 +32,7 @@
   },
   "treasury": {
    "estado": "ok",
-   "filas": 591
+   "filas": 594
   },
   "yahoo": {
    "estado": "ok",
@@ -48,7 +48,7 @@
   },
   "itcrm": {
    "estado": "ok",
-   "filas": 32637
+   "filas": 32640
   },
   "balance_cambiario": {
    "estado": "ok",

@@ -1,4 +1,4 @@
-# Validación — corrida 2026-10-15 16:58 UTC
+# Validación — corrida 2026-10-15 23:52 UTC
 
 ## 1. Reservas vs tabla de Machado
 
@@ -155,31 +155,31 @@ Swap: 130010.5 millones de CNY.
 
 | fecha | tamar | badlar | dif |
 |---|---:|---:|---:|
-| 2026-10-06 | 24.2 | 22.8 | 1.4 |
 | 2026-10-07 | 24.0 | 21.4 | 2.6 |
 | 2026-10-08 | 24.1 | 22.4 | 1.8 |
 | 2026-10-09 | 24.1 | 22.7 | 1.4 |
 | 2026-10-13 | 23.8 | 21.7 | 2.1 |
+| 2026-10-14 | 24.6 | 22.5 | 2.1 |
 
 ## 5b. Caución 1 día (A3) vs pases entre terceros (BCRA)
 
 | fecha | caucion_a3_pesos_1d | tasa_pases_terceros_1d | dif |
 |---|---:|---:|---:|
-| 2026-10-05 | 20.5 | 20.9 | -0.4 |
 | 2026-10-06 | 20.5 | 21.2 | -0.7 |
 | 2026-10-07 | 20.6 | 21.1 | -0.5 |
 | 2026-10-08 | 20.6 | 21.2 | -0.7 |
 | 2026-10-13 | 21.0 | 21.1 | -0.1 |
+| 2026-10-14 | 22.4 | 22.8 | -0.3 |
 
 ## 5d. Compras del BCRA vs volumen del MLC (A3)
 
 | fecha | compras_bcra_mlc | volumen_mlc | dif |
 |---|---:|---:|---:|
-| 2026-10-02 | 35.0 | 737.7 | -702.7 |
 | 2026-10-05 | 14.5 | 451.0 | -436.5 |
 | 2026-10-06 | 41.0 | 547.6 | -506.6 |
 | 2026-10-07 | 45.0 | 425.1 | -380.1 |
 | 2026-10-08 | 43.0 | 527.3 | -484.3 |
+| 2026-10-09 | 69.0 | 717.1 | -648.1 |
 
 ## 5c. Curva LECAP/BONCAP al 2026-10-14 (TEM %)
 
@@ -195,11 +195,11 @@ Swap: 130010.5 millones de CNY.
 | al30_ars | 2026-10-14 | 86,260.00 | 1 |
 | al30_usd_ccl | 2026-10-14 | 53.30 | 1 |
 | al30_usd_mep | 2026-10-14 | 56.20 | 1 |
-| badlar | 2026-10-13 | 21.69 | 2 |
-| baibar | 2026-10-13 | 21.54 | 2 |
+| badlar | 2026-10-14 | 22.50 | 1 |
+| baibar | 2026-10-14 | 22.18 | 1 |
 | banda_piso | 2026-10-15 | 718.30 | 0 |
 | banda_techo | 2026-10-15 | 1,935.12 | 0 |
-| base_monetaria | 2026-10-09 | 46,528,318.00 | 6 |
+| base_monetaria | 2026-10-13 | 47,542,573.00 | 2 |
 | bc_bienes | 2026-08-01 | 3,176.42 | 75 |
 | bc_billetes_divisas_spnf | 2026-08-01 | -2,677.48 | 75 |
 | bc_cobros_exportaciones | 2026-08-01 | 8,794.90 | 75 |
@@ -217,35 +217,35 @@ Swap: 130010.5 millones de CNY.
 | bc_utilidades_dividendos | 2026-08-01 | -475.16 | 75 |
 | bc_var_reservas_transacciones | 2026-08-01 | -249.79 | 75 |
 | brecha_ccl | 2026-10-14 | 6.85 | 1 |
-| brent | 2026-10-15 | 106.06 | 0 |
+| brent | 2026-10-15 | 105.60 | 0 |
 | brl_usd | 2026-10-15 | 5.06 | 0 |
 | canje_ccl_mep | 2026-10-14 | 5.44 | 1 |
-| caucion_a3_pesos_1d | 2026-10-15 | 23.39 | 0 |
-| caucion_a3_usd_1d | 2026-10-15 | 1.13 | 0 |
+| caucion_a3_pesos_1d | 2026-10-15 | 22.75 | 0 |
+| caucion_a3_usd_1d | 2026-10-15 | 1.12 | 0 |
 | ccl | 2026-10-14 | 1,618.39 | 1 |
 | ccl_ad | 2026-10-15 | 1,617.30 | 0 |
 | ccl_largo | 2026-10-14 | 1,618.39 | 1 |
-| compras_bcra_acum_anio | 2026-10-08 | 14,852.41 | 7 |
-| compras_bcra_mlc | 2026-10-08 | 43.00 | 7 |
-| compras_bcra_pct_volumen | 2026-10-08 | 8.15 | 7 |
+| compras_bcra_acum_anio | 2026-10-09 | 14,921.41 | 6 |
+| compras_bcra_mlc | 2026-10-09 | 69.00 | 6 |
+| compras_bcra_pct_volumen | 2026-10-09 | 9.62 | 6 |
 | demanda_electrica_diaria | 2026-10-14 | 387,546.58 | 1 |
-| depositos_gobierno_bcra_me_ars | 2026-10-09 | 1,869,903.00 | 6 |
-| depositos_privados_usd | 2026-10-08 | 42,377.00 | 7 |
-| distancia_techo_banda | 2026-10-14 | 27.70 | 1 |
-| dxy | 2026-10-15 | 102.09 | 0 |
+| depositos_gobierno_bcra_me_ars | 2026-10-13 | 1,864,154.00 | 2 |
+| depositos_privados_usd | 2026-10-09 | 42,220.00 | 6 |
+| distancia_techo_banda | 2026-10-15 | 27.82 | 0 |
+| dxy | 2026-10-15 | 102.04 | 0 |
 | emae_desest | 2026-07-01 | 149.65 | 106 |
-| encajes_usd_bcra | 2026-10-09 | 16,446.60 | 6 |
+| encajes_usd_bcra | 2026-10-13 | 16,372.14 | 2 |
 | exportaciones | 2026-08-01 | 8,882.58 | 75 |
-| futuro_diciembre | 2026-10-14 | 1,583.50 | 1 |
-| futuro_fin_mes | 2026-10-14 | 1,527.00 | 1 |
+| futuro_diciembre | 2026-10-15 | 1,582.50 | 0 |
+| futuro_fin_mes | 2026-10-15 | 1,526.00 | 0 |
 | gd30_ars | 2026-10-14 | 88,580.00 | 1 |
 | gd30_usd_ccl | 2026-10-14 | 54.68 | 1 |
 | gd35_usd_ccl | 2026-10-14 | 71.79 | 1 |
 | importaciones | 2026-08-01 | 6,695.99 | 75 |
 | ipc_nivel_general | 2026-08-01 | 12,276.77 | 75 |
 | ipc_nucleo | 2026-08-01 | 12,445.80 | 75 |
-| lebac_lediv_bopreal_usd | 2026-10-13 | 4,889.69 | 2 |
-| m2_transaccional_privado | 2026-10-08 | 67,012,136.40 | 7 |
+| lebac_lediv_bopreal_usd | 2026-10-14 | 4,889.69 | 1 |
+| m2_transaccional_privado | 2026-10-09 | 65,169,582.25 | 6 |
 | mc_mineria | 2026-08-01 | 674.92 | 75 |
 | mc_oleaginosos_cerealeros | 2026-08-01 | 2,932.54 | 75 |
 | mc_personas_humanas | 2026-08-01 | -3,531.90 | 75 |
@@ -254,22 +254,22 @@ Swap: 130010.5 millones de CNY.
 | mep | 2026-10-14 | 1,534.88 | 1 |
 | mep_ad | 2026-10-15 | 1,539.70 | 0 |
 | mep_largo | 2026-10-14 | 1,534.88 | 1 |
-| oro | 2026-10-15 | 4,168.40 | 0 |
-| prestamos_privados_pesos | 2026-10-08 | 107,444,201.00 | 7 |
-| prestamos_privados_usd | 2026-10-08 | 25,929.00 | 7 |
+| oro | 2026-10-15 | 4,178.00 | 0 |
+| prestamos_privados_pesos | 2026-10-09 | 107,100,981.00 | 6 |
+| prestamos_privados_usd | 2026-10-09 | 25,828.00 | 6 |
 | rem_inflacion_12m | 2026-09-30 | 21.05 | 15 |
 | rem_inflacion_mes_siguiente | 2026-09-30 | 1.70 | 15 |
 | rem_tc_fin_de_anio | 2026-09-30 | 1,614.32 | 15 |
-| repo_a3_pesos_1d | 2026-10-15 | 23.35 | 0 |
-| res_bis | 2026-10-09 | 148.00 | 6 |
-| res_bopreal_1a | 2026-10-09 | 1,444.00 | 6 |
-| res_dep_tesoro | 2026-10-09 | 1,233.55 | 6 |
-| res_encajes | 2026-10-09 | 16,446.60 | 6 |
-| res_repos | 2026-10-09 | 2,484.00 | 6 |
-| res_swap_china | 2026-10-09 | 19,421.36 | 6 |
-| reservas_brutas | 2026-10-09 | 49,709.00 | 6 |
-| reservas_netas | 2026-10-09 | 11,209.04 | 6 |
-| reservas_super_netas | 2026-10-09 | 8,531.49 | 6 |
+| repo_a3_pesos_1d | 2026-10-15 | 21.40 | 0 |
+| res_bis | 2026-10-13 | 148.00 | 2 |
+| res_bopreal_1a | 2026-10-13 | 1,444.00 | 2 |
+| res_dep_tesoro | 2026-10-13 | 1,229.77 | 2 |
+| res_encajes | 2026-10-13 | 16,372.14 | 2 |
+| res_repos | 2026-10-13 | 2,484.00 | 2 |
+| res_swap_china | 2026-10-13 | 19,425.13 | 2 |
+| reservas_brutas | 2026-10-13 | 49,845.00 | 2 |
+| reservas_netas | 2026-10-13 | 11,415.73 | 2 |
+| reservas_super_netas | 2026-10-13 | 8,741.96 | 2 |
 | resultado_primario_spn | 2026-08-01 | 1,990,321.80 | 75 |
 | riesgo_pais_argentina | 2026-10-14 | 616.01 | 1 |
 | riesgo_pais_argentina_ad | 2026-10-14 | 611.00 | 1 |
@@ -292,39 +292,39 @@ Swap: 130010.5 millones de CNY.
 | riesgo_pais_rep_dominicana | 2026-10-14 | 183.75 | 1 |
 | riesgo_pais_uruguay | 2026-10-14 | 77.08 | 1 |
 | riesgo_pais_venezuela | 2026-10-14 | 4,167.65 | 1 |
-| soja_cbot | 2026-10-15 | 1,266.75 | 0 |
-| tamar | 2026-10-13 | 23.81 | 2 |
-| tasa_pases_terceros_1d | 2026-10-13 | 21.09 | 2 |
-| tasa_plazo_fijo_30d | 2026-10-13 | 20.65 | 2 |
-| tasa_real_ex_ante_badlar | 2026-10-13 | 0.08 | 2 |
-| tasa_real_ex_ante_tamar | 2026-10-13 | 0.25 | 2 |
-| tc_mayorista_a3500 | 2026-10-14 | 1,514.57 | 1 |
-| tcr_brasil | 2026-10-14 | 87.64 | 1 |
-| tcr_eeuu | 2026-10-14 | 92.94 | 1 |
-| tcrm | 2026-10-14 | 85.13 | 1 |
-| usd_por_cny | 2026-10-14 | 0.15 | 1 |
-| ust_10y | 2026-10-14 | 5.19 | 1 |
-| ust_2y | 2026-10-14 | 4.82 | 1 |
-| ust_30y | 2026-10-14 | 5.52 | 1 |
-| vix | 2026-10-15 | 16.86 | 0 |
-| volumen_mlc | 2026-10-15 | 366.82 | 0 |
+| soja_cbot | 2026-10-15 | 1,264.25 | 0 |
+| tamar | 2026-10-14 | 24.56 | 1 |
+| tasa_pases_terceros_1d | 2026-10-14 | 22.78 | 1 |
+| tasa_plazo_fijo_30d | 2026-10-14 | 20.85 | 1 |
+| tasa_real_ex_ante_badlar | 2026-10-14 | 0.15 | 1 |
+| tasa_real_ex_ante_tamar | 2026-10-14 | 0.31 | 1 |
+| tc_mayorista_a3500 | 2026-10-15 | 1,513.93 | 0 |
+| tcr_brasil | 2026-10-15 | 86.96 | 0 |
+| tcr_eeuu | 2026-10-15 | 92.94 | 0 |
+| tcrm | 2026-10-15 | 85.15 | 0 |
+| usd_por_cny | 2026-10-15 | 0.15 | 0 |
+| ust_10y | 2026-10-15 | 5.10 | 0 |
+| ust_2y | 2026-10-15 | 4.77 | 0 |
+| ust_30y | 2026-10-15 | 5.43 | 0 |
+| vix | 2026-10-15 | 16.46 | 0 |
+| volumen_mlc | 2026-10-15 | 506.71 | 0 |
 
 ## 7. Estado de fuentes
 
 | fuente | estado | filas | detalle |
 |---|---|---:|---|
-| bcra | ok | 1449 |  |
-| bcra_cny | ok | 82 |  |
+| bcra | ok | 1465 |  |
+| bcra_cny | ok | 83 |  |
 | bcrd_embi | ok | 83705 |  |
 | argentinadatos | ok | 15667 |  |
 | byma_historicos | ok | 498 |  |
-| rofex_futuros | ok | 983 |  |
+| rofex_futuros | ok | 996 |  |
 | cammesa | ok | 1 |  |
-| treasury | ok | 591 |  |
+| treasury | ok | 594 |  |
 | yahoo | ok | 508 |  |
 | datos_gob | ok | 1465 |  |
 | rem | ok | 312 |  |
-| itcrm | ok | 32637 |  |
+| itcrm | ok | 32640 |  |
 | balance_cambiario | ok | 5964 |  |
 | a3_mae | ok | 345 |  |
 | lecaps | ok | 212 |  |

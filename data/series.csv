@@ -7289,6 +7289,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,badlar,22.375,% TNA,BCRA API v4 (id 7)
 2026-10-09,badlar,22.6875,% TNA,BCRA API v4 (id 7)
 2026-10-13,badlar,21.6875,% TNA,BCRA API v4 (id 7)
+2026-10-14,badlar,22.5,% TNA,BCRA API v4 (id 7)
 2003-01-02,baibar,6.34,% TNA,BCRA API v4 (id 11)
 2003-01-03,baibar,6.5,% TNA,BCRA API v4 (id 11)
 2003-01-06,baibar,6.49,% TNA,BCRA API v4 (id 11)
@@ -13117,7 +13118,8 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,baibar,20.79,% TNA,BCRA API v4 (id 11)
 2026-10-08,baibar,21.04,% TNA,BCRA API v4 (id 11)
 2026-10-09,baibar,20.91,% TNA,BCRA API v4 (id 11)
-2026-10-13,baibar,21.54,% TNA,BCRA API v4 (id 11)
+2026-10-13,baibar,21.3,% TNA,BCRA API v4 (id 11)
+2026-10-14,baibar,22.18,% TNA,BCRA API v4 (id 11)
 2025-04-14,banda_piso,1000.0,ARS/USD,BCRA API v4 (id 1187)
 2025-04-15,banda_piso,999.67,ARS/USD,BCRA API v4 (id 1187)
 2025-04-16,banda_piso,999.33,ARS/USD,BCRA API v4 (id 1187)
@@ -21423,6 +21425,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,base_monetaria,46710066.0,ARS M,BCRA API v4 (id 15)
 2026-10-08,base_monetaria,46992105.0,ARS M,BCRA API v4 (id 15)
 2026-10-09,base_monetaria,46528318.0,ARS M,BCRA API v4 (id 15)
+2026-10-13,base_monetaria,47542573.0,ARS M,BCRA API v4 (id 15)
 2003-01-01,bc_bienes,1128.9962,USD M,BCRA balance cambiario (bal002)
 2003-02-01,bc_bienes,868.4112,USD M,BCRA balance cambiario (bal002)
 2003-03-01,bc_bienes,958.694,USD M,BCRA balance cambiario (bal002)
@@ -34097,7 +34100,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,brent,106.6500015258789,USD/bbl,Yahoo Finance (BZ=F)
 2026-10-13,brent,105.69000244140625,USD/bbl,Yahoo Finance (BZ=F)
 2026-10-14,brent,106.05999755859375,USD/bbl,Yahoo Finance (BZ=F)
-2026-10-15,brent,106.05999755859375,USD/bbl,Yahoo Finance (BZ=F)
+2026-10-15,brent,105.5999984741211,USD/bbl,Yahoo Finance (BZ=F)
 2003-12-01,brl_usd,2.9230000972747803,BRL/USD,Yahoo Finance (BRL=X)
 2003-12-02,brl_usd,2.930999994277954,BRL/USD,Yahoo Finance (BRL=X)
 2003-12-03,brl_usd,2.930999994277954,BRL/USD,Yahoo Finance (BRL=X)
@@ -39614,6 +39617,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-11,brl_usd,4.985899925231934,BRL/USD,Yahoo Finance (BRL=X)
 2026-10-12,brl_usd,4.985000133514404,BRL/USD,Yahoo Finance (BRL=X)
 2026-10-13,brl_usd,5.0258002281188965,BRL/USD,Yahoo Finance (BRL=X)
+2026-10-14,brl_usd,5.0395002365112305,BRL/USD,Yahoo Finance (BRL=X)
 2026-10-15,brl_usd,5.058800220489502,BRL/USD,Yahoo Finance (BRL=X)
 2018-10-29,canje_ccl_mep,-0.43278333784148026,%,Cálculo: CCL/MEP-1
 2018-10-30,canje_ccl_mep,1.228501228501222,%,Cálculo: CCL/MEP-1
@@ -43000,7 +43004,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,caucion_a3_pesos_1d,20.5566,% TNA,A3/MAE cauciones (CAARS)
 2026-10-13,caucion_a3_pesos_1d,21.0267,% TNA,A3/MAE cauciones (CAARS)
 2026-10-14,caucion_a3_pesos_1d,22.4326,% TNA,A3/MAE cauciones (CAARS)
-2026-10-15,caucion_a3_pesos_1d,23.3895,% TNA,A3/MAE cauciones (CAARS)
+2026-10-15,caucion_a3_pesos_1d,22.7528,% TNA,A3/MAE cauciones (CAARS)
 2025-07-02,caucion_a3_usd_1d,2.0,% TNA,A3/MAE cauciones (CAUSD)
 2025-08-04,caucion_a3_usd_1d,0.9208,% TNA,A3/MAE cauciones (CAUSD)
 2025-08-05,caucion_a3_usd_1d,1.5,% TNA,A3/MAE cauciones (CAUSD)
@@ -43227,7 +43231,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,caucion_a3_usd_1d,1.0968,% TNA,A3/MAE cauciones (CAUSD)
 2026-10-13,caucion_a3_usd_1d,1.1652,% TNA,A3/MAE cauciones (CAUSD)
 2026-10-14,caucion_a3_usd_1d,1.1366,% TNA,A3/MAE cauciones (CAUSD)
-2026-10-15,caucion_a3_usd_1d,1.1259,% TNA,A3/MAE cauciones (CAUSD)
+2026-10-15,caucion_a3_usd_1d,1.1185,% TNA,A3/MAE cauciones (CAUSD)
 2024-10-14,ccl,1183.0651320176846,ARS/USD,Cálculo: AL30/AL30C (BYMA)
 2024-10-15,ccl,1179.6294360984105,ARS/USD,Cálculo: AL30/AL30C (BYMA)
 2024-10-16,ccl,1188.9843180160467,ARS/USD,Cálculo: AL30/AL30C (BYMA)
@@ -59368,6 +59372,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-06,compras_bcra_acum_anio,14764.41,USD M,Cálculo: suma anual de compras BCRA
 2026-10-07,compras_bcra_acum_anio,14809.41,USD M,Cálculo: suma anual de compras BCRA
 2026-10-08,compras_bcra_acum_anio,14852.41,USD M,Cálculo: suma anual de compras BCRA
+2026-10-09,compras_bcra_acum_anio,14921.41,USD M,Cálculo: suma anual de compras BCRA
 2003-01-02,compras_bcra_mlc,29.37,USD M,BCRA API v4 (id 78)
 2003-01-03,compras_bcra_mlc,61.46,USD M,BCRA API v4 (id 78)
 2003-01-06,compras_bcra_mlc,51.68,USD M,BCRA API v4 (id 78)
@@ -65196,6 +65201,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-06,compras_bcra_mlc,41.0,USD M,BCRA API v4 (id 78)
 2026-10-07,compras_bcra_mlc,45.0,USD M,BCRA API v4 (id 78)
 2026-10-08,compras_bcra_mlc,43.0,USD M,BCRA API v4 (id 78)
+2026-10-09,compras_bcra_mlc,69.0,USD M,BCRA API v4 (id 78)
 2015-12-14,compras_bcra_pct_volumen,-60.75057145469507,%,Cálculo: compras BCRA / volumen MLC (A3)
 2015-12-15,compras_bcra_pct_volumen,-74.45544863459038,%,Cálculo: compras BCRA / volumen MLC (A3)
 2015-12-16,compras_bcra_pct_volumen,-86.4249860568879,%,Cálculo: compras BCRA / volumen MLC (A3)
@@ -67806,6 +67812,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-06,compras_bcra_pct_volumen,7.487381023689343,%,Cálculo: compras BCRA / volumen MLC (A3)
 2026-10-07,compras_bcra_pct_volumen,10.585325450417947,%,Cálculo: compras BCRA / volumen MLC (A3)
 2026-10-08,compras_bcra_pct_volumen,8.154062477185217,%,Cálculo: compras BCRA / volumen MLC (A3)
+2026-10-09,compras_bcra_pct_volumen,9.622661350745943,%,Cálculo: compras BCRA / volumen MLC (A3)
 2026-10-13,demanda_electrica_diaria,392277.0,MWh,CAMMESA (región 1002)
 2026-10-14,demanda_electrica_diaria,387546.5833333333,MWh,CAMMESA (región 1002)
 2024-01-02,depositos_gobierno_bcra_me_ars,48102.0,ARS M,BCRA API v4 (id 1266)
@@ -68481,6 +68488,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,depositos_gobierno_bcra_me_ars,1876570.0,ARS M,BCRA API v4 (id 1266)
 2026-10-08,depositos_gobierno_bcra_me_ars,1873193.0,ARS M,BCRA API v4 (id 1266)
 2026-10-09,depositos_gobierno_bcra_me_ars,1869903.0,ARS M,BCRA API v4 (id 1266)
+2026-10-13,depositos_gobierno_bcra_me_ars,1864154.0,ARS M,BCRA API v4 (id 1266)
 2003-01-02,depositos_privados_usd,642.0,USD M,BCRA API v4 (id 108)
 2003-01-03,depositos_privados_usd,650.0,USD M,BCRA API v4 (id 108)
 2003-01-06,depositos_privados_usd,649.0,USD M,BCRA API v4 (id 108)
@@ -74304,10 +74312,11 @@ fecha,variable,valor,unidad,fuente
 2026-09-30,depositos_privados_usd,41901.0,USD M,BCRA API v4 (id 108)
 2026-10-01,depositos_privados_usd,41982.0,USD M,BCRA API v4 (id 108)
 2026-10-02,depositos_privados_usd,42115.0,USD M,BCRA API v4 (id 108)
-2026-10-05,depositos_privados_usd,42098.0,USD M,BCRA API v4 (id 108)
+2026-10-05,depositos_privados_usd,42099.0,USD M,BCRA API v4 (id 108)
 2026-10-06,depositos_privados_usd,42175.0,USD M,BCRA API v4 (id 108)
 2026-10-07,depositos_privados_usd,42180.0,USD M,BCRA API v4 (id 108)
 2026-10-08,depositos_privados_usd,42377.0,USD M,BCRA API v4 (id 108)
+2026-10-09,depositos_privados_usd,42220.0,USD M,BCRA API v4 (id 108)
 2025-04-14,distancia_techo_banda,18.401575349874545,%,Cálculo: techo/A3500-1
 2025-04-15,distancia_techo_banda,16.624014340708236,%,Cálculo: techo/A3500-1
 2025-04-16,distancia_techo_banda,19.448347859836513,%,Cálculo: techo/A3500-1
@@ -74671,6 +74680,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,distancia_techo_banda,27.241227946918634,%,Cálculo: techo/A3500-1
 2026-10-13,distancia_techo_banda,27.520171298785122,%,Cálculo: techo/A3500-1
 2026-10-14,distancia_techo_banda,27.698009759234576,%,Cálculo: techo/A3500-1
+2026-10-15,distancia_techo_banda,27.820901721531776,%,Cálculo: techo/A3500-1
 2000-01-03,dxy,100.22000122070312,índice,Yahoo Finance (DX-Y.NYB)
 2000-01-04,dxy,100.41000366210938,índice,Yahoo Finance (DX-Y.NYB)
 2000-01-05,dxy,100.37999725341795,índice,Yahoo Finance (DX-Y.NYB)
@@ -81436,7 +81446,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,dxy,102.58000183105469,índice,Yahoo Finance (DX-Y.NYB)
 2026-10-13,dxy,102.18000030517578,índice,Yahoo Finance (DX-Y.NYB)
 2026-10-14,dxy,102.55000305175781,índice,Yahoo Finance (DX-Y.NYB)
-2026-10-15,dxy,102.09200286865234,índice,Yahoo Finance (DX-Y.NYB)
+2026-10-15,dxy,102.04399871826172,índice,Yahoo Finance (DX-Y.NYB)
 2004-01-01,emae_desest,98.5318118721329,índice 2004=100,datos.gob.ar (143.3_NO_PR_2004_A_31)
 2004-02-01,emae_desest,98.02704245284784,índice 2004=100,datos.gob.ar (143.3_NO_PR_2004_A_31)
 2004-03-01,emae_desest,97.51832921205929,índice 2004=100,datos.gob.ar (143.3_NO_PR_2004_A_31)
@@ -87536,6 +87546,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,encajes_usd_bcra,16159.7558,USD M,BCRA API v4 (id 1243)
 2026-10-08,encajes_usd_bcra,16258.1147,USD M,BCRA API v4 (id 1243)
 2026-10-09,encajes_usd_bcra,16446.5988,USD M,BCRA API v4 (id 1243)
+2026-10-13,encajes_usd_bcra,16372.1357,USD M,BCRA API v4 (id 1243)
 1992-01-01,exportaciones,725.798174,USD M,datos.gob.ar (74.3_IET_0_M_16)
 1992-02-01,exportaciones,851.896974,USD M,datos.gob.ar (74.3_IET_0_M_16)
 1992-03-01,exportaciones,984.648674,USD M,datos.gob.ar (74.3_IET_0_M_16)
@@ -89535,6 +89546,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR012027,1619.0,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR012027,1612.0,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR012027,1613.5,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR012027,1612.0,ARS/USD,Matba Rofex (A3)
 2020-01-02,futuro_DLR022020,63.65,ARS/USD,Matba Rofex (A3)
 2020-01-03,futuro_DLR022020,63.3,ARS/USD,Matba Rofex (A3)
 2020-01-06,futuro_DLR022020,63.3,ARS/USD,Matba Rofex (A3)
@@ -91087,6 +91099,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR022027,1646.5,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR022027,1639.5,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR022027,1642.0,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR022027,1639.5,ARS/USD,Matba Rofex (A3)
 2020-01-02,futuro_DLR032020,65.75,ARS/USD,Matba Rofex (A3)
 2020-01-03,futuro_DLR032020,65.55,ARS/USD,Matba Rofex (A3)
 2020-01-06,futuro_DLR032020,65.4,ARS/USD,Matba Rofex (A3)
@@ -92660,6 +92673,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR032027,1681.0,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR032027,1673.0,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR032027,1675.5,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR032027,1673.0,ARS/USD,Matba Rofex (A3)
 2020-01-02,futuro_DLR042020,68.15,ARS/USD,Matba Rofex (A3)
 2020-01-03,futuro_DLR042020,67.55,ARS/USD,Matba Rofex (A3)
 2020-01-06,futuro_DLR042020,67.5,ARS/USD,Matba Rofex (A3)
@@ -94251,6 +94265,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR042027,1712.0,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR042027,1705.0,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR042027,1706.5,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR042027,1704.0,ARS/USD,Matba Rofex (A3)
 2020-01-02,futuro_DLR052020,70.495,ARS/USD,Matba Rofex (A3)
 2020-01-03,futuro_DLR052020,70.0,ARS/USD,Matba Rofex (A3)
 2020-01-06,futuro_DLR052020,69.5,ARS/USD,Matba Rofex (A3)
@@ -95880,6 +95895,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR052027,1744.0,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR052027,1737.0,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR052027,1738.0,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR052027,1736.5,ARS/USD,Matba Rofex (A3)
 2020-01-02,futuro_DLR062020,72.245,ARS/USD,Matba Rofex (A3)
 2020-01-03,futuro_DLR062020,71.75,ARS/USD,Matba Rofex (A3)
 2020-01-06,futuro_DLR062020,71.4,ARS/USD,Matba Rofex (A3)
@@ -97510,6 +97526,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR062027,1776.5,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR062027,1769.5,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR062027,1772.0,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR062027,1768.0,ARS/USD,Matba Rofex (A3)
 2020-01-02,futuro_DLR072020,74.245,ARS/USD,Matba Rofex (A3)
 2020-01-03,futuro_DLR072020,74.0,ARS/USD,Matba Rofex (A3)
 2020-01-06,futuro_DLR072020,73.5,ARS/USD,Matba Rofex (A3)
@@ -99150,6 +99167,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR072027,1809.5,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR072027,1802.5,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR072027,1803.0,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR072027,1800.0,ARS/USD,Matba Rofex (A3)
 2020-01-02,futuro_DLR082020,76.695,ARS/USD,Matba Rofex (A3)
 2020-01-03,futuro_DLR082020,76.3,ARS/USD,Matba Rofex (A3)
 2020-01-06,futuro_DLR082020,75.7,ARS/USD,Matba Rofex (A3)
@@ -100750,6 +100768,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR082027,1849.0,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR082027,1842.5,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR082027,1844.0,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR082027,1841.5,ARS/USD,Matba Rofex (A3)
 2020-01-02,futuro_DLR092020,79.145,ARS/USD,Matba Rofex (A3)
 2020-01-03,futuro_DLR092020,78.75,ARS/USD,Matba Rofex (A3)
 2020-01-06,futuro_DLR092020,78.0,ARS/USD,Matba Rofex (A3)
@@ -102373,6 +102392,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR092027,1889.0,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR092027,1882.5,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR092027,1890.0,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR092027,1887.5,ARS/USD,Matba Rofex (A3)
 2020-02-14,futuro_DLR102020,82.0,ARS/USD,Matba Rofex (A3)
 2020-02-17,futuro_DLR102020,81.8,ARS/USD,Matba Rofex (A3)
 2020-02-18,futuro_DLR102020,81.65,ARS/USD,Matba Rofex (A3)
@@ -103939,7 +103959,9 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR102026,1533.5,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR102026,1526.0,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR102026,1527.0,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR102026,1526.0,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR102027,1935.0,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR102027,1932.5,ARS/USD,Matba Rofex (A3)
 2020-02-18,futuro_DLR112020,83.75,ARS/USD,Matba Rofex (A3)
 2020-02-19,futuro_DLR112020,83.37,ARS/USD,Matba Rofex (A3)
 2020-02-20,futuro_DLR112020,82.65,ARS/USD,Matba Rofex (A3)
@@ -105527,6 +105549,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR112026,1561.0,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR112026,1553.5,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR112026,1555.0,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR112026,1553.5,ARS/USD,Matba Rofex (A3)
 2020-03-05,futuro_DLR122020,84.5,ARS/USD,Matba Rofex (A3)
 2020-03-06,futuro_DLR122020,84.5,ARS/USD,Matba Rofex (A3)
 2020-03-09,futuro_DLR122020,85.3,ARS/USD,Matba Rofex (A3)
@@ -107096,6 +107119,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_DLR122026,1589.5,ARS/USD,Matba Rofex (A3)
 2026-10-13,futuro_DLR122026,1582.5,ARS/USD,Matba Rofex (A3)
 2026-10-14,futuro_DLR122026,1583.5,ARS/USD,Matba Rofex (A3)
+2026-10-15,futuro_DLR122026,1582.5,ARS/USD,Matba Rofex (A3)
 2020-03-05,futuro_diciembre,84.5,ARS/USD,Matba Rofex: próximo diciembre
 2020-03-06,futuro_diciembre,84.5,ARS/USD,Matba Rofex: próximo diciembre
 2020-03-09,futuro_diciembre,85.3,ARS/USD,Matba Rofex: próximo diciembre
@@ -108665,6 +108689,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_diciembre,1589.5,ARS/USD,Matba Rofex: próximo diciembre
 2026-10-13,futuro_diciembre,1582.5,ARS/USD,Matba Rofex: próximo diciembre
 2026-10-14,futuro_diciembre,1583.5,ARS/USD,Matba Rofex: próximo diciembre
+2026-10-15,futuro_diciembre,1582.5,ARS/USD,Matba Rofex: próximo diciembre
 2020-01-02,futuro_fin_mes,61.64,ARS/USD,Matba Rofex: contrato más corto
 2020-01-03,futuro_fin_mes,61.45,ARS/USD,Matba Rofex: contrato más corto
 2020-01-06,futuro_fin_mes,61.27,ARS/USD,Matba Rofex: contrato más corto
@@ -110313,6 +110338,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,futuro_fin_mes,1533.5,ARS/USD,Matba Rofex: contrato más corto
 2026-10-13,futuro_fin_mes,1526.0,ARS/USD,Matba Rofex: contrato más corto
 2026-10-14,futuro_fin_mes,1527.0,ARS/USD,Matba Rofex: contrato más corto
+2026-10-15,futuro_fin_mes,1526.0,ARS/USD,Matba Rofex: contrato más corto
 2024-10-14,gd30_ars,49228.48,ARS,BYMA (GD30 24HS)
 2024-10-15,gd30_ars,50271.599,ARS,BYMA (GD30 24HS)
 2024-10-16,gd30_ars,50587.899,ARS,BYMA (GD30 24HS)
@@ -118253,6 +118279,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,lebac_lediv_bopreal_usd,4889.69,USD M,BCRA API v4 (id 158)
 2026-10-09,lebac_lediv_bopreal_usd,4889.69,USD M,BCRA API v4 (id 158)
 2026-10-13,lebac_lediv_bopreal_usd,4889.69,USD M,BCRA API v4 (id 158)
+2026-10-14,lebac_lediv_bopreal_usd,4889.69,USD M,BCRA API v4 (id 158)
 2026-07-31,lecap_tem_S16O6,2.0439587123963987,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-03,lecap_tem_S16O6,2.009485583583026,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-04,lecap_tem_S16O6,2.0084437160654334,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
@@ -120069,7 +120096,7 @@ fecha,variable,valor,unidad,fuente
 2026-06-25,m2_transaccional_privado,62941338.868,ARS M,BCRA API v4 (id 197)
 2026-06-26,m2_transaccional_privado,63919248.573,ARS M,BCRA API v4 (id 197)
 2026-06-29,m2_transaccional_privado,68450859.312,ARS M,BCRA API v4 (id 197)
-2026-06-30,m2_transaccional_privado,70699530.236,ARS M,BCRA API v4 (id 197)
+2026-06-30,m2_transaccional_privado,70703160.236,ARS M,BCRA API v4 (id 197)
 2026-07-01,m2_transaccional_privado,70636594.216,ARS M,BCRA API v4 (id 197)
 2026-07-02,m2_transaccional_privado,70299819.822,ARS M,BCRA API v4 (id 197)
 2026-07-03,m2_transaccional_privado,70587973.085,ARS M,BCRA API v4 (id 197)
@@ -120090,7 +120117,7 @@ fecha,variable,valor,unidad,fuente
 2026-07-28,m2_transaccional_privado,63937689.388,ARS M,BCRA API v4 (id 197)
 2026-07-29,m2_transaccional_privado,64760899.009,ARS M,BCRA API v4 (id 197)
 2026-07-30,m2_transaccional_privado,66757481.503,ARS M,BCRA API v4 (id 197)
-2026-07-31,m2_transaccional_privado,69618062.545,ARS M,BCRA API v4 (id 197)
+2026-07-31,m2_transaccional_privado,69618063.545,ARS M,BCRA API v4 (id 197)
 2026-08-03,m2_transaccional_privado,68153184.21,ARS M,BCRA API v4 (id 197)
 2026-08-04,m2_transaccional_privado,67719794.027,ARS M,BCRA API v4 (id 197)
 2026-08-05,m2_transaccional_privado,67969556.475,ARS M,BCRA API v4 (id 197)
@@ -120110,35 +120137,36 @@ fecha,variable,valor,unidad,fuente
 2026-08-26,m2_transaccional_privado,63307729.092,ARS M,BCRA API v4 (id 197)
 2026-08-27,m2_transaccional_privado,63987224.941,ARS M,BCRA API v4 (id 197)
 2026-08-28,m2_transaccional_privado,65705509.541,ARS M,BCRA API v4 (id 197)
-2026-08-31,m2_transaccional_privado,68649515.774,ARS M,BCRA API v4 (id 197)
+2026-08-31,m2_transaccional_privado,68898193.774,ARS M,BCRA API v4 (id 197)
 2026-09-01,m2_transaccional_privado,67750731.093,ARS M,BCRA API v4 (id 197)
-2026-09-02,m2_transaccional_privado,67283667.691,ARS M,BCRA API v4 (id 197)
-2026-09-03,m2_transaccional_privado,67679723.664,ARS M,BCRA API v4 (id 197)
-2026-09-04,m2_transaccional_privado,67581355.706,ARS M,BCRA API v4 (id 197)
-2026-09-07,m2_transaccional_privado,66112013.901,ARS M,BCRA API v4 (id 197)
-2026-09-08,m2_transaccional_privado,65265305.208,ARS M,BCRA API v4 (id 197)
-2026-09-09,m2_transaccional_privado,64697023.225,ARS M,BCRA API v4 (id 197)
-2026-09-10,m2_transaccional_privado,64510042.884,ARS M,BCRA API v4 (id 197)
-2026-09-11,m2_transaccional_privado,64774109.016,ARS M,BCRA API v4 (id 197)
-2026-09-14,m2_transaccional_privado,64719013.464,ARS M,BCRA API v4 (id 197)
-2026-09-15,m2_transaccional_privado,64470650.786,ARS M,BCRA API v4 (id 197)
-2026-09-16,m2_transaccional_privado,63464152.469,ARS M,BCRA API v4 (id 197)
-2026-09-17,m2_transaccional_privado,63556390.978,ARS M,BCRA API v4 (id 197)
-2026-09-18,m2_transaccional_privado,62974433.742,ARS M,BCRA API v4 (id 197)
-2026-09-21,m2_transaccional_privado,62781441.346,ARS M,BCRA API v4 (id 197)
-2026-09-22,m2_transaccional_privado,62692123.519,ARS M,BCRA API v4 (id 197)
-2026-09-23,m2_transaccional_privado,62707710.715,ARS M,BCRA API v4 (id 197)
-2026-09-24,m2_transaccional_privado,63154365.63,ARS M,BCRA API v4 (id 197)
-2026-09-25,m2_transaccional_privado,63380126.328,ARS M,BCRA API v4 (id 197)
+2026-09-02,m2_transaccional_privado,67283688.691,ARS M,BCRA API v4 (id 197)
+2026-09-03,m2_transaccional_privado,67679744.664,ARS M,BCRA API v4 (id 197)
+2026-09-04,m2_transaccional_privado,67581361.706,ARS M,BCRA API v4 (id 197)
+2026-09-07,m2_transaccional_privado,66112127.901,ARS M,BCRA API v4 (id 197)
+2026-09-08,m2_transaccional_privado,65265418.208,ARS M,BCRA API v4 (id 197)
+2026-09-09,m2_transaccional_privado,64697136.225,ARS M,BCRA API v4 (id 197)
+2026-09-10,m2_transaccional_privado,64510155.884,ARS M,BCRA API v4 (id 197)
+2026-09-11,m2_transaccional_privado,64774223.016,ARS M,BCRA API v4 (id 197)
+2026-09-14,m2_transaccional_privado,64719126.464,ARS M,BCRA API v4 (id 197)
+2026-09-15,m2_transaccional_privado,64470763.786,ARS M,BCRA API v4 (id 197)
+2026-09-16,m2_transaccional_privado,63464266.469,ARS M,BCRA API v4 (id 197)
+2026-09-17,m2_transaccional_privado,63556503.978,ARS M,BCRA API v4 (id 197)
+2026-09-18,m2_transaccional_privado,62974547.742,ARS M,BCRA API v4 (id 197)
+2026-09-21,m2_transaccional_privado,62781554.346,ARS M,BCRA API v4 (id 197)
+2026-09-22,m2_transaccional_privado,62692236.519,ARS M,BCRA API v4 (id 197)
+2026-09-23,m2_transaccional_privado,62707824.715,ARS M,BCRA API v4 (id 197)
+2026-09-24,m2_transaccional_privado,63154478.63,ARS M,BCRA API v4 (id 197)
+2026-09-25,m2_transaccional_privado,63380239.328,ARS M,BCRA API v4 (id 197)
 2026-09-28,m2_transaccional_privado,64398746.34,ARS M,BCRA API v4 (id 197)
 2026-09-29,m2_transaccional_privado,65792165.991,ARS M,BCRA API v4 (id 197)
 2026-09-30,m2_transaccional_privado,69001134.631,ARS M,BCRA API v4 (id 197)
-2026-10-01,m2_transaccional_privado,69362403.46,ARS M,BCRA API v4 (id 197)
-2026-10-02,m2_transaccional_privado,68721694.746,ARS M,BCRA API v4 (id 197)
-2026-10-05,m2_transaccional_privado,67831844.588,ARS M,BCRA API v4 (id 197)
-2026-10-06,m2_transaccional_privado,68111936.395,ARS M,BCRA API v4 (id 197)
-2026-10-07,m2_transaccional_privado,67508599.857,ARS M,BCRA API v4 (id 197)
-2026-10-08,m2_transaccional_privado,67012136.397,ARS M,BCRA API v4 (id 197)
+2026-10-01,m2_transaccional_privado,69368939.46,ARS M,BCRA API v4 (id 197)
+2026-10-02,m2_transaccional_privado,68645686.073,ARS M,BCRA API v4 (id 197)
+2026-10-05,m2_transaccional_privado,67832981.588,ARS M,BCRA API v4 (id 197)
+2026-10-06,m2_transaccional_privado,68102053.154,ARS M,BCRA API v4 (id 197)
+2026-10-07,m2_transaccional_privado,67502195.857,ARS M,BCRA API v4 (id 197)
+2026-10-08,m2_transaccional_privado,67017108.598,ARS M,BCRA API v4 (id 197)
+2026-10-09,m2_transaccional_privado,65169582.247,ARS M,BCRA API v4 (id 197)
 2003-01-01,mc_mineria,22.04924,USD M,BCRA mercado de cambios por sector (neto)
 2003-02-01,mc_mineria,19.0881178983,USD M,BCRA mercado de cambios por sector (neto)
 2003-03-01,mc_mineria,17.921035843800002,USD M,BCRA mercado de cambios por sector (neto)
@@ -134175,7 +134203,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,oro,4190.60009765625,USD/oz,Yahoo Finance (GC=F)
 2026-10-13,oro,4177.2998046875,USD/oz,Yahoo Finance (GC=F)
 2026-10-14,oro,4107.89990234375,USD/oz,Yahoo Finance (GC=F)
-2026-10-15,oro,4168.39990234375,USD/oz,Yahoo Finance (GC=F)
+2026-10-15,oro,4178.0,USD/oz,Yahoo Finance (GC=F)
 2003-01-02,prestamos_privados_pesos,29879.0,ARS M,BCRA API v4 (id 117)
 2003-01-03,prestamos_privados_pesos,29861.0,ARS M,BCRA API v4 (id 117)
 2003-01-06,prestamos_privados_pesos,29714.0,ARS M,BCRA API v4 (id 117)
@@ -139929,11 +139957,11 @@ fecha,variable,valor,unidad,fuente
 2026-06-19,prestamos_privados_pesos,98701502.0,ARS M,BCRA API v4 (id 117)
 2026-06-22,prestamos_privados_pesos,99052054.0,ARS M,BCRA API v4 (id 117)
 2026-06-23,prestamos_privados_pesos,99552551.0,ARS M,BCRA API v4 (id 117)
-2026-06-24,prestamos_privados_pesos,99877802.0,ARS M,BCRA API v4 (id 117)
-2026-06-25,prestamos_privados_pesos,99879436.0,ARS M,BCRA API v4 (id 117)
-2026-06-26,prestamos_privados_pesos,100314194.0,ARS M,BCRA API v4 (id 117)
+2026-06-24,prestamos_privados_pesos,99878938.0,ARS M,BCRA API v4 (id 117)
+2026-06-25,prestamos_privados_pesos,99919999.0,ARS M,BCRA API v4 (id 117)
+2026-06-26,prestamos_privados_pesos,100394626.0,ARS M,BCRA API v4 (id 117)
 2026-06-29,prestamos_privados_pesos,101478212.0,ARS M,BCRA API v4 (id 117)
-2026-06-30,prestamos_privados_pesos,103293522.0,ARS M,BCRA API v4 (id 117)
+2026-06-30,prestamos_privados_pesos,103300055.0,ARS M,BCRA API v4 (id 117)
 2026-07-01,prestamos_privados_pesos,102202445.0,ARS M,BCRA API v4 (id 117)
 2026-07-02,prestamos_privados_pesos,102574703.0,ARS M,BCRA API v4 (id 117)
 2026-07-03,prestamos_privados_pesos,102274572.0,ARS M,BCRA API v4 (id 117)
@@ -139968,13 +139996,13 @@ fecha,variable,valor,unidad,fuente
 2026-08-18,prestamos_privados_pesos,103347561.0,ARS M,BCRA API v4 (id 117)
 2026-08-19,prestamos_privados_pesos,103673374.0,ARS M,BCRA API v4 (id 117)
 2026-08-20,prestamos_privados_pesos,103808039.0,ARS M,BCRA API v4 (id 117)
-2026-08-21,prestamos_privados_pesos,104143596.0,ARS M,BCRA API v4 (id 117)
-2026-08-24,prestamos_privados_pesos,104577478.0,ARS M,BCRA API v4 (id 117)
+2026-08-21,prestamos_privados_pesos,104143973.0,ARS M,BCRA API v4 (id 117)
+2026-08-24,prestamos_privados_pesos,104579059.0,ARS M,BCRA API v4 (id 117)
 2026-08-25,prestamos_privados_pesos,104742430.0,ARS M,BCRA API v4 (id 117)
 2026-08-26,prestamos_privados_pesos,104989833.0,ARS M,BCRA API v4 (id 117)
 2026-08-27,prestamos_privados_pesos,105310206.0,ARS M,BCRA API v4 (id 117)
 2026-08-28,prestamos_privados_pesos,105354040.0,ARS M,BCRA API v4 (id 117)
-2026-08-31,prestamos_privados_pesos,106543780.0,ARS M,BCRA API v4 (id 117)
+2026-08-31,prestamos_privados_pesos,106548706.0,ARS M,BCRA API v4 (id 117)
 2026-09-01,prestamos_privados_pesos,105912778.0,ARS M,BCRA API v4 (id 117)
 2026-09-02,prestamos_privados_pesos,105320720.0,ARS M,BCRA API v4 (id 117)
 2026-09-03,prestamos_privados_pesos,104848869.0,ARS M,BCRA API v4 (id 117)
@@ -139997,12 +140025,13 @@ fecha,variable,valor,unidad,fuente
 2026-09-28,prestamos_privados_pesos,106956412.0,ARS M,BCRA API v4 (id 117)
 2026-09-29,prestamos_privados_pesos,107928914.0,ARS M,BCRA API v4 (id 117)
 2026-09-30,prestamos_privados_pesos,108141323.0,ARS M,BCRA API v4 (id 117)
-2026-10-01,prestamos_privados_pesos,107850896.0,ARS M,BCRA API v4 (id 117)
+2026-10-01,prestamos_privados_pesos,107855085.0,ARS M,BCRA API v4 (id 117)
 2026-10-02,prestamos_privados_pesos,108184883.0,ARS M,BCRA API v4 (id 117)
-2026-10-05,prestamos_privados_pesos,107947363.0,ARS M,BCRA API v4 (id 117)
-2026-10-06,prestamos_privados_pesos,108180887.0,ARS M,BCRA API v4 (id 117)
+2026-10-05,prestamos_privados_pesos,107947282.0,ARS M,BCRA API v4 (id 117)
+2026-10-06,prestamos_privados_pesos,108205977.0,ARS M,BCRA API v4 (id 117)
 2026-10-07,prestamos_privados_pesos,107233411.0,ARS M,BCRA API v4 (id 117)
-2026-10-08,prestamos_privados_pesos,107444201.0,ARS M,BCRA API v4 (id 117)
+2026-10-08,prestamos_privados_pesos,107434693.0,ARS M,BCRA API v4 (id 117)
+2026-10-09,prestamos_privados_pesos,107100981.0,ARS M,BCRA API v4 (id 117)
 2003-01-02,prestamos_privados_usd,1432.0,USD M,BCRA API v4 (id 125)
 2003-01-03,prestamos_privados_usd,1407.0,USD M,BCRA API v4 (id 125)
 2003-01-06,prestamos_privados_usd,1406.0,USD M,BCRA API v4 (id 125)
@@ -145801,7 +145830,7 @@ fecha,variable,valor,unidad,fuente
 2026-08-26,prestamos_privados_usd,25290.0,USD M,BCRA API v4 (id 125)
 2026-08-27,prestamos_privados_usd,25324.0,USD M,BCRA API v4 (id 125)
 2026-08-28,prestamos_privados_usd,25317.0,USD M,BCRA API v4 (id 125)
-2026-08-31,prestamos_privados_usd,25227.0,USD M,BCRA API v4 (id 125)
+2026-08-31,prestamos_privados_usd,25474.0,USD M,BCRA API v4 (id 125)
 2026-09-01,prestamos_privados_usd,25154.0,USD M,BCRA API v4 (id 125)
 2026-09-02,prestamos_privados_usd,25169.0,USD M,BCRA API v4 (id 125)
 2026-09-03,prestamos_privados_usd,25240.0,USD M,BCRA API v4 (id 125)
@@ -145824,12 +145853,13 @@ fecha,variable,valor,unidad,fuente
 2026-09-28,prestamos_privados_usd,26240.0,USD M,BCRA API v4 (id 125)
 2026-09-29,prestamos_privados_usd,26256.0,USD M,BCRA API v4 (id 125)
 2026-09-30,prestamos_privados_usd,26189.0,USD M,BCRA API v4 (id 125)
-2026-10-01,prestamos_privados_usd,26289.0,USD M,BCRA API v4 (id 125)
+2026-10-01,prestamos_privados_usd,26288.0,USD M,BCRA API v4 (id 125)
 2026-10-02,prestamos_privados_usd,26237.0,USD M,BCRA API v4 (id 125)
 2026-10-05,prestamos_privados_usd,26039.0,USD M,BCRA API v4 (id 125)
-2026-10-06,prestamos_privados_usd,26013.0,USD M,BCRA API v4 (id 125)
+2026-10-06,prestamos_privados_usd,26014.0,USD M,BCRA API v4 (id 125)
 2026-10-07,prestamos_privados_usd,26029.0,USD M,BCRA API v4 (id 125)
 2026-10-08,prestamos_privados_usd,25929.0,USD M,BCRA API v4 (id 125)
+2026-10-09,prestamos_privados_usd,25828.0,USD M,BCRA API v4 (id 125)
 2016-06-30,rem_inflacion_12m,21.5,% i.a.,BCRA REM (mediana)
 2016-07-29,rem_inflacion_12m,21.7,% i.a.,BCRA REM (mediana)
 2016-08-31,rem_inflacion_12m,21.9,% i.a.,BCRA REM (mediana)
@@ -148188,7 +148218,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,repo_a3_pesos_1d,20.8254,% TNA,A3/MAE repo (rueda REPO)
 2026-10-13,repo_a3_pesos_1d,20.7296,% TNA,A3/MAE repo (rueda REPO)
 2026-10-14,repo_a3_pesos_1d,21.6577,% TNA,A3/MAE repo (rueda REPO)
-2026-10-15,repo_a3_pesos_1d,23.3501,% TNA,A3/MAE repo (rueda REPO)
+2026-10-15,repo_a3_pesos_1d,21.4025,% TNA,A3/MAE repo (rueda REPO)
 2024-01-02,res_bis,0.0,USD M,Parámetro (config)
 2024-01-03,res_bis,0.0,USD M,Parámetro (config)
 2024-01-04,res_bis,0.0,USD M,Parámetro (config)
@@ -148862,6 +148892,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,res_bis,148.0,USD M,Parámetro (config)
 2026-10-08,res_bis,148.0,USD M,Parámetro (config)
 2026-10-09,res_bis,148.0,USD M,Parámetro (config)
+2026-10-13,res_bis,148.0,USD M,Parámetro (config)
 2024-01-02,res_bopreal_1a,558.0,USD M,Parámetro (config)
 2024-01-03,res_bopreal_1a,558.0,USD M,Parámetro (config)
 2024-01-04,res_bopreal_1a,558.0,USD M,Parámetro (config)
@@ -149535,6 +149566,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,res_bopreal_1a,1444.0,USD M,Parámetro (config)
 2026-10-08,res_bopreal_1a,1444.0,USD M,Parámetro (config)
 2026-10-09,res_bopreal_1a,1444.0,USD M,Parámetro (config)
+2026-10-13,res_bopreal_1a,1444.0,USD M,Parámetro (config)
 2024-01-02,res_dep_tesoro,59.33756861777586,USD M,"BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
 2024-01-03,res_dep_tesoro,59.337976946310796,USD M,"BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
 2024-01-04,res_dep_tesoro,57.14690483523252,USD M,"BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
@@ -150208,6 +150240,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,res_dep_tesoro,1234.0061928820785,USD M,"BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
 2026-10-08,res_dep_tesoro,1233.63291565145,USD M,"BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
 2026-10-09,res_dep_tesoro,1233.5456593234567,USD M,"BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
+2026-10-13,res_dep_tesoro,1229.7712253743648,USD M,"BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
 2003-01-02,res_encajes,296.7588,USD M,BCRA id 1243 (último dato disponible)
 2003-01-03,res_encajes,297.1004,USD M,BCRA id 1243 (último dato disponible)
 2003-01-06,res_encajes,304.2487,USD M,BCRA id 1243 (último dato disponible)
@@ -156037,6 +156070,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,res_encajes,16159.7558,USD M,BCRA id 1243 (último dato disponible)
 2026-10-08,res_encajes,16258.1147,USD M,BCRA id 1243 (último dato disponible)
 2026-10-09,res_encajes,16446.5988,USD M,BCRA id 1243 (último dato disponible)
+2026-10-13,res_encajes,16372.1357,USD M,BCRA id 1243 (último dato disponible)
 2024-01-02,res_repos,2628.0,USD M,Parámetro (config)
 2024-01-03,res_repos,2628.0,USD M,Parámetro (config)
 2024-01-04,res_repos,2628.0,USD M,Parámetro (config)
@@ -156710,6 +156744,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,res_repos,2484.0,USD M,Parámetro (config)
 2026-10-08,res_repos,2484.0,USD M,Parámetro (config)
 2026-10-09,res_repos,2484.0,USD M,Parámetro (config)
+2026-10-13,res_repos,2484.0,USD M,Parámetro (config)
 2023-12-01,res_swap_china,18234.49674403632,USD M,Cálculo: CNY pactados x tipo de pase BCRA
 2023-12-04,res_swap_china,18201.084038065605,USD M,Cálculo: CNY pactados x tipo de pase BCRA
 2023-12-05,res_swap_china,18192.243322088914,USD M,Cálculo: CNY pactados x tipo de pase BCRA
@@ -157402,6 +157437,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,res_swap_china,19386.0,USD M,Cálculo: CNY pactados x tipo de pase BCRA
 2026-10-08,res_swap_china,19393.280589627862,USD M,Cálculo: CNY pactados x tipo de pase BCRA
 2026-10-09,res_swap_china,19421.362863906754,USD M,Cálculo: CNY pactados x tipo de pase BCRA
+2026-10-13,res_swap_china,19425.13316924975,USD M,Cálculo: CNY pactados x tipo de pase BCRA
 1996-01-02,reservas_brutas,17314.0,USD M,BCRA API v4 (id 1)
 1996-01-03,reservas_brutas,17404.0,USD M,BCRA API v4 (id 1)
 1996-01-04,reservas_brutas,17435.0,USD M,BCRA API v4 (id 1)
@@ -164979,6 +165015,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,reservas_brutas,49133.0,USD M,BCRA API v4 (id 1)
 2026-10-08,reservas_brutas,49323.0,USD M,BCRA API v4 (id 1)
 2026-10-09,reservas_brutas,49709.0,USD M,BCRA API v4 (id 1)
+2026-10-13,reservas_brutas,49845.0,USD M,BCRA API v4 (id 1)
 2024-01-02,reservas_netas,-6847.0179748911905,USD M,Cálculo método Machado
 2024-01-03,reservas_netas,-6822.748690292468,USD M,Cálculo método Machado
 2024-01-04,reservas_netas,-6680.683058182161,USD M,Cálculo método Machado
@@ -165652,6 +165689,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,reservas_netas,10955.244200000001,USD M,Cálculo método Machado
 2026-10-08,reservas_netas,11039.60471037214,USD M,Cálculo método Machado
 2026-10-09,reservas_netas,11209.038336093246,USD M,Cálculo método Machado
+2026-10-13,reservas_netas,11415.73113075025,USD M,Cálculo método Machado
 2024-01-02,reservas_super_netas,-7464.355543508967,USD M,Cálculo método Machado
 2024-01-03,reservas_super_netas,-7440.086667238779,USD M,Cálculo método Machado
 2024-01-04,reservas_super_netas,-7295.829963017394,USD M,Cálculo método Machado
@@ -166325,6 +166363,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-07,reservas_super_netas,8277.238007117923,USD M,Cálculo método Machado
 2026-10-08,reservas_super_netas,8361.97179472069,USD M,Cálculo método Machado
 2026-10-09,reservas_super_netas,8531.49267676979,USD M,Cálculo método Machado
+2026-10-13,reservas_super_netas,8741.959905375885,USD M,Cálculo método Machado
 2016-01-01,resultado_primario_spn,740.7000000000553,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2016-02-01,resultado_primario_spn,-16642.40999999999,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2016-03-01,resultado_primario_spn,-30012.10000000001,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
@@ -166347,7 +166386,7 @@ fecha,variable,valor,unidad,fuente
 2017-08-01,resultado_primario_spn,-24650.600000000035,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2017-09-01,resultado_primario_spn,-31353.10000000001,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2017-10-01,resultado_primario_spn,-32494.79999999993,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
-2017-11-01,resultado_primario_spn,-29661.49999999992,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
+2017-11-01,resultado_primario_spn,-29661.499999999916,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2017-12-01,resultado_primario_spn,-119607.10000000006,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2018-01-01,resultado_primario_spn,3928.5999999999767,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2018-02-01,resultado_primario_spn,-20227.599999999977,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
@@ -166403,7 +166442,7 @@ fecha,variable,valor,unidad,fuente
 2022-04-01,resultado_primario_spn,-79184.80000000028,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2022-05-01,resultado_primario_spn,-162411.7465789998,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2022-06-01,resultado_primario_spn,-321644.40000000014,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
-2022-07-01,resultado_primario_spn,-1945.30000000028,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
+2022-07-01,resultado_primario_spn,-1945.3000000002796,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2022-08-01,resultado_primario_spn,-210051.80000000028,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2022-09-01,resultado_primario_spn,80624.29999999958,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2022-10-01,resultado_primario_spn,-103049.1000000008,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
@@ -271441,7 +271480,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,soja_cbot,1287.75,USc/bu,Yahoo Finance (ZS=F)
 2026-10-13,soja_cbot,1283.75,USc/bu,Yahoo Finance (ZS=F)
 2026-10-14,soja_cbot,1277.25,USc/bu,Yahoo Finance (ZS=F)
-2026-10-15,soja_cbot,1266.75,USc/bu,Yahoo Finance (ZS=F)
+2026-10-15,soja_cbot,1264.25,USc/bu,Yahoo Finance (ZS=F)
 2024-10-01,tamar,44.1875,% TNA,BCRA API v4 (id 44)
 2024-10-02,tamar,43.6875,% TNA,BCRA API v4 (id 44)
 2024-10-03,tamar,43.6875,% TNA,BCRA API v4 (id 44)
@@ -271932,6 +271971,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,tamar,24.125,% TNA,BCRA API v4 (id 44)
 2026-10-09,tamar,24.0625,% TNA,BCRA API v4 (id 44)
 2026-10-13,tamar,23.8125,% TNA,BCRA API v4 (id 44)
+2026-10-14,tamar,24.5625,% TNA,BCRA API v4 (id 44)
 2008-01-02,tasa_pases_terceros_1d,9.485,% TNA,BCRA API v4 (id 150)
 2008-01-03,tasa_pases_terceros_1d,8.35,% TNA,BCRA API v4 (id 150)
 2008-01-04,tasa_pases_terceros_1d,8.1865,% TNA,BCRA API v4 (id 150)
@@ -276501,6 +276541,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,tasa_pases_terceros_1d,21.22,% TNA,BCRA API v4 (id 150)
 2026-10-09,tasa_pases_terceros_1d,20.99,% TNA,BCRA API v4 (id 150)
 2026-10-13,tasa_pases_terceros_1d,21.09,% TNA,BCRA API v4 (id 150)
+2026-10-14,tasa_pases_terceros_1d,22.78,% TNA,BCRA API v4 (id 150)
 2003-01-02,tasa_plazo_fijo_30d,21.16,% TNA,BCRA API v4 (id 12)
 2003-01-03,tasa_plazo_fijo_30d,24.25,% TNA,BCRA API v4 (id 12)
 2003-01-06,tasa_plazo_fijo_30d,20.82,% TNA,BCRA API v4 (id 12)
@@ -282330,6 +282371,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,tasa_plazo_fijo_30d,22.3,% TNA,BCRA API v4 (id 12)
 2026-10-09,tasa_plazo_fijo_30d,21.52,% TNA,BCRA API v4 (id 12)
 2026-10-13,tasa_plazo_fijo_30d,20.65,% TNA,BCRA API v4 (id 12)
+2026-10-14,tasa_plazo_fijo_30d,20.85,% TNA,BCRA API v4 (id 12)
 2016-06-30,tasa_real_ex_ante_badlar,-0.011393185534680494,% mensual,Cálculo: TEM BADLAR vs inflación esperada próx. mes (REM)
 2016-07-01,tasa_real_ex_ante_badlar,-0.006366780151734197,% mensual,Cálculo: TEM BADLAR vs inflación esperada próx. mes (REM)
 2016-07-04,tasa_real_ex_ante_badlar,-0.03149880706645458,% mensual,Cálculo: TEM BADLAR vs inflación esperada próx. mes (REM)
@@ -284832,6 +284874,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,tasa_real_ex_ante_badlar,0.13671690844683226,% mensual,Cálculo: TEM BADLAR vs inflación esperada próx. mes (REM)
 2026-10-09,tasa_real_ex_ante_badlar,0.16197249498257626,% mensual,Cálculo: TEM BADLAR vs inflación esperada próx. mes (REM)
 2026-10-13,tasa_real_ex_ante_badlar,0.08115461806819102,% mensual,Cálculo: TEM BADLAR vs inflación esperada próx. mes (REM)
+2026-10-14,tasa_real_ex_ante_badlar,0.14681914306111654,% mensual,Cálculo: TEM BADLAR vs inflación esperada próx. mes (REM)
 2024-10-01,tasa_real_ex_ante_tamar,0.22422564319970473,% mensual,Cálculo: TEM TAMAR vs inflación esperada próx. mes (REM)
 2024-10-02,tasa_real_ex_ante_tamar,0.18448106833417466,% mensual,Cálculo: TEM TAMAR vs inflación esperada próx. mes (REM)
 2024-10-03,tasa_real_ex_ante_tamar,0.18448106833417466,% mensual,Cálculo: TEM TAMAR vs inflación esperada próx. mes (REM)
@@ -285322,6 +285365,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-08,tasa_real_ex_ante_tamar,0.2781481930469898,% mensual,Cálculo: TEM TAMAR vs inflación esperada próx. mes (REM)
 2026-10-09,tasa_real_ex_ante_tamar,0.27309707573983655,% mensual,Cálculo: TEM TAMAR vs inflación esperada próx. mes (REM)
 2026-10-13,tasa_real_ex_ante_tamar,0.2528926065112458,% mensual,Cálculo: TEM TAMAR vs inflación esperada próx. mes (REM)
+2026-10-14,tasa_real_ex_ante_tamar,0.31350601419701807,% mensual,Cálculo: TEM TAMAR vs inflación esperada próx. mes (REM)
 2003-01-02,tc_mayorista_a3500,3.3625,ARS/USD,BCRA API v4 (id 5)
 2003-01-03,tc_mayorista_a3500,3.3328,ARS/USD,BCRA API v4 (id 5)
 2003-01-06,tc_mayorista_a3500,3.329,ARS/USD,BCRA API v4 (id 5)
@@ -291153,6 +291197,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,tc_mayorista_a3500,1515.8766,ARS/USD,BCRA API v4 (id 5)
 2026-10-13,tc_mayorista_a3500,1515.8543,ARS/USD,BCRA API v4 (id 5)
 2026-10-14,tc_mayorista_a3500,1514.5655,ARS/USD,BCRA API v4 (id 5)
+2026-10-15,tc_mayorista_a3500,1513.9308,ARS/USD,BCRA API v4 (id 5)
 1997-01-01,tcr_brasil,120.24161507257591,índice 17-12-15=100,BCRA ITCRM
 1997-01-02,tcr_brasil,120.25748460813944,índice 17-12-15=100,BCRA ITCRM
 1997-01-03,tcr_brasil,120.26178593015852,índice 17-12-15=100,BCRA ITCRM
@@ -302032,6 +302077,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,tcr_brasil,88.65789687992316,índice 17-12-15=100,BCRA ITCRM
 2026-10-13,tcr_brasil,87.90318443715316,índice 17-12-15=100,BCRA ITCRM
 2026-10-14,tcr_brasil,87.64217071153956,índice 17-12-15=100,BCRA ITCRM
+2026-10-15,tcr_brasil,86.95785773513138,índice 17-12-15=100,BCRA ITCRM
 1997-01-01,tcr_eeuu,70.27819968888265,índice 17-12-15=100,BCRA ITCRM
 1997-01-02,tcr_eeuu,70.2727546411908,índice 17-12-15=100,BCRA ITCRM
 1997-01-03,tcr_eeuu,70.266463258046,índice 17-12-15=100,BCRA ITCRM
@@ -312911,6 +312957,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,tcr_eeuu,93.18400987953282,índice 17-12-15=100,BCRA ITCRM
 2026-10-13,tcr_eeuu,92.90759060170957,índice 17-12-15=100,BCRA ITCRM
 2026-10-14,tcr_eeuu,92.93830385480103,índice 17-12-15=100,BCRA ITCRM
+2026-10-15,tcr_eeuu,92.93830385480103,índice 17-12-15=100,BCRA ITCRM
 1997-01-01,tcrm,86.3480011442799,índice 17-12-15=100,BCRA ITCRM
 1997-01-02,tcrm,86.3331019256848,índice 17-12-15=100,BCRA ITCRM
 1997-01-03,tcrm,86.0561246415282,índice 17-12-15=100,BCRA ITCRM
@@ -323790,6 +323837,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,tcrm,85.6811158685796,índice 17-12-15=100,BCRA ITCRM
 2026-10-13,tcrm,85.31506517827164,índice 17-12-15=100,BCRA ITCRM
 2026-10-14,tcrm,85.1342036308869,índice 17-12-15=100,BCRA ITCRM
+2026-10-15,tcrm,85.14960048878699,índice 17-12-15=100,BCRA ITCRM
 2023-12-01,usd_por_cny,0.140254,USD/CNY,BCRA API cambiaria
 2023-12-04,usd_por_cny,0.139997,USD/CNY,BCRA API cambiaria
 2023-12-05,usd_por_cny,0.139929,USD/CNY,BCRA API cambiaria
@@ -324486,6 +324534,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,usd_por_cny,0.149383,USD/CNY,BCRA API cambiaria
 2026-10-13,usd_por_cny,0.149412,USD/CNY,BCRA API cambiaria
 2026-10-14,usd_por_cny,0.149289,USD/CNY,BCRA API cambiaria
+2026-10-15,usd_por_cny,0.149463,USD/CNY,BCRA API cambiaria
 2000-01-03,ust_10y,6.58,%,US Treasury
 2000-01-04,ust_10y,6.49,%,US Treasury
 2000-01-05,ust_10y,6.62,%,US Treasury
@@ -331185,6 +331234,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,ust_10y,5.24,%,US Treasury
 2026-10-13,ust_10y,5.21,%,US Treasury
 2026-10-14,ust_10y,5.19,%,US Treasury
+2026-10-15,ust_10y,5.1,%,US Treasury
 2000-01-03,ust_2y,6.38,%,US Treasury
 2000-01-04,ust_2y,6.3,%,US Treasury
 2000-01-05,ust_2y,6.38,%,US Treasury
@@ -337884,6 +337934,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,ust_2y,4.8,%,US Treasury
 2026-10-13,ust_2y,4.79,%,US Treasury
 2026-10-14,ust_2y,4.82,%,US Treasury
+2026-10-15,ust_2y,4.77,%,US Treasury
 2000-01-03,ust_30y,6.61,%,US Treasury
 2000-01-04,ust_30y,6.53,%,US Treasury
 2000-01-05,ust_30y,6.64,%,US Treasury
@@ -343589,6 +343640,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,ust_30y,5.6,%,US Treasury
 2026-10-13,ust_30y,5.56,%,US Treasury
 2026-10-14,ust_30y,5.52,%,US Treasury
+2026-10-15,ust_30y,5.43,%,US Treasury
 2000-01-03,vix,24.209999084472656,índice,Yahoo Finance (^VIX)
 2000-01-04,vix,27.01000022888184,índice,Yahoo Finance (^VIX)
 2000-01-05,vix,26.40999984741211,índice,Yahoo Finance (^VIX)
@@ -350327,7 +350379,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,vix,15.210000038146973,índice,Yahoo Finance (^VIX)
 2026-10-13,vix,15.270000457763672,índice,Yahoo Finance (^VIX)
 2026-10-14,vix,16.8700008392334,índice,Yahoo Finance (^VIX)
-2026-10-15,vix,16.860000610351562,índice,Yahoo Finance (^VIX)
+2026-10-15,vix,16.459999084472656,índice,Yahoo Finance (^VIX)
 2015-12-14,volumen_mlc,218.74,USD M,A3/MAE FOREX (volumen operado)
 2015-12-15,volumen_mlc,192.25,USD M,A3/MAE FOREX (volumen operado)
 2015-12-16,volumen_mlc,197.23,USD M,A3/MAE FOREX (volumen operado)
@@ -352965,4 +353017,4 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,volumen_mlc,717.057345,USD M,A3/MAE FOREX (volumen operado)
 2026-10-13,volumen_mlc,539.0335,USD M,A3/MAE FOREX (volumen operado)
 2026-10-14,volumen_mlc,588.23916,USD M,A3/MAE FOREX (volumen operado)
-2026-10-15,volumen_mlc,366.823,USD M,A3/MAE FOREX (volumen operado)
+2026-10-15,volumen_mlc,506.712,USD M,A3/MAE FOREX (volumen operado)
