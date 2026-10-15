@@ -1,5 +1,5 @@
 {
- "corrida_utc": "2026-10-15T01:10:57.157384",
+ "corrida_utc": "2026-10-15T01:23:40.968690",
  "fuentes": {
   "bcra": {
    "estado": "ok",
@@ -39,7 +39,8 @@
   },
   "datos_gob": {
    "estado": "ok",
-   "filas": 415
+   "filas": 415,
+   "error": "74.3_IET_0_M_16: sin datos | 74.3_IIT_0_M_25: sin datos"
   },
   "rem": {
    "estado": "ok",

@@ -1,4 +1,4 @@
-# Validación — corrida 2026-10-15 01:10 UTC
+# Validación — corrida 2026-10-15 01:23 UTC
 
 ## 1. Reservas vs tabla de Machado
 
@@ -116,11 +116,10 @@ Sin fechas en común.
 | bc_utilidades_dividendos | 2026-08-01 | -475.16 | 75 |
 | bc_var_reservas_transacciones | 2026-08-01 | -249.79 | 75 |
 | brecha_ccl | 2026-10-13 | 6.37 | 2 |
-| brent | 2026-10-15 | 104.92 | 0 |
+| brent | 2026-10-15 | 104.88 | 0 |
 | brl_usd | 2026-10-13 | 5.03 | 2 |
 | canje_ccl_mep | 2026-10-13 | 4.71 | 2 |
 | caucion_pesos_1d | 2026-10-15 | 22.24 | 0 |
-| caucion_pesos_1d_vwap | 2026-10-15 | 0.22 | 0 |
 | ccl | 2026-10-13 | 1,612.40 | 2 |
 | ccl_ad | 2026-10-15 | 1,617.30 | 0 |
 | compras_bcra_acum_anio | 2026-10-08 | 14,852.41 | 7 |
@@ -129,7 +128,7 @@ Sin fechas en común.
 | depositos_gobierno_bcra_me_ars | 2026-10-09 | 1,869,903.00 | 6 |
 | depositos_privados_usd | 2026-10-08 | 42,377.00 | 7 |
 | distancia_techo_banda | 2026-10-14 | 27.70 | 1 |
-| dxy | 2026-10-15 | 102.18 | 0 |
+| dxy | 2026-10-15 | 102.08 | 0 |
 | emae_desest | 2026-07-01 | 149.65 | 106 |
 | encajes_usd_bcra | 2026-10-09 | 16,446.60 | 6 |
 | futuro_diciembre | 2025-09-22 | 1,530.00 | 388 |
@@ -148,7 +147,7 @@ Sin fechas en común.
 | mc_total | 2026-08-01 | 271.53 | 75 |
 | mep | 2026-10-13 | 1,539.94 | 2 |
 | mep_ad | 2026-10-15 | 1,539.70 | 0 |
-| oro | 2026-10-15 | 4,162.80 | 0 |
+| oro | 2026-10-15 | 4,161.50 | 0 |
 | prestamos_privados_pesos | 2026-10-08 | 107,444,201.00 | 7 |
 | prestamos_privados_usd | 2026-10-08 | 25,929.00 | 7 |
 | rem_inflacion_12m | 2026-09-30 | 21.05 | 15 |
@@ -184,7 +183,7 @@ Sin fechas en común.
 | riesgo_pais_rep_dominicana | 2026-10-13 | 178.59 | 2 |
 | riesgo_pais_uruguay | 2026-10-13 | 75.32 | 2 |
 | riesgo_pais_venezuela | 2026-10-13 | 4,129.95 | 2 |
-| soja_cbot | 2026-10-15 | 1,273.00 | 0 |
+| soja_cbot | 2026-10-15 | 1,271.25 | 0 |
 | tamar | 2026-10-13 | 23.81 | 2 |
 | tasa_pases_terceros_1d | 2026-10-13 | 21.09 | 2 |
 | tasa_plazo_fijo_30d | 2026-10-13 | 20.65 | 2 |
@@ -212,7 +211,7 @@ Sin fechas en común.
 | cammesa | ok | 1 |  |
 | treasury | ok | 2088 |  |
 | yahoo | ok | 4550 |  |
-| datos_gob | ok | 415 |  |
+| datos_gob | ok | 415 | 74.3_IET_0_M_16: sin datos | 74.3_IIT_0_M_25: sin datos |
 | rem | ok | 312 |  |
 | itcrm | ok | 3054 |  |
 | balance_cambiario | ok | 2184 |  |
