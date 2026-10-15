@@ -348,3 +348,53 @@ def balance_cambiario():
                     filas.append((f, BC_SECTORES[nombre], pd.to_numeric(v, errors="coerce") / 1e6, "USD M",
                                   "BCRA mercado de cambios por sector (neto)"))
     return _df(filas)
+
+
+# ---------------------------------------------------------------- LECAP / BONCAP (tasa fija)
+FICHAS = None  # caché en memoria; se persiste en data/raw/lecap_fichas.json desde run.py
+
+
+def _ficha(sym):
+    r = requests.post(f"{BYMA}/bnown/fichatecnica/especies/general",
+                      json={"symbol": sym, "Content-Type": "application/json"},
+                      headers=BYMA_H, verify=False, timeout=60)
+    d = r.json()["data"][0]
+    m = re.search(r"(\d+[.,]\d+)\s*%", d.get("interes", ""))
+    return {"tem": float(m.group(1).replace(",", ".")) / 100 if m else None,
+            "emision": d["fechaEmision"][:10], "vencimiento": d["fechaVencimiento"][:10],
+            "denominacion": d.get("denominacion", "")}
+
+
+def lecaps(fichas):
+    """TEM de mercado de cada LECAP/BONCAP: pago final (100 capitalizado a la TEM de emisión) vs precio."""
+    r = requests.post(f"{BYMA}/lebacs", json={"excludeZeroPxAndQty": False, "T1": True, "T0": False,
+                      "page_number": 1, "page_size": 500}, headers=BYMA_H, verify=False, timeout=90)
+    syms = sorted({x["symbol"] for x in r.json().get("data", [])
+                   if re.fullmatch(r"[ST]\d{2}[A-Z]\d", x["symbol"]) and x.get("denominationCcy") == "ARS"
+                   and x.get("maturityDate") and x["maturityDate"] > str(HOY)})
+    filas = []
+    desde = int(dt.datetime.combine(HOY - dt.timedelta(days=45), dt.time()).timestamp())
+    for sym in syms:
+        try:
+            if sym not in fichas:
+                fichas[sym] = _ficha(sym)
+            fi = fichas[sym]
+            if not fi["tem"]:
+                continue
+            emi, ven = pd.Timestamp(fi["emision"]), pd.Timestamp(fi["vencimiento"])
+            meses = round((ven - emi).days / 30.4375)
+            pago = 100 * (1 + fi["tem"]) ** meses
+            j = _get(f"{BYMA}/chart/historical-series/history", verify=False,
+                     params={"symbol": f"{sym} 24HS", "resolution": "D", "from": desde,
+                             "to": int(dt.datetime.now().timestamp())}).json()
+            for t, c in zip(j.get("t", []), j.get("c", [])):
+                f = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
+                liq = pd.Timestamp(f) + pd.offsets.BDay(1)
+                dias = (ven - liq).days
+                if c and dias > 0:
+                    tem = ((pago / c) ** (30 / dias) - 1) * 100
+                    filas.append((f, f"lecap_tem_{sym}", tem, "% TEM",
+                                  f"Cálculo: BYMA {sym} (vence {fi['vencimiento']}, TEM emisión {fi['tem']*100:.2f}%)"))
+        except Exception:  # noqa: BLE001
+            continue
+    return _df(filas)

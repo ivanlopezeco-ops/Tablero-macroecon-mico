@@ -171,11 +171,20 @@ def validar(df, notas, estado):
     cruce("tamar", "badlar", "5. Control de rango: TAMAR vs BADLAR", n=5)
     cruce("caucion_pesos_1d", "tasa_pases_terceros_1d", "5b. Caución 1 día (BYMA) vs pases entre terceros (BCRA)", n=5)
 
+    lec = df[df["variable"].str.startswith("lecap_tem_")]
+    if not lec.empty:
+        ult_f = lec["fecha"].max()
+        c = lec[lec["fecha"] == ult_f].sort_values("variable")
+        L.append(f"## 5c. Curva LECAP/BONCAP al {ult_f} (TEM %)\n\n| letra | TEM | fuente |\n|---|---:|---|")
+        for _, r in c.iterrows():
+            L.append(f"| {r['variable'][10:]} | {r['valor']:.2f} | {r['fuente']} |")
+        L.append("")
+
     L.append("## 6. Último dato por variable\n\n| variable | último dato | valor | días de rezago |\n|---|---|---:|---:|")
     ult = df.sort_values("fecha").groupby("variable").last()
     hoy = dt.date.today()
     for var, r in ult.iterrows():
-        if var.startswith("futuro_DLR"):
+        if var.startswith("futuro_DLR") or var.startswith("lecap_tem_"):
             continue
         L.append(f"| {var} | {r['fecha']} | {r['valor']:,.2f} | {(hoy - r['fecha']).days} |")
 
@@ -204,6 +213,16 @@ def main():
             estado[nombre] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}",
                               "traza": traceback.format_exc()[-800:]}
         print(nombre, estado[nombre]["estado"], estado[nombre].get("filas", ""))
+
+    fpath = RAW / "lecap_fichas.json"
+    fichas = json.loads(fpath.read_text(encoding="utf-8")) if fpath.exists() else {}
+    try:
+        d = F.lecaps(fichas)
+        partes.append(d)
+        estado["lecaps"] = {"estado": "ok", "filas": len(d)}
+        fpath.write_text(json.dumps(fichas, ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception as e:  # noqa: BLE001
+        estado["lecaps"] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}"}
 
     try:
         d, crudos = F.byma_snapshots()
