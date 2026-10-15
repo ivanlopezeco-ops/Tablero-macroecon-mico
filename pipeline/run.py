@@ -84,12 +84,18 @@ def derivadas(df):
     repos = vigente(PARAM["repos_bcra"], f)
     netas = brutas - encajes - swap - bis - repos
     bop = vigente(PARAM["bopreal_1_anio"], f)
-    dep = vigente(PARAM["depositos_usd_tesoro_bcra"], f)
+    dep_ars = serie(df, "depositos_gobierno_bcra_me_ars")
+    if not dep_ars.empty:
+        dep = (dep_ars / a3500.reindex(dep_ars.index.union(a3500.index)).ffill().reindex(dep_ars.index))
+        dep = dep.reindex(f.union(dep.index)).ffill().reindex(f)
+        notas["dep_tesoro"] = "BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
+    else:
+        dep = vigente(PARAM["depositos_usd_tesoro_bcra"], f)
     super_ = netas - bop - dep
     for s, v, fu in [(encajes, "res_encajes", "BCRA id 1243 (último dato disponible)"),
                      (swap, "res_swap_china", "Cálculo: CNY pactados x tipo de pase BCRA"),
                      (bis, "res_bis", "Parámetro (config)"), (repos, "res_repos", "Parámetro (config)"),
-                     (bop, "res_bopreal_1a", "Parámetro (config)"), (dep, "res_dep_tesoro", "Parámetro (config)"),
+                     (bop, "res_bopreal_1a", "Parámetro (config)"), (dep, "res_dep_tesoro", notas.get("dep_tesoro", "Parámetro (config)")),
                      (netas, "reservas_netas", "Cálculo método Machado"),
                      (super_, "reservas_super_netas", "Cálculo método Machado")]:
         out.append(largo(s, v, "USD M", fu))
@@ -124,7 +130,7 @@ def validar(df, notas, estado):
     L.append("## 1. Reservas vs tabla de Machado\n")
     L.append("| fecha | componente | nuestro | Machado | dif |\n|---|---|---:|---:|---:|")
     mapa = {"brutas": "reservas_brutas", "encajes": "res_encajes", "swap": "res_swap_china",
-            "netas": "reservas_netas", "super_netas": "reservas_super_netas"}
+            "netas": "reservas_netas", "dep_tesoro": "res_dep_tesoro", "super_netas": "reservas_super_netas"}
     for ref in PARAM["validacion_machado"]:
         for k, var in mapa.items():
             s = serie(df, var)
@@ -147,6 +153,7 @@ def validar(df, notas, estado):
             L.append(f"| {f:%Y-%m-%d} | {fmt.format(r[a])} | {fmt.format(r[b])} | {fmt.format(r[a] - r[b])} |")
         L.append("")
 
+    cruce("bc_billetes_divisas_spnf", "mc_personas_humanas", "1b. Balance cambiario: billetes y divisas SPNF vs personas humanas (mensual)", n=4)
     cruce("riesgo_pais_argentina", "riesgo_pais_argentina_ad", "2. Riesgo país: BCRD vs ArgentinaDatos", fmt="{:,.0f}")
     cruce("mep", "mep_ad", "3. MEP: cálculo propio (AL30) vs ArgentinaDatos")
     cruce("ccl", "ccl_ad", "4. CCL: cálculo propio (AL30) vs ArgentinaDatos")
@@ -174,11 +181,14 @@ def main():
                        ("argentinadatos", F.argentinadatos), ("byma_historicos", F.byma_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
                        ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob),
-                       ("rem", F.rem), ("itcrm", F.itcrm)]:
+                       ("rem", F.rem), ("itcrm", F.itcrm),
+                       ("balance_cambiario", F.balance_cambiario)]:
         try:
             d = fn()
             partes.append(d)
             estado[nombre] = {"estado": "ok", "filas": len(d)}
+            if d.attrs.get("errores"):
+                estado[nombre]["error"] = " | ".join(d.attrs["errores"])
         except Exception as e:  # noqa: BLE001
             estado[nombre] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}",
                               "traza": traceback.format_exc()[-800:]}

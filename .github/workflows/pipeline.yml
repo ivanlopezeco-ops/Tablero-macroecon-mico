@@ -2,7 +2,8 @@ name: Actualización diaria
 
 on:
   schedule:
-    - cron: "47 0 * * 2-6"   # 21:47 hora Argentina, de lunes a viernes
+    - cron: "40 21 * * 1-5"   # 18:40 hora Argentina: cierre de mercado (caución, futuros, A3500)
+    - cron: "10 12 * * 1-6"   # 09:10 hora Argentina: lo que el BCRA, el BCRD y EE.UU. publican de noche
   workflow_dispatch:
   push:
     paths:

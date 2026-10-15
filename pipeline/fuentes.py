@@ -53,6 +53,7 @@ BCRA_VARS = {
     117: ("prestamos_privados_pesos", "ARS M"),
     125: ("prestamos_privados_usd", "USD M"),
     108: ("depositos_privados_usd", "USD M"),
+    1266: ("depositos_gobierno_bcra_me_ars", "ARS M"),
 }
 
 
@@ -225,21 +226,26 @@ DATOS_GOB = {
     "148.3_INIVELNAL_DICI_M_26": ("ipc_nivel_general", "índice dic-16=100"),
     "148.3_INUCLEONAL_DICI_M_19": ("ipc_nucleo", "índice dic-16=100"),
     "143.3_NO_PR_2004_A_31": ("emae_desest", "índice 2004=100"),
+    "74.3_IET_0_M_16": ("exportaciones", "USD M"),
+    "74.3_IIT_0_M_25": ("importaciones", "USD M"),
+    "452.3_RESULTADO_RIO_0_M_18_54": ("resultado_primario_spn", "ARS M"),
 }
 
 
 def datos_gob():
-    filas = []
-    j = _get("https://apis.datos.gob.ar/series/api/series/",
-             params={"ids": ",".join(DATOS_GOB), "start_date": "2018-01-01", "limit": 1000,
-                     "format": "json"}).json()
-    ids = list(DATOS_GOB)
-    for fila in j["data"]:
-        f = fila[0]
-        for sid, v in zip(ids, fila[1:]):
-            var, uni = DATOS_GOB[sid]
-            filas.append((f, var, v, uni, f"INDEC vía datos.gob.ar ({sid})"))
-    return _df(filas)
+    """Una consulta por serie, para que un id que cambie no frene al resto."""
+    filas, errores = [], []
+    for sid, (var, uni) in DATOS_GOB.items():
+        try:
+            j = _get("https://apis.datos.gob.ar/series/api/series/",
+                     params={"ids": sid, "start_date": "2018-01-01", "limit": 1000, "format": "json"}).json()
+            for f, v in j["data"]:
+                filas.append((f, var, v, uni, f"datos.gob.ar ({sid})"))
+        except Exception as e:  # noqa: BLE001
+            errores.append(f"{sid}: {e}"[:120])
+    df = _df(filas)
+    df.attrs["errores"] = errores
+    return df
 
 
 def datos_gob_buscar(consultas):
@@ -255,9 +261,7 @@ def datos_gob_buscar(consultas):
 
 
 # ---------------------------------------------------------------- Archivos para inspeccionar
-ARCHIVOS = {
-    "balance_cambiario.xlsx": "https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/anexo-estadistico-mercado-cambios-balance-cambiario.xlsx",
-}
+ARCHIVOS = {}
 
 
 # ---------------------------------------------------------------- BCRA: archivos Excel
@@ -297,4 +301,44 @@ def itcrm():
     for col, var in [("ITCRM", "tcrm"), ("ITCRB Brasil", "tcr_brasil"), ("ITCRB Estados Unidos", "tcr_eeuu")]:
         for f, v in zip(df["Período"], df[col]):
             filas.append((f, var, v, "índice 17-12-15=100", "BCRA ITCRM"))
+    return _df(filas)
+
+
+# ---------------------------------------------------------------- Balance cambiario (mensual)
+F_BC = ("https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/"
+        "anexo-estadistico-mercado-cambios-balance-cambiario.xlsx")
+# Códigos de columna de la hoja "Balance Cambiario" (fila de códigos bal0xx). Netos en USD M.
+BC_CODIGOS = {
+    "bal001": "bc_cuenta_corriente", "bal002": "bc_bienes", "bal003": "bc_cobros_exportaciones",
+    "bal004": "bc_pagos_importaciones", "bal005": "bc_servicios", "bal009": "bc_intereses",
+    "bal012": "bc_intereses_fmi", "bal016": "bc_utilidades_dividendos", "bal024": "bc_cuenta_financiera",
+    "bal025": "bc_ied", "bal028": "bc_portafolio", "bal031": "bc_prestamos_titulos_deuda",
+    "bal034": "bc_fmi", "bal037": "bc_otros_organismos", "bal040": "bc_billetes_divisas_spnf",
+    "bal050": "bc_var_reservas_transacciones",
+}
+BC_SECTORES = {"Personas Humanas": "mc_personas_humanas", "Oleaginosos y Cerealeros": "mc_oleaginosos_cerealeros",
+               "Petróleo": "mc_petroleo", "Mineria": "mc_mineria", "Total general": "mc_total"}
+
+
+def balance_cambiario():
+    contenido = _get(F_BC).content
+    b = pd.read_excel(io.BytesIO(contenido), sheet_name="Balance Cambiario", header=None)
+    codigos = b.iloc[10].tolist()
+    filas = []
+    meses = b[b[0].apply(lambda x: isinstance(x, (dt.datetime, pd.Timestamp)))]
+    meses = meses[pd.to_datetime(meses[0]) >= pd.Timestamp("2018-01-01")]
+    for col, cod in enumerate(codigos):
+        if cod in BC_CODIGOS:
+            for f, v in zip(meses[0], meses[col]):
+                filas.append((f, BC_CODIGOS[cod], v, "USD M", f"BCRA balance cambiario ({cod})"))
+    s = pd.read_excel(io.BytesIO(contenido), sheet_name="MC por sector", header=None)
+    fila_fechas = s.index[s[0].astype(str).str.strip().eq("Sector")][0]
+    fechas = s.iloc[fila_fechas].tolist()
+    for _, r in s.iloc[fila_fechas + 1:].iterrows():
+        nombre = str(r[0]).strip()
+        if nombre in BC_SECTORES:
+            for f, v in zip(fechas[1:], r.tolist()[1:]):
+                if isinstance(f, (dt.datetime, pd.Timestamp)) and f >= dt.datetime(2018, 1, 1):
+                    filas.append((f, BC_SECTORES[nombre], pd.to_numeric(v, errors="coerce") / 1e6, "USD M",
+                                  "BCRA mercado de cambios por sector (neto)"))
     return _df(filas)
