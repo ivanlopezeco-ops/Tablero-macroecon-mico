@@ -413,9 +413,10 @@ def _mae(ruta, ini, fin):
 def a3_mae():
     """Volumen del mercado de cambios (FOREX MAE) y tasas de caución y repo a 1 día, por ventanas de 30 días."""
     filas = []
-    ini = max(DESDE, HOY - dt.timedelta(days=500))
-    while ini <= HOY:
-        fin = min(ini + dt.timedelta(days=29), HOY)
+    tope = max(DESDE, HOY - dt.timedelta(days=500))
+    fin = HOY
+    while fin >= tope:  # ventanas completas de 30 días hacia atrás (una ventana de 1 día devuelve otro agregado)
+        ini = fin - dt.timedelta(days=29)
         for d in _mae("mercado/titulo/historicoforex/volumenoperado", ini, fin) or []:
             filas.append((d["fecha"][:10], "volumen_mlc", d["cant_Millones"], "USD M", "A3/MAE FOREX (volumen operado)"))
         for d in _mae("mercado/titulo/historicocauciones", ini, fin) or []:
@@ -427,5 +428,5 @@ def a3_mae():
             for x in d.get("details", []):
                 if x.get("plazo") == "001" and x.get("rueda") == "REPO" and x.get("moneda") == "$" and x.get("tasaPP"):
                     filas.append((x["fecha"][:10], "repo_a3_pesos_1d", x["tasaPP"], "% TNA", "A3/MAE repo (rueda REPO)"))
-        ini = fin + dt.timedelta(days=1)
-    return _df(filas)
+        fin = ini - dt.timedelta(days=1)
+    return _df(filas).drop_duplicates(["fecha", "variable"], keep="first")
