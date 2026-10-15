@@ -1,4 +1,4 @@
-# Validación — corrida 2026-10-15 03:02 UTC
+# Validación — corrida 2026-10-15 03:07 UTC
 
 ## 1. Reservas vs tabla de Machado
 
@@ -217,7 +217,7 @@ Swap: 130010.5 millones de CNY.
 | bc_utilidades_dividendos | 2026-08-01 | -475.16 | 75 |
 | bc_var_reservas_transacciones | 2026-08-01 | -249.79 | 75 |
 | brecha_ccl | 2026-10-14 | 6.85 | 1 |
-| brent | 2026-10-15 | 104.43 | 0 |
+| brent | 2026-10-15 | 104.25 | 0 |
 | brl_usd | 2026-10-15 | 5.05 | 0 |
 | canje_ccl_mep | 2026-10-14 | 5.44 | 1 |
 | caucion_a3_pesos_1d | 2026-10-14 | 22.43 | 1 |
@@ -228,11 +228,11 @@ Swap: 130010.5 millones de CNY.
 | compras_bcra_acum_anio | 2026-10-08 | 14,852.41 | 7 |
 | compras_bcra_mlc | 2026-10-08 | 43.00 | 7 |
 | compras_bcra_pct_volumen | 2026-10-08 | 8.15 | 7 |
-| demanda_electrica_diaria | 2026-10-14 | 392,277.00 | 1 |
+| demanda_electrica_diaria | 2026-10-14 | 387,546.58 | 1 |
 | depositos_gobierno_bcra_me_ars | 2026-10-09 | 1,869,903.00 | 6 |
 | depositos_privados_usd | 2026-10-08 | 42,377.00 | 7 |
 | distancia_techo_banda | 2026-10-14 | 27.70 | 1 |
-| dxy | 2026-10-15 | 101.98 | 0 |
+| dxy | 2026-10-15 | 101.92 | 0 |
 | emae_desest | 2026-07-01 | 149.65 | 106 |
 | encajes_usd_bcra | 2026-10-09 | 16,446.60 | 6 |
 | exportaciones | 2026-08-01 | 8,882.58 | 75 |
@@ -254,7 +254,7 @@ Swap: 130010.5 millones de CNY.
 | mep | 2026-10-14 | 1,534.88 | 1 |
 | mep_ad | 2026-10-15 | 1,539.70 | 0 |
 | mep_largo | 2026-10-14 | 1,534.88 | 1 |
-| oro | 2026-10-15 | 4,169.20 | 0 |
+| oro | 2026-10-15 | 4,178.40 | 0 |
 | prestamos_privados_pesos | 2026-10-08 | 107,444,201.00 | 7 |
 | prestamos_privados_usd | 2026-10-08 | 25,929.00 | 7 |
 | rem_inflacion_12m | 2026-09-30 | 21.05 | 15 |
