@@ -1,4 +1,4 @@
-# Validación — corrida 2026-10-15 01:48 UTC
+# Validación — corrida 2026-10-15 02:01 UTC
 
 ## 1. Reservas vs tabla de Machado
 
@@ -120,9 +120,25 @@ Swap: 130004.4 millones de CNY.
 | 2026-10-09 | 24.1 | 22.7 | 1.4 |
 | 2026-10-13 | 23.8 | 21.7 | 2.1 |
 
-## 5b. Caución 1 día (BYMA) vs pases entre terceros (BCRA)
+## 5b. Caución 1 día (A3) vs pases entre terceros (BCRA)
 
-Sin fechas en común.
+| fecha | caucion_a3_pesos_1d | tasa_pases_terceros_1d | dif |
+|---|---:|---:|---:|
+| 2026-10-05 | 20.5 | 20.9 | -0.4 |
+| 2026-10-06 | 20.5 | 21.2 | -0.7 |
+| 2026-10-07 | 20.6 | 21.1 | -0.5 |
+| 2026-10-08 | 20.6 | 21.2 | -0.7 |
+| 2026-10-13 | 21.0 | 21.1 | -0.1 |
+
+## 5d. Compras del BCRA vs volumen del MLC (A3)
+
+| fecha | compras_bcra_mlc | volumen_mlc | dif |
+|---|---:|---:|---:|
+| 2026-10-02 | 35.0 | 737.7 | -702.7 |
+| 2026-10-05 | 14.5 | 451.0 | -436.5 |
+| 2026-10-06 | 41.0 | 547.6 | -506.6 |
+| 2026-10-07 | 45.0 | 425.1 | -380.1 |
+| 2026-10-08 | 43.0 | 527.3 | -484.3 |
 
 ## 5c. Curva LECAP/BONCAP al 2026-10-13 (TEM %)
 
@@ -161,19 +177,22 @@ Sin fechas en común.
 | bc_utilidades_dividendos | 2026-08-01 | -475.16 | 75 |
 | bc_var_reservas_transacciones | 2026-08-01 | -249.79 | 75 |
 | brecha_ccl | 2026-10-13 | 6.37 | 2 |
-| brent | 2026-10-15 | 104.80 | 0 |
+| brent | 2026-10-15 | 104.67 | 0 |
 | brl_usd | 2026-10-13 | 5.03 | 2 |
 | canje_ccl_mep | 2026-10-13 | 4.71 | 2 |
+| caucion_a3_pesos_1d | 2026-10-14 | 22.43 | 1 |
+| caucion_a3_usd_1d | 2026-10-14 | 1.14 | 1 |
 | caucion_pesos_1d | 2026-10-15 | 22.24 | 0 |
 | ccl | 2026-10-13 | 1,612.40 | 2 |
 | ccl_ad | 2026-10-15 | 1,617.30 | 0 |
 | compras_bcra_acum_anio | 2026-10-08 | 14,852.41 | 7 |
 | compras_bcra_mlc | 2026-10-08 | 43.00 | 7 |
+| compras_bcra_pct_volumen | 2026-10-08 | 8.15 | 7 |
 | demanda_electrica_diaria | 2026-10-14 | 392,277.00 | 1 |
 | depositos_gobierno_bcra_me_ars | 2026-10-09 | 1,869,903.00 | 6 |
 | depositos_privados_usd | 2026-10-08 | 42,377.00 | 7 |
 | distancia_techo_banda | 2026-10-14 | 27.70 | 1 |
-| dxy | 2026-10-15 | 102.07 | 0 |
+| dxy | 2026-10-15 | 102.08 | 0 |
 | emae_desest | 2026-07-01 | 149.65 | 106 |
 | encajes_usd_bcra | 2026-10-09 | 16,446.60 | 6 |
 | exportaciones | 2026-08-01 | 8,882.58 | 75 |
@@ -194,12 +213,13 @@ Sin fechas en común.
 | mc_total | 2026-08-01 | 271.53 | 75 |
 | mep | 2026-10-13 | 1,539.94 | 2 |
 | mep_ad | 2026-10-15 | 1,539.70 | 0 |
-| oro | 2026-10-15 | 4,168.10 | 0 |
+| oro | 2026-10-15 | 4,158.40 | 0 |
 | prestamos_privados_pesos | 2026-10-08 | 107,444,201.00 | 7 |
 | prestamos_privados_usd | 2026-10-08 | 25,929.00 | 7 |
 | rem_inflacion_12m | 2026-09-30 | 21.05 | 15 |
 | rem_inflacion_mes_siguiente | 2026-09-30 | 1.70 | 15 |
 | rem_tc_fin_de_anio | 2026-09-30 | 1,614.32 | 15 |
+| repo_a3_pesos_1d | 2026-10-14 | 21.66 | 1 |
 | res_bis | 2026-10-09 | 148.00 | 6 |
 | res_bopreal_1a | 2026-10-09 | 1,444.00 | 6 |
 | res_dep_tesoro | 2026-10-09 | 1,233.55 | 6 |
@@ -244,6 +264,7 @@ Sin fechas en común.
 | ust_2y | 2026-10-14 | 4.82 | 1 |
 | ust_30y | 2026-10-14 | 5.52 | 1 |
 | vix | 2026-10-14 | 16.87 | 1 |
+| volumen_mlc | 2026-10-14 | 2,352.96 | 1 |
 
 ## 7. Estado de fuentes
 
@@ -262,5 +283,6 @@ Sin fechas en común.
 | rem | ok | 312 |  |
 | itcrm | ok | 3054 |  |
 | balance_cambiario | ok | 2184 |  |
-| lecaps | ok | 93 |  |
+| a3_mae | ok | 1072 |  |
+| lecaps | ok | 88 |  |
 | byma_snapshots | ok | 1 |  |
