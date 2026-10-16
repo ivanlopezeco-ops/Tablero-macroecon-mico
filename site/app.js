@@ -211,9 +211,8 @@ function tarjeta(cont, cfg) {
   const card = document.createElement("section");
   card.className = "card" + (cfg.ancha ? " ancha" : "");
   card._r = { ...R };
-  const titulo = typeof cfg.titulo === "function" ? cfg.titulo() : cfg.titulo;
   const conRango = !cfg.sinRango && (cfg.series || cfg.conRango);
-  card.innerHTML = `<div class="card-top"><h3>${titulo}${cfg.badge ? `<span class="badge">${cfg.badge}</span>` : ""}</h3>${conRango ? '<div class="mini-rangos" role="group" aria-label="Período de este gráfico"></div>' : ""}</div>
+  card.innerHTML = `<div class="card-top"><h3><span class="tit"></span>${cfg.badge ? `<span class="badge">${cfg.badge}</span>` : ""}</h3>${conRango ? '<div class="mini-rangos" role="group" aria-label="Período de este gráfico"></div>' : ""}</div>
     <p class="bajada"></p><div class="chips"></div><div class="chart"></div><p class="fuente">${cfg.fuente}</p>`;
   cont.appendChild(card);
   if (!cfg.chips) card.querySelector(".chips").remove();
@@ -234,6 +233,7 @@ function tarjeta(cont, cfg) {
     const chips = card.querySelector(".chips"); if (chips) chips.innerHTML = "";
     if (cfg.render) cfg.render(el, card); else grafico(el, cfg);
     if (botones) botones.querySelectorAll("button").forEach((b) => b.classList.toggle("on", !card._r.desde && +b.dataset.r === card._r.dias));
+    card.querySelector("h3 .tit").innerHTML = typeof cfg.titulo === "function" ? cfg.titulo(card._r) : cfg.titulo;
     baj.innerHTML = typeof cfg.bajada === "function" ? cfg.bajada() : (cfg.bajada || "");
     if (el.dataset.log) baj.innerHTML += " · Escala logarítmica";
     if (el.dataset.recorte) baj.innerHTML += ` · Eje cortado en ${el.dataset.recorte}: hay picos fuera de escala`;
@@ -379,7 +379,8 @@ function novedades() {
     const d1 = difVar("riesgo_pais_argentina", prev("riesgo_pais_argentina")[0]);
     const d30 = difVar("riesgo_pais_argentina", iso(Date.parse(fR) - 30 * 864e5));
     const e = extremoDesde("riesgo_pais_argentina");
-    L.push(`El <b>riesgo país</b> marca ${fmt(rp)} puntos${esProv("riesgo_pais_argentina") ? " (dato del día de Ámbito)" : ""}, ${fmtS(d1)} contra la rueda anterior y ${fmtS(d30)} en 30 días.${e ? ` Es el nivel más ${e.tipo} ${desdeTxt(e)}.` : ""}`);
+    const gl = promedioGrupo("latam"); const g30 = difVar(gl, iso(Date.parse(fR) - 30 * 864e5));
+    L.push(`El <b>riesgo país</b> marca ${fmt(rp)} puntos${esProv("riesgo_pais_argentina") ? " (dato del día de Ámbito)" : ""}, ${fmtS(d1)} contra la rueda anterior y ${fmtS(d30)} en 30 días. En el mismo lapso, el promedio de la región sin Venezuela ni Argentina varió ${fmtS(g30)} puntos.${e ? ` Es el nivel más ${e.tipo} ${desdeTxt(e)}.` : ""}`);
   }
   const [fB, brutas] = ult("reservas_brutas");
   if (brutas) {
@@ -441,9 +442,8 @@ function resumen(main) {
     bajada: "Tipo de cambio mayorista, MEP y CCL · En pesos por dólar", fuente: F.byma + " A3500 del BCRA. " + NOTA_AD, logAuto: true,
     series: [{ v: "ccl_largo", nombre: "CCL", estimadoAntes: inicio("ccl") }, { v: "tc_mayorista_a3500", nombre: "A3500" }, { v: "mep_largo", nombre: "MEP", color: "celeste", estimadoAntes: inicio("mep") }] });
   tarjeta(g, { titulo: () => `El riesgo país está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
-    bajada: "EMBI Global Diversified · Argentina y América Latina · En puntos básicos", fuente: F.bcrd + " *Antes de oct-07, ArgentinaDatos.",
-    lineas: [{ x: "2026-09-04", txt: "cambio metodológico" }],
-    dec: 0, series: [{ v: "riesgo_pais_argentina_largo", nombre: "Argentina", estimadoAntes: inicio("riesgo_pais_argentina") }, { v: "riesgo_pais_latam", nombre: "América Latina" }] });
+    bajada: "Argentina (eje izquierdo) y promedio simple de América Latina sin Venezuela ni Argentina (eje derecho) · En puntos básicos", fuente: F.bcrd,
+    dec: 0, leyenda: true, series: [{ v: "riesgo_pais_argentina", nombre: "Argentina", color: "azul" }, { v: promedioGrupo("latam"), nombre: "LATAM sin VZ y ARG", color: "ocre", eje2: true }] });
 }
 
 function estimadoDesdeFuente(v) { return ((meta(v).f || "").match(/desde (\d{4}-\d{2}-\d{2})/) || [])[1]; }
@@ -525,50 +525,197 @@ function tasas(main) {
     } });
 }
 
+// ------------------------------------------------------------------ riesgo país
 const PAISES = { brasil: "Brasil", chile: "Chile", colombia: "Colombia", ecuador: "Ecuador", mexico: "México", peru: "Perú",
   uruguay: "Uruguay", paraguay: "Paraguay", bolivia: "Bolivia", el_salvador: "El Salvador", panama: "Panamá",
   costa_rica: "Costa Rica", guatemala: "Guatemala", honduras: "Honduras", rep_dominicana: "Rep. Dominicana", venezuela: "Venezuela" };
-const RIESGO = { sel: ["brasil", "ecuador", "colombia"], vista: "dosejes" };
-const VISTAS = [["niveles", "Mismo eje"], ["dosejes", "Dos ejes"], ["base100", "Base 100"], ["latam", "Diferencia con América Latina"]];
+// Grupos de comparación: promedios simples calculados acá con los spreads por país (no tienen el quiebre
+// metodológico del 4/9/26, que afectó sobre todo a los agregados que publica JP Morgan).
+const GRUPOS = {
+  latam: { nombre: "Promedio LATAM sin VZ y ARG", corto: "LATAM sin VZ y ARG",
+    paises: ["bolivia", "brasil", "chile", "colombia", "costa_rica", "ecuador", "el_salvador", "guatemala", "honduras", "mexico", "panama", "paraguay", "peru", "rep_dominicana", "uruguay"] },
+  alto: { nombre: "Promedio spread alto (EC, BO, SV)", corto: "Spread alto", paises: ["ecuador", "bolivia", "el_salvador"] },
+  bajo: { nombre: "Promedio spread bajo (CL, UY, PE, PA, PY, GT)", corto: "Spread bajo", paises: ["chile", "uruguay", "peru", "panama", "paraguay", "guatemala"] },
+  oficial: { nombre: "EMBI América Latina (JP Morgan)", corto: "EMBI LATAM oficial", v: "riesgo_pais_latam" },
+};
+const RIESGO = { sel: ["ecuador"], grupo: "latam", vista: "dosejes", glob: "vix" };
+const VISTAS = [["dosejes", "Dos ejes"], ["niveles", "Mismo eje"], ["base100", "Base 100"], ["dif", "Diferencia con el grupo"]];
+
+function promedioGrupo(k) {        // promedio simple por fecha; exige al menos 70% de los países del grupo con dato
+  const gr = GRUPOS[k];
+  const nombre = "_grp_" + k;
+  if (D.series[nombre]) return nombre;
+  if (gr.v) return tmp(nombre, S(gr.v));
+  const m = new Map();
+  gr.paises.forEach((p) => S("riesgo_pais_" + p).forEach(([f, x]) => { if (x == null) return; const o = m.get(f) || [0, 0]; o[0] += x; o[1]++; m.set(f, o); }));
+  const min = Math.ceil(gr.paises.length * 0.7);
+  return tmp(nombre, [...m].filter(([, [, n]]) => n >= min).map(([f, [s, n]]) => [f, s / n]).sort((a, b) => (a[0] < b[0] ? -1 : 1)));
+}
+
+function botonera(cont, opciones, actual, alElegir, clase = "segmento") {
+  const seg = document.createElement("div"); seg.className = clase;
+  opciones.forEach(([k, n]) => { const b = document.createElement("button"); b.textContent = n; if (k === actual) b.className = "on"; b.onclick = () => alElegir(k); seg.appendChild(b); });
+  cont.appendChild(seg); return seg;
+}
+function chipsPaises(chips, card, max = 3) {
+  Object.entries(PAISES).filter(([k]) => k !== "venezuela").forEach(([k, n]) => {
+    const b = document.createElement("button"); b.textContent = n; if (RIESGO.sel.includes(k)) b.className = "on";
+    b.onclick = () => { if (RIESGO.sel.includes(k)) RIESGO.sel = RIESGO.sel.filter((x) => x !== k); else { RIESGO.sel.push(k); if (RIESGO.sel.length > max) RIESGO.sel.shift(); } card._redibujar(); };
+    chips.appendChild(b);
+  });
+}
+const OPC_GRUPOS = () => Object.entries(GRUPOS).map(([k, g]) => [k, g.corto]);
+
+// Alinea series por fecha (solo fechas con dato en la primera; las demás se toman al último dato disponible, hasta 4 días)
+function alinear(vs) {
+  const base = S(vs[0]);
+  const otras = vs.slice(1).map((v) => S(v));
+  const idx = otras.map(() => 0);
+  const out = [];
+  base.forEach(([f, x]) => {
+    const fila = [f, x];
+    for (let k = 0; k < otras.length; k++) {
+      const s = otras[k]; while (idx[k] + 1 < s.length && s[idx[k] + 1][0] <= f) idx[k]++;
+      const p = s[idx[k]]; fila.push(p && p[0] <= f && (Date.parse(f) - Date.parse(p[0])) / 864e5 <= 4 ? p[1] : null);
+    }
+    if (fila.every((v) => v != null)) out.push(fila);
+  });
+  return out;
+}
+
+// MCO con constante: y = a + b·X. Devuelve coeficientes y R².
+function mco(X, y) {
+  const n = y.length, k = X[0].length + 1;
+  const A = Array.from({ length: k }, () => Array(k).fill(0)), b = Array(k).fill(0);
+  for (let i = 0; i < n; i++) { const xi = [1, ...X[i]]; for (let r = 0; r < k; r++) { b[r] += xi[r] * y[i]; for (let c = 0; c < k; c++) A[r][c] += xi[r] * xi[c]; } }
+  for (let c = 0; c < k; c++) {            // Gauss-Jordan
+    let p = c; for (let r = c + 1; r < k; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    [A[c], A[p]] = [A[p], A[c]]; [b[c], b[p]] = [b[p], b[c]];
+    if (Math.abs(A[c][c]) < 1e-12) return null;
+    for (let r = 0; r < k; r++) if (r !== c) { const f = A[r][c] / A[c][c]; for (let j = c; j < k; j++) A[r][j] -= f * A[c][j]; b[r] -= f * b[c]; }
+  }
+  const beta = b.map((v, i) => v / A[i][i]);
+  const my = y.reduce((s, v) => s + v, 0) / n;
+  let sr = 0, st = 0; for (let i = 0; i < n; i++) { const e = y[i] - beta[0] - X[i].reduce((s, v, j) => s + v * beta[j + 1], 0); sr += e * e; st += (y[i] - my) ** 2; }
+  return { beta, r2: 1 - sr / st };
+}
+
+// Descompone la variación del riesgo país de Argentina en el período: región (grupo elegido), factor global (VIX y
+// Tesoro a 10 años) y propio de Argentina (residuo + constante). Coeficientes estimados con variaciones diarias del
+// mismo período (si tiene menos de 60 ruedas, con las últimas 250).
+function descomponer(r) {
+  const g = promedioGrupo(RIESGO.grupo);
+  const filas = alinear(["riesgo_pais_argentina", g, "vix", "ust_10y"]);
+  const d = []; for (let i = 1; i < filas.length; i++) d.push([filas[i][0], ...filas[i].slice(1).map((v, j) => v - filas[i - 1][j + 1])]);
+  const [a, b] = rango(r);
+  const per = d.filter((x) => x[0] > a && x[0] <= b);
+  const est = per.length >= 60 ? per : d.filter((x) => x[0] <= b).slice(-250);
+  if (est.length < 30 || !per.length) return null;
+  const m = mco(est.map((x) => [x[2], x[3], x[4] * 100]), est.map((x) => x[1]));
+  if (!m) return null;
+  const [c, bR, bV, bT] = m.beta;
+  let ac = [0, 0, 0, 0]; const serie = { total: [], region: [], global: [], propio: [] };
+  per.forEach(([f, dA, dG, dV, dT]) => {
+    const reg = bR * dG, glo = bV * dV + bT * dT * 100;
+    ac = [ac[0] + dA, ac[1] + reg, ac[2] + glo, ac[3] + dA - reg - glo];
+    serie.total.push([f, ac[0]]); serie.region.push([f, ac[1]]); serie.global.push([f, ac[2]]); serie.propio.push([f, ac[3]]);
+  });
+  return { serie, ac, m, n: est.length, propioEst: est === per };
+}
 
 function riesgo(main) {
   const g = grilla(main);
-  tarjeta(g, { titulo: () => `El riesgo país de Argentina está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
-    bajada: "EMBI Global Diversified · Argentina y América Latina · En puntos básicos", fuente: F.bcrd + " Desde el 4/9/26 cambió la metodología de JP Morgan. *Tramo punteado (antes de oct-07): ArgentinaDatos (Ámbito), que coincide con el BCRD en el período común.",
-    lineas: [{ x: "2026-09-04", txt: "cambio metodológico" }],
-    dec: 0, series: [{ v: "riesgo_pais_argentina_largo", nombre: "Argentina", estimadoAntes: inicio("riesgo_pais_argentina") }, { v: "riesgo_pais_latam", nombre: "América Latina" }] });
-  tarjeta(g, { titulo: "Argentina frente a otros países de la región", chips: true, conRango: true,
-    bajada: () => ({ niveles: "Todos en el mismo eje · En puntos básicos", dosejes: "Argentina en el eje izquierdo y el resto en el derecho · En puntos básicos",
-      base100: "Cada país = 100 al inicio del período elegido", latam: "Spread de cada país menos el de América Latina · En puntos básicos" })[RIESGO.vista],
-    fuente: F.bcrd,
+  // 1. Argentina frente a un grupo de comparación, en dos ejes (al estilo del gráfico de 1816)
+  tarjeta(g, { ancha: true, chips: true, conRango: true, alto: 380,
+    titulo: () => `El riesgo país de Argentina está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
+    bajada: () => ({ dosejes: `Argentina${RIESGO.sel.length ? " y países elegidos" : ""} en el eje izquierdo; ${GRUPOS[RIESGO.grupo].nombre} en el derecho · En puntos básicos`,
+      niveles: "Todos en el mismo eje · En puntos básicos", base100: "Cada serie = 100 al inicio del período elegido",
+      dif: `Spread de cada país menos el ${GRUPOS[RIESGO.grupo].nombre} · En puntos básicos` })[RIESGO.vista],
+    fuente: F.bcrd + " Promedios simples calculados con los spreads por país del EMBIGD. El EMBI LATAM oficial tiene un quiebre el 4/9/26 por el cambio metodológico de JP Morgan.",
     render: (el, card) => {
       const chips = card.querySelector(".chips");
-      const seg = document.createElement("div"); seg.className = "segmento";
-      VISTAS.forEach(([k, n]) => { const b = document.createElement("button"); b.textContent = n; b.className = RIESGO.vista === k ? "on" : "";
-        b.onclick = () => { RIESGO.vista = k; card._redibujar(); }; seg.appendChild(b); });
-      chips.appendChild(seg);
-      Object.entries(PAISES).forEach(([k, n]) => {
-        const b = document.createElement("button"); b.textContent = n; if (RIESGO.sel.includes(k)) b.className = "on";
-        b.onclick = () => { if (RIESGO.sel.includes(k)) RIESGO.sel = RIESGO.sel.filter((x) => x !== k); else { RIESGO.sel.push(k); if (RIESGO.sel.length > 4) RIESGO.sel.shift(); } card._redibujar(); };
-        chips.appendChild(b);
-      });
-      const colores = ["gris", "celeste", "naranja", "verde"];
-      const v = RIESGO.vista;
-      const otros = RIESGO.sel.map((p, i) => ({ v: "riesgo_pais_" + p, nombre: PAISES[p], color: colores[i] }));
-      let series = [{ v: "riesgo_pais_argentina", nombre: "Argentina", color: "azul" }, ...otros];
-      if (v === "dosejes") series = series.map((s, i) => ({ ...s, eje2: i > 0 }));
-      if (v === "latam") series = series.map((s) => ({ ...s, v: undefined, datos: restar(s.v, "riesgo_pais_latam") }));
-      grafico(el, { dec: v === "base100" ? 1 : 0, base100: v === "base100", cero: v === "base100" || v === "latam", series });
+      const fila1 = document.createElement("div"); fila1.className = "fila-controles"; chips.appendChild(fila1);
+      botonera(fila1, OPC_GRUPOS(), RIESGO.grupo, (k) => { RIESGO.grupo = k; card._redibujar(); });
+      botonera(fila1, VISTAS, RIESGO.vista, (k) => { RIESGO.vista = k; card._redibujar(); });
+      chipsPaises(chips, card);
+      const v = RIESGO.vista, grp = promedioGrupo(RIESGO.grupo);
+      const colores = ["naranja", "celeste", "verde"];
+      let series = [{ v: "riesgo_pais_argentina", nombre: "Argentina", color: "azul" },
+        ...RIESGO.sel.map((p, i) => ({ v: "riesgo_pais_" + p, nombre: PAISES[p], color: colores[i] }))];
+      if (v === "dif") series = series.map((s) => ({ ...s, v: undefined, datos: restar(s.v, grp) }));
+      else series.push({ v: grp, nombre: GRUPOS[RIESGO.grupo].corto, color: "ocre", eje2: v === "dosejes" });
+      if (v === "dosejes" && !series.some((s) => s.eje2)) series[series.length - 1].eje2 = true;
+      grafico(el, { dec: v === "base100" ? 1 : 0, base100: v === "base100", cero: v === "base100" || v === "dif", series, leyenda: true,
+        lineas: v === "dif" || RIESGO.grupo === "oficial" ? [{ x: "2026-09-04", txt: "cambio metodológico" }] : undefined });
     } });
+
+  // 2. Descomposición: región, contexto global y propio de Argentina
+  tarjeta(g, { ancha: true, chips: true, conRango: true,
+    titulo: (r) => { const x = descomponer(r); return x ? `De los ${fmtS(x.ac[0])} pb del período, ${fmtS(x.ac[1] + x.ac[2])} se explican por la región y el contexto global` : "Qué explica las variaciones del riesgo país"; },
+    bajada: () => "Variación acumulada del riesgo país de Argentina en el período, separada por factores · En puntos básicos",
+    fuente: F.bcrd + " VIX: Yahoo Finance; Tesoro a 10 años: US Treasury. Regresión de las variaciones diarias de Argentina contra el grupo elegido, el VIX y la tasa a 10 años; lo propio de Argentina es el residuo.",
+    render: (el, card) => {
+      const chips = card.querySelector(".chips");
+      botonera(chips, OPC_GRUPOS(), RIESGO.grupo, (k) => { RIESGO.grupo = k; card._redibujar(); });
+      const x = descomponer(card._r);
+      if (!x) { el.style.height = "auto"; el.innerHTML = '<p class="seccion-intro" style="margin:24px 0">No hay datos suficientes para el período elegido.</p>'; return; }
+      const [, bR, bV, bT] = x.m.beta;
+      const info = document.createElement("p"); info.className = "nota-metodo";
+      info.innerHTML = `Por cada punto que sube el ${GRUPOS[RIESGO.grupo].corto}, Argentina sube en promedio <b>${fmt(bR, 2)}</b> pb; por punto de VIX, <b>${fmt(bV, 1)}</b> pb; por punto básico de la tasa a 10 años, <b>${fmt(bT, 2)}</b> pb · R² ${fmt(x.m.r2, 2)} con ${x.n} ruedas${x.propioEst ? " del período" : " (últimas 250: el período es corto)"} · Resultado: total ${fmtS(x.ac[0])}, región ${fmtS(x.ac[1])}, global ${fmtS(x.ac[2])}, propio ${fmtS(x.ac[3])}.`;
+      chips.appendChild(info);
+      grafico(el, { dec: 0, cero: true, leyenda: true, sinZoom: false, series: [
+        { datos: x.serie.total, nombre: "Variación total", color: "azul" },
+        { datos: x.serie.region, nombre: "Región", color: "ocre" },
+        { datos: x.serie.global, nombre: "Contexto global", color: "gris" },
+        { datos: x.serie.propio, nombre: "Propio de Argentina", color: "naranja" }] });
+    } });
+
+  // 3. Argentina y el contexto global
+  const GLOB = [["vix", "VIX"], ["ust_10y", "Tesoro 10 años"], ["dxy", "DXY"]];
+  tarjeta(g, { chips: true, conRango: true,
+    titulo: "Argentina y el contexto global",
+    bajada: () => `Riesgo país de Argentina (eje izquierdo) y ${GLOB.find((x) => x[0] === RIESGO.glob)[1]} (eje derecho)`,
+    fuente: F.bcrd + " VIX y DXY: Yahoo Finance; Tesoro: US Treasury.",
+    render: (el, card) => {
+      botonera(card.querySelector(".chips"), GLOB, RIESGO.glob, (k) => { RIESGO.glob = k; card._redibujar(); });
+      const [, nom] = GLOB.find((x) => x[0] === RIESGO.glob);
+      grafico(el, { dec: RIESGO.glob === "ust_10y" ? 2 : 1, decEje: RIESGO.glob === "ust_10y" ? 1 : 0, leyenda: true, series: [
+        { v: "riesgo_pais_argentina", nombre: "Argentina (pb)", color: "azul" }, { v: RIESGO.glob, nombre: nom, color: "gris", eje2: true }] });
+    } });
+
+  // Argentina y América Latina en la serie larga
+  tarjeta(g, { titulo: "Argentina y la región en la serie larga",
+    bajada: "EMBI Global Diversified · En puntos básicos", fuente: F.bcrd + " *Tramo punteado (antes de oct-07): ArgentinaDatos (Ámbito).",
+    dec: 0, series: [{ v: "riesgo_pais_argentina_largo", nombre: "Argentina", estimadoAntes: inicio("riesgo_pais_argentina") }, { v: promedioGrupo("latam"), nombre: "LATAM sin VZ y ARG", color: "ocre" }] });
+
+  // 4. Tabla de variaciones (secundaria)
+  tarjeta(g, { ancha: true, conRango: true, titulo: "Variación del riesgo país por país",
+    bajada: () => "En puntos básicos · Ordenado por la variación en el período elegido", fuente: F.bcrd,
+    render: (el, card) => {
+      el.style.height = "auto";
+      const [a] = rango(card._r);
+      const filas = [["Argentina", "riesgo_pais_argentina"], ...Object.entries(GRUPOS).map(([k, gr]) => [gr.nombre, promedioGrupo(k), true]),
+        ...Object.entries(PAISES).filter(([k]) => k !== "venezuela").map(([k, n]) => [n, "riesgo_pais_" + k])];
+      const datos = filas.map(([n, v, grp]) => {
+        const [f, x] = ult(v);
+        const d = (dias) => { const y = valEn(v, iso(Date.parse(f) - dias * 864e5)); return x != null && y != null ? x - y : null; };
+        const y0 = valEn(v, a);
+        return { n, grp, x, f, d7: d(7), d30: d(30), dp: x != null && y0 != null ? x - y0 : null, pp: x != null && y0 ? (x / y0 - 1) * 100 : null };
+      }).sort((p, q) => (q.dp ?? -1e9) - (p.dp ?? -1e9));
+      const c = (v, dec = 0, pct) => `<td class="${v == null || Math.abs(v) < 0.5 ? "" : v > 0 ? "dif-neg" : "dif-pos"}">${v == null ? "s/d" : fmtS(v, dec) + (pct ? "%" : "")}</td>`;
+      el.innerHTML = `<div class="tw"><table class="tabla"><tr><th>País o grupo</th><th>Último</th><th>1 semana</th><th>1 mes</th><th>Desde ${fechaCorta(a)}</th><th>%</th></tr>` +
+        datos.map((r) => `<tr class="${r.n === "Argentina" ? "total" : r.grp ? "grupo" : ""}"><td>${r.n}</td><td>${fmt(r.x)}</td>${c(r.d7)}${c(r.d30)}${c(r.dp)}${c(r.pp, 1, true)}</tr>`).join("") + "</table></div>";
+    } });
+
   tarjeta(g, { ancha: true, titulo: "Ranking regional de riesgo país", alto: 380,
-    bajada: () => `Último dato de cada país · En puntos básicos`, fuente: F.bcrd + " Venezuela fuera de escala, excluida del gráfico.",
+    bajada: () => "Último dato de cada país · En puntos básicos", fuente: F.bcrd + " Venezuela fuera de escala, excluida del gráfico.",
     render: (el) => {
       const ks = Object.keys(D.series).filter((k) => k.startsWith("riesgo_pais_") && !["riesgo_pais_venezuela", "riesgo_pais_global"].includes(k) && !/_(ad|bcrp|largo|ambito)$/.test(k));
-      const pts = ks.map((k) => [k === "riesgo_pais_latam" ? "América Latina" : (PAISES[k.slice(12)] || "Argentina"), ult(k)[1]]).sort((a, b) => a[1] - b[1]);
+      const pts = ks.map((k) => [k === "riesgo_pais_latam" ? "EMBI LATAM oficial" : (PAISES[k.slice(12)] || "Argentina"), ult(k)[1]]).sort((a, b) => a[1] - b[1]);
       const c = COL(); const ch = echarts.init(el); charts.push(ch);
       ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" }, grid: { left: 16, right: 50, top: 6, bottom: 6, containLabel: true },
-        xAxis: { type: "value", show: false }, yAxis: { type: "category", data: pts.map((p) => p[0]), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: c.texto2, width: 120, overflow: "none" } },
-        series: [{ type: "bar", data: pts.map((p) => ({ value: p[1], itemStyle: { color: p[0] === "Argentina" ? c.azul : p[0] === "América Latina" ? c.celeste : c.gris } })),
+        xAxis: { type: "value", show: false }, yAxis: { type: "category", data: pts.map((p) => p[0]), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: c.texto2, width: 130, overflow: "none" } },
+        series: [{ type: "bar", data: pts.map((p) => ({ value: p[1], itemStyle: { color: p[0] === "Argentina" ? c.azul : p[0].startsWith("EMBI") ? c.ocre : c.gris } })),
           barMaxWidth: 16, label: { show: true, position: "right", color: c.texto2, fontSize: 11, formatter: (p) => fmt(p.value) } }] });
     } });
 }

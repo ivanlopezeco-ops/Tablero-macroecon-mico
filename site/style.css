@@ -135,3 +135,9 @@ table.tabla { width: 100%; border-collapse: collapse; font-size: 13px; margin-to
   .card .chart { height: 290px; }
   .etq-general { display: none; }
 }
+
+.fila-controles { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; margin-bottom: 2px; }
+.nota-metodo { width: 100%; font-size: 12px; color: var(--texto2); margin: 4px 0 0; }
+.nota-metodo b { color: var(--tinta); font-weight: 600; }
+.tabla tr.grupo td { color: var(--texto2); font-style: italic; }
+.tw { overflow-x: auto; }
