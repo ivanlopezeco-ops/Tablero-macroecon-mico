@@ -486,6 +486,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,al30_ars,86600.0,ARS,BYMA (AL30 24HS)
 2026-10-13,al30_ars,86360.0,ARS,BYMA (AL30 24HS)
 2026-10-14,al30_ars,86260.0,ARS,BYMA (AL30 24HS)
+2026-10-15,al30_ars,86030.0,ARS,BYMA (AL30 24HS)
 2024-10-14,al30_usd_ccl,40.487,USD,BYMA (AL30C 24HS)
 2024-10-15,al30_usd_ccl,41.337,USD,BYMA (AL30C 24HS)
 2024-10-16,al30_usd_ccl,41.13,USD,BYMA (AL30C 24HS)
@@ -973,6 +974,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,al30_usd_ccl,53.75,USD,BYMA (AL30C 24HS)
 2026-10-13,al30_usd_ccl,53.56,USD,BYMA (AL30C 24HS)
 2026-10-14,al30_usd_ccl,53.3,USD,BYMA (AL30C 24HS)
+2026-10-15,al30_usd_ccl,53.26,USD,BYMA (AL30C 24HS)
 2024-10-14,al30_usd_mep,41.888,USD,BYMA (AL30D 24HS)
 2024-10-15,al30_usd_mep,42.792,USD,BYMA (AL30D 24HS)
 2024-10-16,al30_usd_mep,42.123,USD,BYMA (AL30D 24HS)
@@ -1460,6 +1462,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,al30_usd_mep,56.26,USD,BYMA (AL30D 24HS)
 2026-10-13,al30_usd_mep,56.08,USD,BYMA (AL30D 24HS)
 2026-10-14,al30_usd_mep,56.2,USD,BYMA (AL30D 24HS)
+2026-10-15,al30_usd_mep,56.15,USD,BYMA (AL30D 24HS)
 2003-01-02,badlar,21.75,% TNA,BCRA API v4 (id 7)
 2003-01-03,badlar,18.375,% TNA,BCRA API v4 (id 7)
 2003-01-06,badlar,18.1875,% TNA,BCRA API v4 (id 7)
@@ -13484,6 +13487,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-13,banda_piso,719.09,ARS/USD,BCRA API v4 (id 1187)
 2026-10-14,banda_piso,718.69,ARS/USD,BCRA API v4 (id 1187)
 2026-10-15,banda_piso,718.3,ARS/USD,BCRA API v4 (id 1187)
+2026-10-16,banda_piso,717.9,ARS/USD,BCRA API v4 (id 1187)
 2025-04-14,banda_techo,1400.0,ARS/USD,BCRA API v4 (id 1188)
 2025-04-15,banda_techo,1400.46,ARS/USD,BCRA API v4 (id 1188)
 2025-04-16,banda_techo,1400.93,ARS/USD,BCRA API v4 (id 1188)
@@ -13848,6 +13852,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-13,banda_techo,1933.02,ARS/USD,BCRA API v4 (id 1188)
 2026-10-14,banda_techo,1934.07,ARS/USD,BCRA API v4 (id 1188)
 2026-10-15,banda_techo,1935.12,ARS/USD,BCRA API v4 (id 1188)
+2026-10-16,banda_techo,1936.17,ARS/USD,BCRA API v4 (id 1188)
 1996-01-02,base_monetaria,13069.0,ARS M,BCRA API v4 (id 15)
 1996-01-03,base_monetaria,12970.0,ARS M,BCRA API v4 (id 15)
 1996-01-04,base_monetaria,13034.0,ARS M,BCRA API v4 (id 15)
@@ -28844,14 +28849,14 @@ fecha,variable,valor,unidad,fuente
 2024-10-17,brecha_ccl,21.59212358713607,%,Cálculo: CCL/A3500-1
 2024-10-18,brecha_ccl,21.105571113285837,%,Cálculo: CCL/A3500-1
 2024-10-21,brecha_ccl,21.516145928282704,%,Cálculo: CCL/A3500-1
-2024-10-22,brecha_ccl,20.884468493058407,%,Cálculo: CCL/A3500-1
+2024-10-22,brecha_ccl,20.884468493058385,%,Cálculo: CCL/A3500-1
 2024-10-23,brecha_ccl,20.30628799484191,%,Cálculo: CCL/A3500-1
 2024-10-24,brecha_ccl,19.811361288913343,%,Cálculo: CCL/A3500-1
 2024-10-25,brecha_ccl,17.358376913810147,%,Cálculo: CCL/A3500-1
 2024-10-28,brecha_ccl,16.831469405482324,%,Cálculo: CCL/A3500-1
 2024-10-29,brecha_ccl,16.88359678654092,%,Cálculo: CCL/A3500-1
 2024-10-30,brecha_ccl,17.043928235438564,%,Cálculo: CCL/A3500-1
-2024-10-31,brecha_ccl,16.54078043414502,%,Cálculo: CCL/A3500-1
+2024-10-31,brecha_ccl,16.540780434145,%,Cálculo: CCL/A3500-1
 2024-11-01,brecha_ccl,18.52979141703375,%,Cálculo: CCL/A3500-1
 2024-11-04,brecha_ccl,18.706251303487065,%,Cálculo: CCL/A3500-1
 2024-11-05,brecha_ccl,19.056958221160603,%,Cálculo: CCL/A3500-1
@@ -28889,8 +28894,8 @@ fecha,variable,valor,unidad,fuente
 2024-12-26,brecha_ccl,15.401536112513403,%,Cálculo: CCL/A3500-1
 2024-12-27,brecha_ccl,15.183793309478544,%,Cálculo: CCL/A3500-1
 2024-12-30,brecha_ccl,14.893022980663705,%,Cálculo: CCL/A3500-1
-2025-01-02,brecha_ccl,14.253163038915883,%,Cálculo: CCL/A3500-1
-2025-01-03,brecha_ccl,14.028041946368063,%,Cálculo: CCL/A3500-1
+2025-01-02,brecha_ccl,14.253163038915861,%,Cálculo: CCL/A3500-1
+2025-01-03,brecha_ccl,14.028041946368086,%,Cálculo: CCL/A3500-1
 2025-01-06,brecha_ccl,13.918449558706737,%,Cálculo: CCL/A3500-1
 2025-01-07,brecha_ccl,14.267628300768799,%,Cálculo: CCL/A3500-1
 2025-01-08,brecha_ccl,14.350352930872079,%,Cálculo: CCL/A3500-1
@@ -28900,8 +28905,8 @@ fecha,variable,valor,unidad,fuente
 2025-01-14,brecha_ccl,13.74643851554589,%,Cálculo: CCL/A3500-1
 2025-01-15,brecha_ccl,13.696682459132802,%,Cálculo: CCL/A3500-1
 2025-01-16,brecha_ccl,13.834792626685877,%,Cálculo: CCL/A3500-1
-2025-01-17,brecha_ccl,13.574188168666312,%,Cálculo: CCL/A3500-1
-2025-01-20,brecha_ccl,13.494543555547933,%,Cálculo: CCL/A3500-1
+2025-01-17,brecha_ccl,13.57418816866629,%,Cálculo: CCL/A3500-1
+2025-01-20,brecha_ccl,13.494543555547956,%,Cálculo: CCL/A3500-1
 2025-01-21,brecha_ccl,13.570368926951183,%,Cálculo: CCL/A3500-1
 2025-01-22,brecha_ccl,13.42591607772221,%,Cálculo: CCL/A3500-1
 2025-01-23,brecha_ccl,13.269797357015921,%,Cálculo: CCL/A3500-1
@@ -28916,7 +28921,7 @@ fecha,variable,valor,unidad,fuente
 2025-02-05,brecha_ccl,13.751751789055678,%,Cálculo: CCL/A3500-1
 2025-02-06,brecha_ccl,13.746812685488008,%,Cálculo: CCL/A3500-1
 2025-02-07,brecha_ccl,13.877923148409632,%,Cálculo: CCL/A3500-1
-2025-02-10,brecha_ccl,12.824532229199814,%,Cálculo: CCL/A3500-1
+2025-02-10,brecha_ccl,12.824532229199836,%,Cálculo: CCL/A3500-1
 2025-02-11,brecha_ccl,12.772662729379181,%,Cálculo: CCL/A3500-1
 2025-02-12,brecha_ccl,12.864043218871469,%,Cálculo: CCL/A3500-1
 2025-02-13,brecha_ccl,13.342790071650601,%,Cálculo: CCL/A3500-1
@@ -28924,7 +28929,7 @@ fecha,variable,valor,unidad,fuente
 2025-02-17,brecha_ccl,15.168491896063397,%,Cálculo: CCL/A3500-1
 2025-02-18,brecha_ccl,14.372459660766236,%,Cálculo: CCL/A3500-1
 2025-02-19,brecha_ccl,14.643115232690107,%,Cálculo: CCL/A3500-1
-2025-02-20,brecha_ccl,14.702086640117695,%,Cálculo: CCL/A3500-1
+2025-02-20,brecha_ccl,14.702086640117717,%,Cálculo: CCL/A3500-1
 2025-02-21,brecha_ccl,14.50566384657963,%,Cálculo: CCL/A3500-1
 2025-02-24,brecha_ccl,14.524502117747495,%,Cálculo: CCL/A3500-1
 2025-02-25,brecha_ccl,14.59171512470656,%,Cálculo: CCL/A3500-1
@@ -28938,8 +28943,8 @@ fecha,variable,valor,unidad,fuente
 2025-03-11,brecha_ccl,15.351986527207483,%,Cálculo: CCL/A3500-1
 2025-03-12,brecha_ccl,15.020253155164864,%,Cálculo: CCL/A3500-1
 2025-03-13,brecha_ccl,15.708370869552791,%,Cálculo: CCL/A3500-1
-2025-03-14,brecha_ccl,15.896566732531237,%,Cálculo: CCL/A3500-1
-2025-03-17,brecha_ccl,17.42260012530088,%,Cálculo: CCL/A3500-1
+2025-03-14,brecha_ccl,15.896566732531214,%,Cálculo: CCL/A3500-1
+2025-03-17,brecha_ccl,17.422600125300857,%,Cálculo: CCL/A3500-1
 2025-03-18,brecha_ccl,21.495506371407934,%,Cálculo: CCL/A3500-1
 2025-03-19,brecha_ccl,20.944282361856594,%,Cálculo: CCL/A3500-1
 2025-03-20,brecha_ccl,20.37630743531016,%,Cálculo: CCL/A3500-1
@@ -28991,7 +28996,7 @@ fecha,variable,valor,unidad,fuente
 2025-06-02,brecha_ccl,0.9682039988599733,%,Cálculo: CCL/A3500-1
 2025-06-03,brecha_ccl,0.9281598802156399,%,Cálculo: CCL/A3500-1
 2025-06-04,brecha_ccl,1.3379194658946991,%,Cálculo: CCL/A3500-1
-2025-06-05,brecha_ccl,1.0909500707779074,%,Cálculo: CCL/A3500-1
+2025-06-05,brecha_ccl,1.0909500707779296,%,Cálculo: CCL/A3500-1
 2025-06-06,brecha_ccl,0.7129273841958161,%,Cálculo: CCL/A3500-1
 2025-06-09,brecha_ccl,1.0694156243832964,%,Cálculo: CCL/A3500-1
 2025-06-10,brecha_ccl,0.6074712433113305,%,Cálculo: CCL/A3500-1
@@ -29015,7 +29020,7 @@ fecha,variable,valor,unidad,fuente
 2025-07-11,brecha_ccl,0.6533542979078488,%,Cálculo: CCL/A3500-1
 2025-07-14,brecha_ccl,2.540227070822887,%,Cálculo: CCL/A3500-1
 2025-07-15,brecha_ccl,0.09824695409494932,%,Cálculo: CCL/A3500-1
-2025-07-16,brecha_ccl,1.604774037301837,%,Cálculo: CCL/A3500-1
+2025-07-16,brecha_ccl,1.604774037301815,%,Cálculo: CCL/A3500-1
 2025-07-17,brecha_ccl,1.3588461204589786,%,Cálculo: CCL/A3500-1
 2025-07-18,brecha_ccl,0.8458329279865895,%,Cálculo: CCL/A3500-1
 2025-07-21,brecha_ccl,-0.1184793142243068,%,Cálculo: CCL/A3500-1
@@ -29037,7 +29042,7 @@ fecha,variable,valor,unidad,fuente
 2025-08-12,brecha_ccl,0.18709294709919888,%,Cálculo: CCL/A3500-1
 2025-08-13,brecha_ccl,0.25718881254348513,%,Cálculo: CCL/A3500-1
 2025-08-14,brecha_ccl,0.1884283565321221,%,Cálculo: CCL/A3500-1
-2025-08-18,brecha_ccl,0.30018124638089283,%,Cálculo: CCL/A3500-1
+2025-08-18,brecha_ccl,0.3001812463808706,%,Cálculo: CCL/A3500-1
 2025-08-19,brecha_ccl,0.580884712997265,%,Cálculo: CCL/A3500-1
 2025-08-20,brecha_ccl,1.079246077511642,%,Cálculo: CCL/A3500-1
 2025-08-21,brecha_ccl,0.9402521009796772,%,Cálculo: CCL/A3500-1
@@ -29087,7 +29092,7 @@ fecha,variable,valor,unidad,fuente
 2025-10-23,brecha_ccl,4.55281753154666,%,Cálculo: CCL/A3500-1
 2025-10-24,brecha_ccl,5.597913578950564,%,Cálculo: CCL/A3500-1
 2025-10-27,brecha_ccl,5.615933255398531,%,Cálculo: CCL/A3500-1
-2025-10-28,brecha_ccl,1.2857114734624142,%,Cálculo: CCL/A3500-1
+2025-10-28,brecha_ccl,1.285711473462392,%,Cálculo: CCL/A3500-1
 2025-10-29,brecha_ccl,2.203493068822815,%,Cálculo: CCL/A3500-1
 2025-10-30,brecha_ccl,3.672435755747938,%,Cálculo: CCL/A3500-1
 2025-10-31,brecha_ccl,3.8066521292045907,%,Cálculo: CCL/A3500-1
@@ -29096,7 +29101,7 @@ fecha,variable,valor,unidad,fuente
 2025-11-05,brecha_ccl,3.3414174609708747,%,Cálculo: CCL/A3500-1
 2025-11-07,brecha_ccl,2.2282686213978,%,Cálculo: CCL/A3500-1
 2025-11-10,brecha_ccl,4.220179631179777,%,Cálculo: CCL/A3500-1
-2025-11-11,brecha_ccl,4.241082244003125,%,Cálculo: CCL/A3500-1
+2025-11-11,brecha_ccl,4.241082244003103,%,Cálculo: CCL/A3500-1
 2025-11-12,brecha_ccl,4.885404178714725,%,Cálculo: CCL/A3500-1
 2025-11-13,brecha_ccl,5.1603956526194095,%,Cálculo: CCL/A3500-1
 2025-11-14,brecha_ccl,5.467060662878986,%,Cálculo: CCL/A3500-1
@@ -29161,7 +29166,7 @@ fecha,variable,valor,unidad,fuente
 2026-02-18,brecha_ccl,3.68379604673017,%,Cálculo: CCL/A3500-1
 2026-02-19,brecha_ccl,4.034774090883331,%,Cálculo: CCL/A3500-1
 2026-02-20,brecha_ccl,4.631664899728616,%,Cálculo: CCL/A3500-1
-2026-02-23,brecha_ccl,5.406292161599535,%,Cálculo: CCL/A3500-1
+2026-02-23,brecha_ccl,5.406292161599513,%,Cálculo: CCL/A3500-1
 2026-02-24,brecha_ccl,5.169183305452751,%,Cálculo: CCL/A3500-1
 2026-02-25,brecha_ccl,6.014713741919175,%,Cálculo: CCL/A3500-1
 2026-02-26,brecha_ccl,5.116214815561926,%,Cálculo: CCL/A3500-1
@@ -29173,7 +29178,7 @@ fecha,variable,valor,unidad,fuente
 2026-03-06,brecha_ccl,4.701318684320976,%,Cálculo: CCL/A3500-1
 2026-03-09,brecha_ccl,3.8029031721181994,%,Cálculo: CCL/A3500-1
 2026-03-10,brecha_ccl,4.6252575778300775,%,Cálculo: CCL/A3500-1
-2026-03-11,brecha_ccl,4.111881875461276,%,Cálculo: CCL/A3500-1
+2026-03-11,brecha_ccl,4.1118818754612985,%,Cálculo: CCL/A3500-1
 2026-03-12,brecha_ccl,4.108769892365216,%,Cálculo: CCL/A3500-1
 2026-03-13,brecha_ccl,5.62036807036741,%,Cálculo: CCL/A3500-1
 2026-03-16,brecha_ccl,5.544241615580736,%,Cálculo: CCL/A3500-1
@@ -29184,7 +29189,7 @@ fecha,variable,valor,unidad,fuente
 2026-03-25,brecha_ccl,5.157003710169983,%,Cálculo: CCL/A3500-1
 2026-03-26,brecha_ccl,5.639027187796408,%,Cálculo: CCL/A3500-1
 2026-03-27,brecha_ccl,7.354452094044106,%,Cálculo: CCL/A3500-1
-2026-03-30,brecha_ccl,6.434800792113937,%,Cálculo: CCL/A3500-1
+2026-03-30,brecha_ccl,6.434800792113915,%,Cálculo: CCL/A3500-1
 2026-03-31,brecha_ccl,6.559481149560442,%,Cálculo: CCL/A3500-1
 2026-04-01,brecha_ccl,7.069849955541341,%,Cálculo: CCL/A3500-1
 2026-04-06,brecha_ccl,6.505844690007012,%,Cálculo: CCL/A3500-1
@@ -29199,10 +29204,10 @@ fecha,variable,valor,unidad,fuente
 2026-04-17,brecha_ccl,6.923958177841794,%,Cálculo: CCL/A3500-1
 2026-04-20,brecha_ccl,6.346616692501295,%,Cálculo: CCL/A3500-1
 2026-04-21,brecha_ccl,6.433097421645084,%,Cálculo: CCL/A3500-1
-2026-04-22,brecha_ccl,6.965415457125346,%,Cálculo: CCL/A3500-1
+2026-04-22,brecha_ccl,6.965415457125368,%,Cálculo: CCL/A3500-1
 2026-04-23,brecha_ccl,6.59745433123573,%,Cálculo: CCL/A3500-1
 2026-04-24,brecha_ccl,6.945786770500373,%,Cálculo: CCL/A3500-1
-2026-04-27,brecha_ccl,7.4497572425545,%,Cálculo: CCL/A3500-1
+2026-04-27,brecha_ccl,7.449757242554478,%,Cálculo: CCL/A3500-1
 2026-04-28,brecha_ccl,6.915203473313158,%,Cálculo: CCL/A3500-1
 2026-04-29,brecha_ccl,6.806400261035672,%,Cálculo: CCL/A3500-1
 2026-04-30,brecha_ccl,8.342134412334556,%,Cálculo: CCL/A3500-1
@@ -29213,14 +29218,14 @@ fecha,variable,valor,unidad,fuente
 2026-05-08,brecha_ccl,6.558942072012619,%,Cálculo: CCL/A3500-1
 2026-05-11,brecha_ccl,5.704940129853964,%,Cálculo: CCL/A3500-1
 2026-05-12,brecha_ccl,6.131870945165119,%,Cálculo: CCL/A3500-1
-2026-05-13,brecha_ccl,6.695387304960532,%,Cálculo: CCL/A3500-1
+2026-05-13,brecha_ccl,6.6953873049605095,%,Cálculo: CCL/A3500-1
 2026-05-14,brecha_ccl,6.144182556162514,%,Cálculo: CCL/A3500-1
 2026-05-15,brecha_ccl,6.410193880547044,%,Cálculo: CCL/A3500-1
 2026-05-18,brecha_ccl,6.323305023853609,%,Cálculo: CCL/A3500-1
-2026-05-19,brecha_ccl,6.550283225115616,%,Cálculo: CCL/A3500-1
+2026-05-19,brecha_ccl,6.550283225115638,%,Cálculo: CCL/A3500-1
 2026-05-20,brecha_ccl,6.321916966778174,%,Cálculo: CCL/A3500-1
 2026-05-21,brecha_ccl,6.127932697177307,%,Cálculo: CCL/A3500-1
-2026-05-22,brecha_ccl,6.696555826336481,%,Cálculo: CCL/A3500-1
+2026-05-22,brecha_ccl,6.696555826336503,%,Cálculo: CCL/A3500-1
 2026-05-26,brecha_ccl,5.695428841488059,%,Cálculo: CCL/A3500-1
 2026-05-27,brecha_ccl,5.167739843514374,%,Cálculo: CCL/A3500-1
 2026-05-28,brecha_ccl,5.091397555074573,%,Cálculo: CCL/A3500-1
@@ -29236,7 +29241,7 @@ fecha,variable,valor,unidad,fuente
 2026-06-11,brecha_ccl,4.467837873380387,%,Cálculo: CCL/A3500-1
 2026-06-12,brecha_ccl,4.5224326472414145,%,Cálculo: CCL/A3500-1
 2026-06-16,brecha_ccl,4.519881119539759,%,Cálculo: CCL/A3500-1
-2026-06-17,brecha_ccl,4.510496747179782,%,Cálculo: CCL/A3500-1
+2026-06-17,brecha_ccl,4.510496747179804,%,Cálculo: CCL/A3500-1
 2026-06-18,brecha_ccl,4.2377304358447665,%,Cálculo: CCL/A3500-1
 2026-06-19,brecha_ccl,3.988823346327486,%,Cálculo: CCL/A3500-1
 2026-06-22,brecha_ccl,4.716840056596627,%,Cálculo: CCL/A3500-1
@@ -29255,7 +29260,7 @@ fecha,variable,valor,unidad,fuente
 2026-07-13,brecha_ccl,5.577110477507374,%,Cálculo: CCL/A3500-1
 2026-07-14,brecha_ccl,5.514804329597434,%,Cálculo: CCL/A3500-1
 2026-07-15,brecha_ccl,5.929101053318853,%,Cálculo: CCL/A3500-1
-2026-07-16,brecha_ccl,6.189810657309414,%,Cálculo: CCL/A3500-1
+2026-07-16,brecha_ccl,6.189810657309436,%,Cálculo: CCL/A3500-1
 2026-07-17,brecha_ccl,6.500427639824902,%,Cálculo: CCL/A3500-1
 2026-07-20,brecha_ccl,6.297869874362427,%,Cálculo: CCL/A3500-1
 2026-07-21,brecha_ccl,6.4030474586088015,%,Cálculo: CCL/A3500-1
@@ -29277,7 +29282,7 @@ fecha,variable,valor,unidad,fuente
 2026-08-12,brecha_ccl,6.32186448355907,%,Cálculo: CCL/A3500-1
 2026-08-13,brecha_ccl,6.152538810918329,%,Cálculo: CCL/A3500-1
 2026-08-14,brecha_ccl,5.620672055507581,%,Cálculo: CCL/A3500-1
-2026-08-18,brecha_ccl,5.637500709794097,%,Cálculo: CCL/A3500-1
+2026-08-18,brecha_ccl,5.637500709794074,%,Cálculo: CCL/A3500-1
 2026-08-19,brecha_ccl,5.459582957203346,%,Cálculo: CCL/A3500-1
 2026-08-20,brecha_ccl,5.872537358216268,%,Cálculo: CCL/A3500-1
 2026-08-21,brecha_ccl,6.4197085651299,%,Cálculo: CCL/A3500-1
@@ -29288,7 +29293,7 @@ fecha,variable,valor,unidad,fuente
 2026-08-28,brecha_ccl,6.0217918990076,%,Cálculo: CCL/A3500-1
 2026-08-31,brecha_ccl,6.047378507856882,%,Cálculo: CCL/A3500-1
 2026-09-01,brecha_ccl,5.432735095885133,%,Cálculo: CCL/A3500-1
-2026-09-02,brecha_ccl,5.478033007377503,%,Cálculo: CCL/A3500-1
+2026-09-02,brecha_ccl,5.478033007377481,%,Cálculo: CCL/A3500-1
 2026-09-03,brecha_ccl,5.124664493986253,%,Cálculo: CCL/A3500-1
 2026-09-04,brecha_ccl,5.32004269439692,%,Cálculo: CCL/A3500-1
 2026-09-07,brecha_ccl,5.6571197273590945,%,Cálculo: CCL/A3500-1
@@ -29297,7 +29302,7 @@ fecha,variable,valor,unidad,fuente
 2026-09-10,brecha_ccl,5.874013042635728,%,Cálculo: CCL/A3500-1
 2026-09-11,brecha_ccl,5.94202778750379,%,Cálculo: CCL/A3500-1
 2026-09-14,brecha_ccl,5.781363812914675,%,Cálculo: CCL/A3500-1
-2026-09-15,brecha_ccl,5.818631932345375,%,Cálculo: CCL/A3500-1
+2026-09-15,brecha_ccl,5.818631932345353,%,Cálculo: CCL/A3500-1
 2026-09-16,brecha_ccl,5.851922304887713,%,Cálculo: CCL/A3500-1
 2026-09-17,brecha_ccl,5.526848429196773,%,Cálculo: CCL/A3500-1
 2026-09-18,brecha_ccl,5.72242621220449,%,Cálculo: CCL/A3500-1
@@ -29318,6 +29323,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,brecha_ccl,6.2858804402465385,%,Cálculo: CCL/A3500-1
 2026-10-13,brecha_ccl,6.36888462343892,%,Cálculo: CCL/A3500-1
 2026-10-14,brecha_ccl,6.85483668796254,%,Cálculo: CCL/A3500-1
+2026-10-15,brecha_ccl,6.694672889467279,%,Cálculo: CCL/A3500-1
 2007-07-30,brent,75.73999786376953,USD/bbl,Yahoo Finance (BZ=F)
 2007-07-31,brent,77.05000305175781,USD/bbl,Yahoo Finance (BZ=F)
 2007-08-01,brent,75.3499984741211,USD/bbl,Yahoo Finance (BZ=F)
@@ -34100,7 +34106,8 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,brent,106.6500015258789,USD/bbl,Yahoo Finance (BZ=F)
 2026-10-13,brent,105.69000244140625,USD/bbl,Yahoo Finance (BZ=F)
 2026-10-14,brent,106.05999755859375,USD/bbl,Yahoo Finance (BZ=F)
-2026-10-15,brent,105.5999984741211,USD/bbl,Yahoo Finance (BZ=F)
+2026-10-15,brent,105.91999816894531,USD/bbl,Yahoo Finance (BZ=F)
+2026-10-16,brent,107.94999694824219,USD/bbl,Yahoo Finance (BZ=F)
 2003-12-01,brl_usd,2.9230000972747803,BRL/USD,Yahoo Finance (BRL=X)
 2003-12-02,brl_usd,2.930999994277954,BRL/USD,Yahoo Finance (BRL=X)
 2003-12-03,brl_usd,2.930999994277954,BRL/USD,Yahoo Finance (BRL=X)
@@ -39619,6 +39626,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-13,brl_usd,5.0258002281188965,BRL/USD,Yahoo Finance (BRL=X)
 2026-10-14,brl_usd,5.0395002365112305,BRL/USD,Yahoo Finance (BRL=X)
 2026-10-15,brl_usd,5.058800220489502,BRL/USD,Yahoo Finance (BRL=X)
+2026-10-16,brl_usd,5.081999778747559,BRL/USD,Yahoo Finance (BRL=X)
 2018-10-29,canje_ccl_mep,-0.43278333784148026,%,Cálculo: CCL/MEP-1
 2018-10-30,canje_ccl_mep,1.228501228501222,%,Cálculo: CCL/MEP-1
 2018-10-31,canje_ccl_mep,2.0873921514055205,%,Cálculo: CCL/MEP-1
@@ -41802,14 +41810,14 @@ fecha,variable,valor,unidad,fuente
 2024-10-17,canje_ccl_mep,2.9801733290536037,%,Cálculo: CCL/MEP-1
 2024-10-18,canje_ccl_mep,2.832847184456422,%,Cálculo: CCL/MEP-1
 2024-10-21,canje_ccl_mep,2.4598903960126206,%,Cálculo: CCL/MEP-1
-2024-10-22,canje_ccl_mep,2.491332342743946,%,Cálculo: CCL/MEP-1
+2024-10-22,canje_ccl_mep,2.4913323427439016,%,Cálculo: CCL/MEP-1
 2024-10-23,canje_ccl_mep,2.1132651052942153,%,Cálculo: CCL/MEP-1
 2024-10-24,canje_ccl_mep,1.9096724911677354,%,Cálculo: CCL/MEP-1
 2024-10-25,canje_ccl_mep,1.6179733727810675,%,Cálculo: CCL/MEP-1
 2024-10-28,canje_ccl_mep,1.8939910069491805,%,Cálculo: CCL/MEP-1
 2024-10-29,canje_ccl_mep,1.623753189515198,%,Cálculo: CCL/MEP-1
-2024-10-30,canje_ccl_mep,1.8560882998042594,%,Cálculo: CCL/MEP-1
-2024-10-31,canje_ccl_mep,2.0825878479925564,%,Cálculo: CCL/MEP-1
+2024-10-30,canje_ccl_mep,1.8560882998042372,%,Cálculo: CCL/MEP-1
+2024-10-31,canje_ccl_mep,2.082587847992534,%,Cálculo: CCL/MEP-1
 2024-11-01,canje_ccl_mep,2.700223450546857,%,Cálculo: CCL/MEP-1
 2024-11-04,canje_ccl_mep,2.4332274385221897,%,Cálculo: CCL/MEP-1
 2024-11-05,canje_ccl_mep,2.7084353075542467,%,Cálculo: CCL/MEP-1
@@ -41823,7 +41831,7 @@ fecha,variable,valor,unidad,fuente
 2024-11-19,canje_ccl_mep,3.423956814174711,%,Cálculo: CCL/MEP-1
 2024-11-20,canje_ccl_mep,3.5214790647090988,%,Cálculo: CCL/MEP-1
 2024-11-21,canje_ccl_mep,3.0649418642699766,%,Cálculo: CCL/MEP-1
-2024-11-22,canje_ccl_mep,2.6051188299816896,%,Cálculo: CCL/MEP-1
+2024-11-22,canje_ccl_mep,2.605118829981712,%,Cálculo: CCL/MEP-1
 2024-11-25,canje_ccl_mep,2.896888927350605,%,Cálculo: CCL/MEP-1
 2024-11-26,canje_ccl_mep,2.829881817196145,%,Cálculo: CCL/MEP-1
 2024-11-27,canje_ccl_mep,3.008493807949164,%,Cálculo: CCL/MEP-1
@@ -41860,8 +41868,8 @@ fecha,variable,valor,unidad,fuente
 2025-01-14,canje_ccl_mep,1.880057643276789,%,Cálculo: CCL/MEP-1
 2025-01-15,canje_ccl_mep,1.7871069813044649,%,Cálculo: CCL/MEP-1
 2025-01-16,canje_ccl_mep,1.7864365646487856,%,Cálculo: CCL/MEP-1
-2025-01-17,canje_ccl_mep,1.7895262751510321,%,Cálculo: CCL/MEP-1
-2025-01-20,canje_ccl_mep,1.7868075553842289,%,Cálculo: CCL/MEP-1
+2025-01-17,canje_ccl_mep,1.78952627515101,%,Cálculo: CCL/MEP-1
+2025-01-20,canje_ccl_mep,1.786807555384251,%,Cálculo: CCL/MEP-1
 2025-01-21,canje_ccl_mep,1.7698513415518535,%,Cálculo: CCL/MEP-1
 2025-01-22,canje_ccl_mep,1.3292995966263543,%,Cálculo: CCL/MEP-1
 2025-01-23,canje_ccl_mep,1.6918638199653557,%,Cálculo: CCL/MEP-1
@@ -41876,7 +41884,7 @@ fecha,variable,valor,unidad,fuente
 2025-02-05,canje_ccl_mep,0.6914254000554898,%,Cálculo: CCL/MEP-1
 2025-02-06,canje_ccl_mep,0.9490463466322874,%,Cálculo: CCL/MEP-1
 2025-02-07,canje_ccl_mep,0.7050718942161138,%,Cálculo: CCL/MEP-1
-2025-02-10,canje_ccl_mep,0.6930716096471778,%,Cálculo: CCL/MEP-1
+2025-02-10,canje_ccl_mep,0.6930716096472,%,Cálculo: CCL/MEP-1
 2025-02-11,canje_ccl_mep,0.9444301937830746,%,Cálculo: CCL/MEP-1
 2025-02-12,canje_ccl_mep,0.5806018829080939,%,Cálculo: CCL/MEP-1
 2025-02-13,canje_ccl_mep,0.9332260659694169,%,Cálculo: CCL/MEP-1
@@ -41884,7 +41892,7 @@ fecha,variable,valor,unidad,fuente
 2025-02-17,canje_ccl_mep,0.831455976960771,%,Cálculo: CCL/MEP-1
 2025-02-18,canje_ccl_mep,0.718277980507187,%,Cálculo: CCL/MEP-1
 2025-02-19,canje_ccl_mep,1.0880478180671949,%,Cálculo: CCL/MEP-1
-2025-02-20,canje_ccl_mep,0.8356027279286637,%,Cálculo: CCL/MEP-1
+2025-02-20,canje_ccl_mep,0.835602727928686,%,Cálculo: CCL/MEP-1
 2025-02-21,canje_ccl_mep,0.7710225949219662,%,Cálculo: CCL/MEP-1
 2025-02-24,canje_ccl_mep,0.6787067382562517,%,Cálculo: CCL/MEP-1
 2025-02-25,canje_ccl_mep,0.4121071012805899,%,Cálculo: CCL/MEP-1
@@ -41898,12 +41906,12 @@ fecha,variable,valor,unidad,fuente
 2025-03-11,canje_ccl_mep,0.03908135819212788,%,Cálculo: CCL/MEP-1
 2025-03-12,canje_ccl_mep,-0.14507772020724286,%,Cálculo: CCL/MEP-1
 2025-03-13,canje_ccl_mep,0.1322597860639929,%,Cálculo: CCL/MEP-1
-2025-03-14,canje_ccl_mep,0.08605251529176794,%,Cálculo: CCL/MEP-1
-2025-03-17,canje_ccl_mep,0.4002621600112555,%,Cálculo: CCL/MEP-1
-2025-03-18,canje_ccl_mep,0.0047324956815808505,%,Cálculo: CCL/MEP-1
+2025-03-14,canje_ccl_mep,0.08605251529174573,%,Cálculo: CCL/MEP-1
+2025-03-17,canje_ccl_mep,0.40026216001123327,%,Cálculo: CCL/MEP-1
+2025-03-18,canje_ccl_mep,0.004732495681603055,%,Cálculo: CCL/MEP-1
 2025-03-19,canje_ccl_mep,0.5697276934167439,%,Cálculo: CCL/MEP-1
 2025-03-20,canje_ccl_mep,0.0536505714952229,%,Cálculo: CCL/MEP-1
-2025-03-21,canje_ccl_mep,0.023257436565371492,%,Cálculo: CCL/MEP-1
+2025-03-21,canje_ccl_mep,0.023257436565349288,%,Cálculo: CCL/MEP-1
 2025-03-25,canje_ccl_mep,0.34864122278404075,%,Cálculo: CCL/MEP-1
 2025-03-26,canje_ccl_mep,0.17922398342760104,%,Cálculo: CCL/MEP-1
 2025-03-27,canje_ccl_mep,0.394761285528511,%,Cálculo: CCL/MEP-1
@@ -41951,7 +41959,7 @@ fecha,variable,valor,unidad,fuente
 2025-06-02,canje_ccl_mep,0.7813707096346878,%,Cálculo: CCL/MEP-1
 2025-06-03,canje_ccl_mep,0.4820284815002296,%,Cálculo: CCL/MEP-1
 2025-06-04,canje_ccl_mep,0.6182825484764676,%,Cálculo: CCL/MEP-1
-2025-06-05,canje_ccl_mep,0.8973438621679541,%,Cálculo: CCL/MEP-1
+2025-06-05,canje_ccl_mep,0.8973438621679763,%,Cálculo: CCL/MEP-1
 2025-06-06,canje_ccl_mep,0.5462054265287009,%,Cálculo: CCL/MEP-1
 2025-06-09,canje_ccl_mep,0.618033329654577,%,Cálculo: CCL/MEP-1
 2025-06-10,canje_ccl_mep,0.4364239422174787,%,Cálculo: CCL/MEP-1
@@ -41968,19 +41976,19 @@ fecha,variable,valor,unidad,fuente
 2025-06-30,canje_ccl_mep,0.290983875555173,%,Cálculo: CCL/MEP-1
 2025-07-01,canje_ccl_mep,0.24503905309907204,%,Cálculo: CCL/MEP-1
 2025-07-02,canje_ccl_mep,0.23039471396277822,%,Cálculo: CCL/MEP-1
-2025-07-03,canje_ccl_mep,-0.045558086560348876,%,Cálculo: CCL/MEP-1
+2025-07-03,canje_ccl_mep,-0.04555808656035998,%,Cálculo: CCL/MEP-1
 2025-07-04,canje_ccl_mep,0.12805208898534204,%,Cálculo: CCL/MEP-1
 2025-07-07,canje_ccl_mep,0.9163752268803282,%,Cálculo: CCL/MEP-1
 2025-07-08,canje_ccl_mep,0.03280194187496033,%,Cálculo: CCL/MEP-1
 2025-07-11,canje_ccl_mep,0.08330775639058263,%,Cálculo: CCL/MEP-1
 2025-07-14,canje_ccl_mep,0.218316536926344,%,Cálculo: CCL/MEP-1
 2025-07-15,canje_ccl_mep,0.1852056002646041,%,Cálculo: CCL/MEP-1
-2025-07-16,canje_ccl_mep,0.8124306326304342,%,Cálculo: CCL/MEP-1
+2025-07-16,canje_ccl_mep,0.812430632630412,%,Cálculo: CCL/MEP-1
 2025-07-17,canje_ccl_mep,0.2206177296429912,%,Cálculo: CCL/MEP-1
 2025-07-18,canje_ccl_mep,0.23832327326993585,%,Cálculo: CCL/MEP-1
 2025-07-21,canje_ccl_mep,0.27187235370147445,%,Cálculo: CCL/MEP-1
 2025-07-22,canje_ccl_mep,0.272662256391909,%,Cálculo: CCL/MEP-1
-2025-07-23,canje_ccl_mep,0.18734945133376257,%,Cálculo: CCL/MEP-1
+2025-07-23,canje_ccl_mep,0.18734945133374037,%,Cálculo: CCL/MEP-1
 2025-07-24,canje_ccl_mep,0.18257005851038954,%,Cálculo: CCL/MEP-1
 2025-07-25,canje_ccl_mep,0.6208171891511238,%,Cálculo: CCL/MEP-1
 2025-07-28,canje_ccl_mep,0.06551648831620849,%,Cálculo: CCL/MEP-1
@@ -41988,25 +41996,25 @@ fecha,variable,valor,unidad,fuente
 2025-07-30,canje_ccl_mep,0.015175822746416046,%,Cálculo: CCL/MEP-1
 2025-07-31,canje_ccl_mep,0.06580101772239999,%,Cálculo: CCL/MEP-1
 2025-08-01,canje_ccl_mep,0.06626758852246173,%,Cálculo: CCL/MEP-1
-2025-08-04,canje_ccl_mep,0.13366347481209573,%,Cálculo: CCL/MEP-1
+2025-08-04,canje_ccl_mep,0.13366347481207352,%,Cálculo: CCL/MEP-1
 2025-08-05,canje_ccl_mep,0.1814128344116206,%,Cálculo: CCL/MEP-1
 2025-08-06,canje_ccl_mep,0.09786651008025782,%,Cálculo: CCL/MEP-1
 2025-08-07,canje_ccl_mep,0.23328827453885648,%,Cálculo: CCL/MEP-1
 2025-08-08,canje_ccl_mep,0.16531442368346028,%,Cálculo: CCL/MEP-1
 2025-08-11,canje_ccl_mep,0.14715429560701043,%,Cálculo: CCL/MEP-1
-2025-08-12,canje_ccl_mep,0.06476124686984885,%,Cálculo: CCL/MEP-1
+2025-08-12,canje_ccl_mep,0.06476124686987106,%,Cálculo: CCL/MEP-1
 2025-08-13,canje_ccl_mep,0.22995916612937872,%,Cálculo: CCL/MEP-1
 2025-08-14,canje_ccl_mep,0.23098178050253715,%,Cálculo: CCL/MEP-1
-2025-08-18,canje_ccl_mep,0.12896846720977795,%,Cálculo: CCL/MEP-1
+2025-08-18,canje_ccl_mep,0.12896846720975574,%,Cálculo: CCL/MEP-1
 2025-08-19,canje_ccl_mep,0.29452864667312006,%,Cálculo: CCL/MEP-1
 2025-08-20,canje_ccl_mep,0.3824969400244571,%,Cálculo: CCL/MEP-1
-2025-08-21,canje_ccl_mep,-0.10113224139827182,%,Cálculo: CCL/MEP-1
+2025-08-21,canje_ccl_mep,-0.10113224139826071,%,Cálculo: CCL/MEP-1
 2025-08-22,canje_ccl_mep,-0.05276464768605438,%,Cálculo: CCL/MEP-1
 2025-08-25,canje_ccl_mep,0.07046095099554339,%,Cálculo: CCL/MEP-1
 2025-08-26,canje_ccl_mep,0.20752503834702285,%,Cálculo: CCL/MEP-1
 2025-08-27,canje_ccl_mep,-0.08741454667712256,%,Cálculo: CCL/MEP-1
 2025-08-28,canje_ccl_mep,0.10045091298718223,%,Cálculo: CCL/MEP-1
-2025-08-29,canje_ccl_mep,0.11810848152604692,%,Cálculo: CCL/MEP-1
+2025-08-29,canje_ccl_mep,0.11810848152602471,%,Cálculo: CCL/MEP-1
 2025-09-01,canje_ccl_mep,0.10219143862837399,%,Cálculo: CCL/MEP-1
 2025-09-02,canje_ccl_mep,-0.10509961615792207,%,Cálculo: CCL/MEP-1
 2025-09-03,canje_ccl_mep,0.036762171725279735,%,Cálculo: CCL/MEP-1
@@ -42027,7 +42035,7 @@ fecha,variable,valor,unidad,fuente
 2025-09-24,canje_ccl_mep,1.5560941357675162,%,Cálculo: CCL/MEP-1
 2025-09-25,canje_ccl_mep,1.343195961019128,%,Cálculo: CCL/MEP-1
 2025-09-26,canje_ccl_mep,2.416999975461942,%,Cálculo: CCL/MEP-1
-2025-09-29,canje_ccl_mep,2.3589561871979026,%,Cálculo: CCL/MEP-1
+2025-09-29,canje_ccl_mep,2.3589561871978804,%,Cálculo: CCL/MEP-1
 2025-09-30,canje_ccl_mep,3.379034869912556,%,Cálculo: CCL/MEP-1
 2025-10-01,canje_ccl_mep,2.904922454484149,%,Cálculo: CCL/MEP-1
 2025-10-02,canje_ccl_mep,3.498490044530911,%,Cálculo: CCL/MEP-1
@@ -42036,7 +42044,7 @@ fecha,variable,valor,unidad,fuente
 2025-10-07,canje_ccl_mep,1.426803523331155,%,Cálculo: CCL/MEP-1
 2025-10-08,canje_ccl_mep,1.0090574922518858,%,Cálculo: CCL/MEP-1
 2025-10-09,canje_ccl_mep,1.2590809823060045,%,Cálculo: CCL/MEP-1
-2025-10-13,canje_ccl_mep,1.1609023876404612,%,Cálculo: CCL/MEP-1
+2025-10-13,canje_ccl_mep,1.160902387640439,%,Cálculo: CCL/MEP-1
 2025-10-14,canje_ccl_mep,0.5448275862069085,%,Cálculo: CCL/MEP-1
 2025-10-15,canje_ccl_mep,1.0148214326621385,%,Cálculo: CCL/MEP-1
 2025-10-16,canje_ccl_mep,2.143341834943957,%,Cálculo: CCL/MEP-1
@@ -42047,14 +42055,14 @@ fecha,variable,valor,unidad,fuente
 2025-10-23,canje_ccl_mep,1.1909981002484304,%,Cálculo: CCL/MEP-1
 2025-10-24,canje_ccl_mep,1.295572436512038,%,Cálculo: CCL/MEP-1
 2025-10-27,canje_ccl_mep,1.105821574194632,%,Cálculo: CCL/MEP-1
-2025-10-28,canje_ccl_mep,0.8302234894544958,%,Cálculo: CCL/MEP-1
+2025-10-28,canje_ccl_mep,0.8302234894544736,%,Cálculo: CCL/MEP-1
 2025-10-29,canje_ccl_mep,0.5867735805717311,%,Cálculo: CCL/MEP-1
 2025-10-30,canje_ccl_mep,1.0957648480303561,%,Cálculo: CCL/MEP-1
 2025-10-31,canje_ccl_mep,1.412258990411619,%,Cálculo: CCL/MEP-1
 2025-11-03,canje_ccl_mep,1.0692272212671439,%,Cálculo: CCL/MEP-1
 2025-11-04,canje_ccl_mep,1.3092843975196944,%,Cálculo: CCL/MEP-1
 2025-11-05,canje_ccl_mep,1.1859346491955636,%,Cálculo: CCL/MEP-1
-2025-11-06,canje_ccl_mep,1.238525426198489,%,Cálculo: CCL/MEP-1
+2025-11-06,canje_ccl_mep,1.2385254261984668,%,Cálculo: CCL/MEP-1
 2025-11-07,canje_ccl_mep,1.327966136863501,%,Cálculo: CCL/MEP-1
 2025-11-10,canje_ccl_mep,1.4693810540141294,%,Cálculo: CCL/MEP-1
 2025-11-11,canje_ccl_mep,1.4799975469653948,%,Cálculo: CCL/MEP-1
@@ -42100,7 +42108,7 @@ fecha,variable,valor,unidad,fuente
 2026-01-13,canje_ccl_mep,2.744079144598799,%,Cálculo: CCL/MEP-1
 2026-01-14,canje_ccl_mep,2.71438866202256,%,Cálculo: CCL/MEP-1
 2026-01-15,canje_ccl_mep,2.695873622219569,%,Cálculo: CCL/MEP-1
-2026-01-16,canje_ccl_mep,3.1502648452745863,%,Cálculo: CCL/MEP-1
+2026-01-16,canje_ccl_mep,3.1502648452746085,%,Cálculo: CCL/MEP-1
 2026-01-19,canje_ccl_mep,3.0478810349639174,%,Cálculo: CCL/MEP-1
 2026-01-20,canje_ccl_mep,3.2169062518743408,%,Cálculo: CCL/MEP-1
 2026-01-21,canje_ccl_mep,3.2791138608921244,%,Cálculo: CCL/MEP-1
@@ -42132,11 +42140,11 @@ fecha,variable,valor,unidad,fuente
 2026-03-02,canje_ccl_mep,3.040960671537407,%,Cálculo: CCL/MEP-1
 2026-03-03,canje_ccl_mep,3.631799819586612,%,Cálculo: CCL/MEP-1
 2026-03-04,canje_ccl_mep,2.736126140052564,%,Cálculo: CCL/MEP-1
-2026-03-05,canje_ccl_mep,2.946905067975547,%,Cálculo: CCL/MEP-1
+2026-03-05,canje_ccl_mep,2.946905067975525,%,Cálculo: CCL/MEP-1
 2026-03-06,canje_ccl_mep,2.983561163003845,%,Cálculo: CCL/MEP-1
 2026-03-09,canje_ccl_mep,2.9479430688243324,%,Cálculo: CCL/MEP-1
 2026-03-10,canje_ccl_mep,3.182258376912661,%,Cálculo: CCL/MEP-1
-2026-03-11,canje_ccl_mep,2.844441023074973,%,Cálculo: CCL/MEP-1
+2026-03-11,canje_ccl_mep,2.844441023074995,%,Cálculo: CCL/MEP-1
 2026-03-12,canje_ccl_mep,2.9529393492273126,%,Cálculo: CCL/MEP-1
 2026-03-13,canje_ccl_mep,3.3041579757890016,%,Cálculo: CCL/MEP-1
 2026-03-16,canje_ccl_mep,3.3110523861339836,%,Cálculo: CCL/MEP-1
@@ -42163,10 +42171,10 @@ fecha,variable,valor,unidad,fuente
 2026-04-17,canje_ccl_mep,2.958207685049863,%,Cálculo: CCL/MEP-1
 2026-04-20,canje_ccl_mep,3.202102652377503,%,Cálculo: CCL/MEP-1
 2026-04-21,canje_ccl_mep,3.7810499598753378,%,Cálculo: CCL/MEP-1
-2026-04-22,canje_ccl_mep,3.832726593857916,%,Cálculo: CCL/MEP-1
+2026-04-22,canje_ccl_mep,3.832726593857938,%,Cálculo: CCL/MEP-1
 2026-04-23,canje_ccl_mep,3.8591014236548427,%,Cálculo: CCL/MEP-1
-2026-04-24,canje_ccl_mep,3.896177229008657,%,Cálculo: CCL/MEP-1
-2026-04-27,canje_ccl_mep,3.875836699091706,%,Cálculo: CCL/MEP-1
+2026-04-24,canje_ccl_mep,3.896177229008635,%,Cálculo: CCL/MEP-1
+2026-04-27,canje_ccl_mep,3.8758366990916837,%,Cálculo: CCL/MEP-1
 2026-04-28,canje_ccl_mep,4.0408062650511,%,Cálculo: CCL/MEP-1
 2026-04-29,canje_ccl_mep,3.8151622909888827,%,Cálculo: CCL/MEP-1
 2026-04-30,canje_ccl_mep,3.7450648618161386,%,Cálculo: CCL/MEP-1
@@ -42177,14 +42185,14 @@ fecha,variable,valor,unidad,fuente
 2026-05-08,canje_ccl_mep,4.103888383153453,%,Cálculo: CCL/MEP-1
 2026-05-11,canje_ccl_mep,3.8190712670940874,%,Cálculo: CCL/MEP-1
 2026-05-12,canje_ccl_mep,3.7186471561645895,%,Cálculo: CCL/MEP-1
-2026-05-13,canje_ccl_mep,3.9679868357081594,%,Cálculo: CCL/MEP-1
+2026-05-13,canje_ccl_mep,3.967986835708137,%,Cálculo: CCL/MEP-1
 2026-05-14,canje_ccl_mep,4.240163458113866,%,Cálculo: CCL/MEP-1
-2026-05-15,canje_ccl_mep,4.095241683306328,%,Cálculo: CCL/MEP-1
+2026-05-15,canje_ccl_mep,4.09524168330635,%,Cálculo: CCL/MEP-1
 2026-05-18,canje_ccl_mep,3.8440561939329987,%,Cálculo: CCL/MEP-1
-2026-05-19,canje_ccl_mep,3.9522561424018665,%,Cálculo: CCL/MEP-1
+2026-05-19,canje_ccl_mep,3.9522561424018887,%,Cálculo: CCL/MEP-1
 2026-05-20,canje_ccl_mep,3.890125928559396,%,Cálculo: CCL/MEP-1
-2026-05-21,canje_ccl_mep,3.6122133422753944,%,Cálculo: CCL/MEP-1
-2026-05-22,canje_ccl_mep,3.84264006712034,%,Cálculo: CCL/MEP-1
+2026-05-21,canje_ccl_mep,3.612213342275372,%,Cálculo: CCL/MEP-1
+2026-05-22,canje_ccl_mep,3.842640067120362,%,Cálculo: CCL/MEP-1
 2026-05-26,canje_ccl_mep,3.88040830745775,%,Cálculo: CCL/MEP-1
 2026-05-27,canje_ccl_mep,3.8122132015531163,%,Cálculo: CCL/MEP-1
 2026-05-28,canje_ccl_mep,3.54423344140804,%,Cálculo: CCL/MEP-1
@@ -42194,13 +42202,13 @@ fecha,variable,valor,unidad,fuente
 2026-06-03,canje_ccl_mep,3.6506614857988673,%,Cálculo: CCL/MEP-1
 2026-06-04,canje_ccl_mep,3.5945601830494667,%,Cálculo: CCL/MEP-1
 2026-06-05,canje_ccl_mep,3.6181777843514284,%,Cálculo: CCL/MEP-1
-2026-06-08,canje_ccl_mep,3.728725477458772,%,Cálculo: CCL/MEP-1
+2026-06-08,canje_ccl_mep,3.7287254774587497,%,Cálculo: CCL/MEP-1
 2026-06-09,canje_ccl_mep,3.7794368917613674,%,Cálculo: CCL/MEP-1
 2026-06-10,canje_ccl_mep,3.6110697258641133,%,Cálculo: CCL/MEP-1
 2026-06-11,canje_ccl_mep,3.0207666270240408,%,Cálculo: CCL/MEP-1
 2026-06-12,canje_ccl_mep,3.122251539138099,%,Cálculo: CCL/MEP-1
 2026-06-16,canje_ccl_mep,3.0152874892180215,%,Cálculo: CCL/MEP-1
-2026-06-17,canje_ccl_mep,2.9161470178269866,%,Cálculo: CCL/MEP-1
+2026-06-17,canje_ccl_mep,2.916147017827009,%,Cálculo: CCL/MEP-1
 2026-06-18,canje_ccl_mep,2.9161470178269866,%,Cálculo: CCL/MEP-1
 2026-06-19,canje_ccl_mep,2.8162824339418746,%,Cálculo: CCL/MEP-1
 2026-06-22,canje_ccl_mep,2.7975482572500265,%,Cálculo: CCL/MEP-1
@@ -42232,13 +42240,13 @@ fecha,variable,valor,unidad,fuente
 2026-07-29,canje_ccl_mep,4.569842738205376,%,Cálculo: CCL/MEP-1
 2026-07-30,canje_ccl_mep,3.6226553880102985,%,Cálculo: CCL/MEP-1
 2026-07-31,canje_ccl_mep,3.9485766758494023,%,Cálculo: CCL/MEP-1
-2026-08-03,canje_ccl_mep,3.5506190823015427,%,Cálculo: CCL/MEP-1
+2026-08-03,canje_ccl_mep,3.5506190823015205,%,Cálculo: CCL/MEP-1
 2026-08-04,canje_ccl_mep,3.6882267441860517,%,Cálculo: CCL/MEP-1
 2026-08-05,canje_ccl_mep,3.8321167883211826,%,Cálculo: CCL/MEP-1
 2026-08-06,canje_ccl_mep,3.7860687373644675,%,Cálculo: CCL/MEP-1
 2026-08-07,canje_ccl_mep,3.877963609630597,%,Cálculo: CCL/MEP-1
 2026-08-10,canje_ccl_mep,3.889400921658992,%,Cálculo: CCL/MEP-1
-2026-08-11,canje_ccl_mep,3.8652678078409775,%,Cálculo: CCL/MEP-1
+2026-08-11,canje_ccl_mep,3.8652678078409552,%,Cálculo: CCL/MEP-1
 2026-08-12,canje_ccl_mep,4.046349089571444,%,Cálculo: CCL/MEP-1
 2026-08-13,canje_ccl_mep,4.1214351425942874,%,Cálculo: CCL/MEP-1
 2026-08-14,canje_ccl_mep,3.8023512123438685,%,Cálculo: CCL/MEP-1
@@ -42249,20 +42257,20 @@ fecha,variable,valor,unidad,fuente
 2026-08-24,canje_ccl_mep,3.9381948370077247,%,Cálculo: CCL/MEP-1
 2026-08-25,canje_ccl_mep,3.8244159758854535,%,Cálculo: CCL/MEP-1
 2026-08-26,canje_ccl_mep,4.04460404460405,%,Cálculo: CCL/MEP-1
-2026-08-27,canje_ccl_mep,4.268522000752162,%,Cálculo: CCL/MEP-1
+2026-08-27,canje_ccl_mep,4.26852200075214,%,Cálculo: CCL/MEP-1
 2026-08-28,canje_ccl_mep,4.3355325164938785,%,Cálculo: CCL/MEP-1
 2026-08-31,canje_ccl_mep,4.248120300751879,%,Cálculo: CCL/MEP-1
 2026-09-01,canje_ccl_mep,4.05835047690295,%,Cálculo: CCL/MEP-1
-2026-09-02,canje_ccl_mep,3.919372900335949,%,Cálculo: CCL/MEP-1
+2026-09-02,canje_ccl_mep,3.919372900335927,%,Cálculo: CCL/MEP-1
 2026-09-03,canje_ccl_mep,3.754646840148701,%,Cálculo: CCL/MEP-1
 2026-09-04,canje_ccl_mep,4.075935231714145,%,Cálculo: CCL/MEP-1
 2026-09-07,canje_ccl_mep,4.477611940298498,%,Cálculo: CCL/MEP-1
-2026-09-08,canje_ccl_mep,4.368116483106199,%,Cálculo: CCL/MEP-1
+2026-09-08,canje_ccl_mep,4.368116483106177,%,Cálculo: CCL/MEP-1
 2026-09-09,canje_ccl_mep,4.083905698904777,%,Cálculo: CCL/MEP-1
-2026-09-10,canje_ccl_mep,4.261682242990661,%,Cálculo: CCL/MEP-1
+2026-09-10,canje_ccl_mep,4.261682242990639,%,Cálculo: CCL/MEP-1
 2026-09-11,canje_ccl_mep,3.996265172735769,%,Cálculo: CCL/MEP-1
 2026-09-14,canje_ccl_mep,4.141679160419787,%,Cálculo: CCL/MEP-1
-2026-09-15,canje_ccl_mep,4.039648400972529,%,Cálculo: CCL/MEP-1
+2026-09-15,canje_ccl_mep,4.039648400972506,%,Cálculo: CCL/MEP-1
 2026-09-16,canje_ccl_mep,3.8929440389294356,%,Cálculo: CCL/MEP-1
 2026-09-17,canje_ccl_mep,3.887850467289722,%,Cálculo: CCL/MEP-1
 2026-09-18,canje_ccl_mep,3.936269915651347,%,Cálculo: CCL/MEP-1
@@ -42283,6 +42291,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,canje_ccl_mep,4.669767441860451,%,Cálculo: CCL/MEP-1
 2026-10-13,canje_ccl_mep,4.705003734129964,%,Cálculo: CCL/MEP-1
 2026-10-14,canje_ccl_mep,5.44090056285178,%,Cálculo: CCL/MEP-1
+2026-10-15,canje_ccl_mep,5.42621104018024,%,Cálculo: CCL/MEP-1
 2022-12-12,caucion_a3_pesos_1d,63.3633,% TNA,A3/MAE cauciones (CAARS)
 2022-12-13,caucion_a3_pesos_1d,63.7186,% TNA,A3/MAE cauciones (CAARS)
 2022-12-14,caucion_a3_pesos_1d,63.7208,% TNA,A3/MAE cauciones (CAARS)
@@ -43719,6 +43728,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,ccl,1611.1627906976744,ARS/USD,Cálculo: AL30/AL30C (BYMA)
 2026-10-13,ccl,1612.3973114264377,ARS/USD,Cálculo: AL30/AL30C (BYMA)
 2026-10-14,ccl,1618.3864915572233,ARS/USD,Cálculo: AL30/AL30C (BYMA)
+2026-10-15,ccl,1615.2835148328952,ARS/USD,Cálculo: AL30/AL30C (BYMA)
 2013-01-02,ccl_ad,6.67,ARS/USD,ArgentinaDatos
 2013-01-03,ccl_ad,6.68,ARS/USD,ArgentinaDatos
 2013-01-04,ccl_ad,6.82,ARS/USD,ArgentinaDatos
@@ -48754,6 +48764,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-13,ccl_ad,1606.6,ARS/USD,ArgentinaDatos
 2026-10-14,ccl_ad,1613.8,ARS/USD,ArgentinaDatos
 2026-10-15,ccl_ad,1617.3,ARS/USD,ArgentinaDatos
+2026-10-16,ccl_ad,1616.0,ARS/USD,ArgentinaDatos
 2013-01-02,ccl_largo,6.67,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2013-01-03,ccl_largo,6.68,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2013-01-04,ccl_largo,6.82,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53063,14 +53074,14 @@ fecha,variable,valor,unidad,fuente
 2024-10-17,ccl_largo,1193.7306733167084,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-18,ccl_largo,1191.4769367676868,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-21,ccl_largo,1196.225233714385,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2024-10-22,ccl_largo,1190.5105002476473,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2024-10-22,ccl_largo,1190.510500247647,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-23,ccl_largo,1186.1197844912415,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-24,ccl_largo,1181.7393535758615,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-25,ccl_largo,1159.891919378698,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-28,ccl_largo,1155.2684743607213,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-29,ccl_largo,1156.270981210856,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-30,ccl_largo,1159.0274993514304,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2024-10-31,ccl_largo,1154.6277821512917,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2024-10-31,ccl_largo,1154.6277821512915,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-11-01,ccl_largo,1176.7045042926025,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-11-04,ccl_largo,1179.148723379221,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-11-05,ccl_largo,1184.319091904995,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53110,8 +53121,8 @@ fecha,variable,valor,unidad,fuente
 2024-12-26,ccl_largo,1187.481806597763,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-27,ccl_largo,1186.9689900541764,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-30,ccl_largo,1186.2704622753527,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-01-02,ccl_largo,1179.9495412844037,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-01-03,ccl_largo,1179.9051640400435,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-01-02,ccl_largo,1179.9495412844035,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-01-03,ccl_largo,1179.9051640400437,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-06,ccl_largo,1179.9103413043051,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-07,ccl_largo,1184.0982982667167,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-08,ccl_largo,1185.5272840108162,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53121,8 +53132,8 @@ fecha,variable,valor,unidad,fuente
 2025-01-14,ccl_largo,1184.3847910431216,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-15,ccl_largo,1184.435189518016,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-16,ccl_largo,1186.4431261516336,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-01-17,ccl_largo,1186.2823954217197,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-01-20,ccl_largo,1186.3017165143647,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-01-17,ccl_largo,1186.2823954217195,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-01-20,ccl_largo,1186.301716514365,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-21,ccl_largo,1187.8514548585931,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-22,ccl_largo,1187.8529061239458,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-23,ccl_largo,1186.6899480669358,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53137,7 +53148,7 @@ fecha,variable,valor,unidad,fuente
 2025-02-05,ccl_largo,1199.7491675145686,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-02-06,ccl_largo,1199.8866903160417,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-02-07,ccl_largo,1202.456008137223,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-02-10,ccl_largo,1191.8501523362095,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-02-10,ccl_largo,1191.8501523362097,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-02-11,ccl_largo,1191.5841475643028,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-02-12,ccl_largo,1192.8318567694478,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-02-13,ccl_largo,1198.5527410642453,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53145,7 +53156,7 @@ fecha,variable,valor,unidad,fuente
 2025-02-17,ccl_largo,1219.7302645330608,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-02-18,ccl_largo,1211.3950066977688,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-02-19,ccl_largo,1214.5005019963107,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-02-20,ccl_largo,1215.6987407769475,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-02-20,ccl_largo,1215.6987407769477,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-02-21,ccl_largo,1214.7619613324016,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-02-24,ccl_largo,1215.2481230969481,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-02-25,ccl_largo,1216.534295692666,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53159,8 +53170,8 @@ fecha,variable,valor,unidad,fuente
 2025-03-11,ccl_largo,1230.4212280742086,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-12,ccl_largo,1227.1223258491652,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-13,ccl_largo,1234.7529526417152,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-03-14,ccl_largo,1238.4031444054237,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-03-17,ccl_largo,1255.1497823135621,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-03-14,ccl_largo,1238.4031444054235,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-03-17,ccl_largo,1255.149782313562,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-18,ccl_largo,1298.9388324933152,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-19,ccl_largo,1293.6502802130085,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-20,ccl_largo,1287.825822253324,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53212,7 +53223,7 @@ fecha,variable,valor,unidad,fuente
 2025-06-02,ccl_largo,1192.6028032226025,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-06-03,ccl_largo,1194.9894129817533,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-06-04,ccl_largo,1200.178725761773,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-06-05,ccl_largo,1202.645369705671,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-06-05,ccl_largo,1202.6453697056713,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-06-06,ccl_largo,1198.4838358719303,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-06-09,ccl_largo,1199.1044255600927,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-06-10,ccl_largo,1194.2106836581056,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53221,7 +53232,7 @@ fecha,variable,valor,unidad,fuente
 2025-06-17,ccl_largo,1185.491848250329,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-06-18,ccl_largo,1170.1009332408298,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-06-19,ccl_largo,1178.4744519035617,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-06-23,ccl_largo,1190.3041809156093,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-06-23,ccl_largo,1190.304180915609,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-06-24,ccl_largo,1186.6423180359157,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-06-25,ccl_largo,1200.8529885858673,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-06-26,ccl_largo,1205.6161624929473,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53236,7 +53247,7 @@ fecha,variable,valor,unidad,fuente
 2025-07-11,ccl_largo,1269.8259087122376,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-14,ccl_largo,1298.3302092751449,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-15,ccl_largo,1278.2546136037924,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-07-16,ccl_largo,1280.13551609323,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-07-16,ccl_largo,1280.1355160932299,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-17,ccl_largo,1283.456389000312,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-18,ccl_largo,1294.692384791857,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-21,ccl_largo,1284.4763560190754,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53258,10 +53269,10 @@ fecha,variable,valor,unidad,fuente
 2025-08-12,ccl_largo,1323.9724332959158,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-13,ccl_largo,1321.389748549323,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-14,ccl_largo,1310.7985709351524,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-08-18,ccl_largo,1302.73215398835,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-08-18,ccl_largo,1302.7321539883499,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-19,ccl_largo,1299.840266580673,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-20,ccl_largo,1312.5140103164888,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-08-21,ccl_largo,1321.5602506320763,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-08-21,ccl_largo,1321.5602506320765,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-22,ccl_largo,1330.1134879630647,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-25,ccl_largo,1360.9121283753068,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-26,ccl_largo,1354.8993503564018,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53288,7 +53299,7 @@ fecha,variable,valor,unidad,fuente
 2025-09-24,ccl_largo,1390.4074157965074,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-09-25,ccl_largo,1398.3015615827169,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-09-26,ccl_largo,1465.6528599121536,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-09-29,ccl_largo,1488.8248500341697,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-09-29,ccl_largo,1488.8248500341695,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-09-30,ccl_largo,1544.111141098996,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-01,ccl_largo,1566.8149157113958,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-02,ccl_largo,1552.058913855761,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53308,7 +53319,7 @@ fecha,variable,valor,unidad,fuente
 2025-10-23,ccl_largo,1551.5638121681525,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-24,ccl_largo,1569.097032721194,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-27,ccl_largo,1456.355741519544,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-10-28,ccl_largo,1489.7439724936057,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-10-28,ccl_largo,1489.7439724936055,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-29,ccl_largo,1483.4837018939631,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-30,ccl_largo,1486.3171885090514,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-31,ccl_largo,1497.9299902244222,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53318,7 +53329,7 @@ fecha,variable,valor,unidad,fuente
 2025-11-06,ccl_largo,1498.1621115297353,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-07,ccl_largo,1473.6204921774493,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-10,ccl_largo,1479.2317148251518,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-11-11,ccl_largo,1476.5749299863041,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-11-11,ccl_largo,1476.574929986304,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-12,ccl_largo,1470.4933665855804,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-13,ccl_largo,1481.5346723658545,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-14,ccl_largo,1481.8122023134497,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53361,7 +53372,7 @@ fecha,variable,valor,unidad,fuente
 2026-01-13,ccl_largo,1527.778375137404,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-01-14,ccl_largo,1521.8202818480263,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-01-15,ccl_largo,1513.4222872149933,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-01-16,ccl_largo,1518.3928870126247,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-01-16,ccl_largo,1518.392887012625,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-01-19,ccl_largo,1511.2802695052426,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-01-20,ccl_largo,1518.918807605414,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-01-21,ccl_largo,1511.5546951402057,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53385,7 +53396,7 @@ fecha,variable,valor,unidad,fuente
 2026-02-18,ccl_largo,1453.4488882085038,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-02-19,ccl_largo,1448.1331570171908,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-02-20,ccl_largo,1448.3167371252885,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-02-23,ccl_largo,1441.1524564796905,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-02-23,ccl_largo,1441.1524564796903,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-02-24,ccl_largo,1448.278723486758,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-02-25,ccl_largo,1472.1040947690874,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-02-26,ccl_largo,1480.7685441555172,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53393,11 +53404,11 @@ fecha,variable,valor,unidad,fuente
 2026-03-02,ccl_largo,1460.9703870666876,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-03,ccl_largo,1486.0576538416285,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-04,ccl_largo,1466.649385530994,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-03-05,ccl_largo,1475.306045732539,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-03-05,ccl_largo,1475.3060457325387,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-06,ccl_largo,1480.2900684464032,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-09,ccl_largo,1472.2138428543576,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-10,ccl_largo,1467.2453612240945,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-03-11,ccl_largo,1453.8732895825715,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-03-11,ccl_largo,1453.8732895825717,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-12,ccl_largo,1457.1843208821929,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-13,ccl_largo,1471.2759897853757,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-16,ccl_largo,1471.9780429037774,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53409,7 +53420,7 @@ fecha,variable,valor,unidad,fuente
 2026-03-25,ccl_largo,1450.0823773350903,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-26,ccl_largo,1447.5619764029002,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-27,ccl_largo,1477.303434367168,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-03-30,ccl_largo,1484.6839419925825,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-03-30,ccl_largo,1484.6839419925823,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-31,ccl_largo,1473.4595372350768,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-01,ccl_largo,1485.8310066412378,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-06,ccl_largo,1482.2298053903776,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53424,10 +53435,10 @@ fecha,variable,valor,unidad,fuente
 2026-04-17,ccl_largo,1454.198656873809,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-20,ccl_largo,1459.8992355674013,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-21,ccl_largo,1467.7673329227553,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-04-22,ccl_largo,1474.1179874918323,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-04-22,ccl_largo,1474.1179874918325,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-23,ccl_largo,1479.2487164538393,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-24,ccl_largo,1494.253270341998,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-04-27,ccl_largo,1518.2505641200673,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-04-27,ccl_largo,1518.250564120067,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-28,ccl_largo,1505.5254754726282,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-29,ccl_largo,1490.2553907845956,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-30,ccl_largo,1496.3082346305696,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53438,14 +53449,14 @@ fecha,variable,valor,unidad,fuente
 2026-05-08,ccl_largo,1485.5629331004886,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-11,ccl_largo,1479.3141051773337,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-12,ccl_largo,1471.5458788092892,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-05-13,ccl_largo,1482.220109203785,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-05-13,ccl_largo,1482.2201092037847,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-14,ccl_largo,1478.834929799239,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-15,ccl_largo,1484.7922992879478,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-18,ccl_largo,1483.1824610234517,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-05-19,ccl_largo,1490.5489600814583,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-05-19,ccl_largo,1490.5489600814585,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-20,ccl_largo,1487.2677619145634,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-05-21,ccl_largo,1477.4817712699569,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-05-22,ccl_largo,1486.8185326745595,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-05-21,ccl_largo,1477.4817712699567,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-05-22,ccl_largo,1486.8185326745597,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-26,ccl_largo,1488.0746332484243,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-27,ccl_largo,1484.1056904527468,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-28,ccl_largo,1483.2656600277905,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53458,10 +53469,10 @@ fecha,variable,valor,unidad,fuente
 2026-06-08,ccl_largo,1521.657009224373,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-09,ccl_largo,1512.934347373895,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-10,ccl_largo,1504.6065628724673,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-06-11,ccl_largo,1492.876534626292,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-06-12,ccl_largo,1495.5165823805337,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-06-11,ccl_largo,1492.8765346262921,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-06-12,ccl_largo,1495.5165823805335,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-16,ccl_largo,1497.4245627557857,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-06-17,ccl_largo,1504.1358667742643,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-06-17,ccl_largo,1504.1358667742645,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-18,ccl_largo,1511.0091886141881,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-19,ccl_largo,1518.4965849371006,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-22,ccl_largo,1526.0444790046656,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53481,7 +53492,7 @@ fecha,variable,valor,unidad,fuente
 2026-07-13,ccl_largo,1568.9338235294117,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-07-14,ccl_largo,1556.0661764705883,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-07-15,ccl_largo,1562.9236123832202,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-07-16,ccl_largo,1566.0550458715595,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-07-16,ccl_largo,1566.0550458715597,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-07-17,ccl_largo,1576.3365790924122,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-07-20,ccl_largo,1573.394495412844,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-07-21,ccl_largo,1572.3178322958624,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53503,7 +53514,7 @@ fecha,variable,valor,unidad,fuente
 2026-08-12,ccl_largo,1586.904542946478,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-13,ccl_largo,1583.6246550137994,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-14,ccl_largo,1572.3732549595886,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-08-18,ccl_largo,1578.3582089552237,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-08-18,ccl_largo,1578.3582089552235,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-19,ccl_largo,1579.292267365662,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-20,ccl_largo,1585.2187028657618,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-21,ccl_largo,1593.5849056603774,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53514,7 +53525,7 @@ fecha,variable,valor,unidad,fuente
 2026-08-28,ccl_largo,1604.1470311027333,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-31,ccl_largo,1600.751879699248,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-01,ccl_largo,1594.9130353469236,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-09-02,ccl_largo,1594.4382232176185,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-09-02,ccl_largo,1594.4382232176183,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-03,ccl_largo,1585.5018587360596,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-04,ccl_largo,1587.567466964452,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-07,ccl_largo,1596.641791044776,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53523,7 +53534,7 @@ fecha,variable,valor,unidad,fuente
 2026-09-10,ccl_largo,1601.8691588785048,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-11,ccl_largo,1599.6265172735762,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-14,ccl_largo,1597.6386806596702,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-09-15,ccl_largo,1594.351973069011,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-09-15,ccl_largo,1594.3519730690107,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-16,ccl_largo,1597.4171813587873,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-17,ccl_largo,1593.4579439252336,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-18,ccl_largo,1598.8753514526709,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -53544,6 +53555,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,ccl_largo,1611.1627906976744,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-10-13,ccl_largo,1612.3973114264377,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-10-14,ccl_largo,1618.3864915572233,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-10-15,ccl_largo,1615.2835148328952,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2003-01-02,compras_bcra_acum_anio,29.37,USD M,Cálculo: suma anual de compras BCRA
 2003-01-03,compras_bcra_acum_anio,90.83,USD M,Cálculo: suma anual de compras BCRA
 2003-01-06,compras_bcra_acum_anio,142.51,USD M,Cálculo: suma anual de compras BCRA
@@ -67815,6 +67827,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,compras_bcra_pct_volumen,9.622661350745943,%,Cálculo: compras BCRA / volumen MLC (A3)
 2026-10-13,demanda_electrica_diaria,392277.0,MWh,CAMMESA (región 1002)
 2026-10-14,demanda_electrica_diaria,387546.5833333333,MWh,CAMMESA (región 1002)
+2026-10-15,demanda_electrica_diaria,386672.1666666667,MWh,CAMMESA (región 1002)
 2024-01-02,depositos_gobierno_bcra_me_ars,48102.0,ARS M,BCRA API v4 (id 1266)
 2024-01-03,depositos_gobierno_bcra_me_ars,48132.0,ARS M,BCRA API v4 (id 1266)
 2024-01-04,depositos_gobierno_bcra_me_ars,46389.0,ARS M,BCRA API v4 (id 1266)
@@ -81446,7 +81459,8 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,dxy,102.58000183105469,índice,Yahoo Finance (DX-Y.NYB)
 2026-10-13,dxy,102.18000030517578,índice,Yahoo Finance (DX-Y.NYB)
 2026-10-14,dxy,102.55000305175781,índice,Yahoo Finance (DX-Y.NYB)
-2026-10-15,dxy,102.04399871826172,índice,Yahoo Finance (DX-Y.NYB)
+2026-10-15,dxy,102.0,índice,Yahoo Finance (DX-Y.NYB)
+2026-10-16,dxy,101.88500213623047,índice,Yahoo Finance (DX-Y.NYB)
 2004-01-01,emae_desest,98.5318118721329,índice 2004=100,datos.gob.ar (143.3_NO_PR_2004_A_31)
 2004-02-01,emae_desest,98.02704245284784,índice 2004=100,datos.gob.ar (143.3_NO_PR_2004_A_31)
 2004-03-01,emae_desest,97.51832921205929,índice 2004=100,datos.gob.ar (143.3_NO_PR_2004_A_31)
@@ -110826,6 +110840,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,gd30_ars,88750.0,ARS,BYMA (GD30 24HS)
 2026-10-13,gd30_ars,88610.0,ARS,BYMA (GD30 24HS)
 2026-10-14,gd30_ars,88580.0,ARS,BYMA (GD30 24HS)
+2026-10-15,gd30_ars,88250.0,ARS,BYMA (GD30 24HS)
 2024-10-14,gd30_usd_ccl,41.906,USD,BYMA (GD30C 24HS)
 2024-10-15,gd30_usd_ccl,42.794,USD,BYMA (GD30C 24HS)
 2024-10-16,gd30_usd_ccl,42.545,USD,BYMA (GD30C 24HS)
@@ -111313,6 +111328,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,gd30_usd_ccl,55.09,USD,BYMA (GD30C 24HS)
 2026-10-13,gd30_usd_ccl,55.07,USD,BYMA (GD30C 24HS)
 2026-10-14,gd30_usd_ccl,54.68,USD,BYMA (GD30C 24HS)
+2026-10-15,gd30_usd_ccl,54.6,USD,BYMA (GD30C 24HS)
 2024-10-14,gd35_usd_ccl,50.167,USD,BYMA (GD35C 24HS)
 2024-10-15,gd35_usd_ccl,51.622,USD,BYMA (GD35C 24HS)
 2024-10-16,gd35_usd_ccl,50.94,USD,BYMA (GD35C 24HS)
@@ -111800,6 +111816,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,gd35_usd_ccl,72.18,USD,BYMA (GD35C 24HS)
 2026-10-13,gd35_usd_ccl,72.13,USD,BYMA (GD35C 24HS)
 2026-10-14,gd35_usd_ccl,71.79,USD,BYMA (GD35C 24HS)
+2026-10-15,gd35_usd_ccl,71.75,USD,BYMA (GD35C 24HS)
 1992-01-01,importaciones,902.946207,USD M,datos.gob.ar (74.3_IIT_0_M_25)
 1992-02-01,importaciones,914.187817,USD M,datos.gob.ar (74.3_IIT_0_M_25)
 1992-03-01,importaciones,1070.337821,USD M,datos.gob.ar (74.3_IIT_0_M_25)
@@ -118283,48 +118300,48 @@ fecha,variable,valor,unidad,fuente
 2026-07-31,lecap_tem_S16O6,2.0439587123963987,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-03,lecap_tem_S16O6,2.009485583583026,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-04,lecap_tem_S16O6,2.0084437160654334,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-08-05,lecap_tem_S16O6,2.0490478381740562,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-08-05,lecap_tem_S16O6,2.049047838174056,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-06,lecap_tem_S16O6,2.0768781842207096,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-07,lecap_tem_S16O6,2.078006336399496,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-10,lecap_tem_S16O6,2.0448016350443687,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-11,lecap_tem_S16O6,2.039174712709979,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-12,lecap_tem_S16O6,2.0096985258299727,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-13,lecap_tem_S16O6,1.9990893023515977,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-08-14,lecap_tem_S16O6,2.0036722774283477,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-08-18,lecap_tem_S16O6,2.2198898505848996,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-08-14,lecap_tem_S16O6,2.003672277428348,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-08-18,lecap_tem_S16O6,2.2198898505849,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-19,lecap_tem_S16O6,2.312652962163808,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-08-20,lecap_tem_S16O6,2.0699827440323837,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-08-20,lecap_tem_S16O6,2.069982744032384,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-21,lecap_tem_S16O6,2.0437099258012736,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-24,lecap_tem_S16O6,2.04806833838318,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-25,lecap_tem_S16O6,2.0886430599642125,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-26,lecap_tem_S16O6,2.0856672376453167,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-08-27,lecap_tem_S16O6,2.0549836505888486,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-08-27,lecap_tem_S16O6,2.054983650588849,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-28,lecap_tem_S16O6,1.997859851064554,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-08-31,lecap_tem_S16O6,1.9429147639107525,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-01,lecap_tem_S16O6,1.9467358942188318,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-01,lecap_tem_S16O6,1.946735894218832,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-02,lecap_tem_S16O6,2.0829441545320515,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-03,lecap_tem_S16O6,1.9514459017467622,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-04,lecap_tem_S16O6,1.9539060244365913,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-07,lecap_tem_S16O6,1.9313764797967314,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-08,lecap_tem_S16O6,1.9197574638175618,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-03,lecap_tem_S16O6,1.9514459017467625,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-04,lecap_tem_S16O6,1.9539060244365916,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-07,lecap_tem_S16O6,1.9313764797967317,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-08,lecap_tem_S16O6,1.9197574638175616,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-09,lecap_tem_S16O6,1.9339589292096893,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-10,lecap_tem_S16O6,1.924379523997266,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-11,lecap_tem_S16O6,1.9488760874676991,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-14,lecap_tem_S16O6,1.897632303104202,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-15,lecap_tem_S16O6,1.8924235205803441,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-15,lecap_tem_S16O6,1.892423520580344,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-16,lecap_tem_S16O6,1.886904186452898,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-17,lecap_tem_S16O6,1.8757658628784535,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-18,lecap_tem_S16O6,1.8869204757899105,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-17,lecap_tem_S16O6,1.8757658628784533,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-18,lecap_tem_S16O6,1.8869204757899103,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-21,lecap_tem_S16O6,1.8692456708466976,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-22,lecap_tem_S16O6,1.9090140305676018,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-22,lecap_tem_S16O6,1.9090140305676015,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-23,lecap_tem_S16O6,1.929663138627813,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-24,lecap_tem_S16O6,1.931286130214227,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-25,lecap_tem_S16O6,1.9213130597939942,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-25,lecap_tem_S16O6,1.9213130597939945,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-28,lecap_tem_S16O6,1.9144838646236728,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-09-29,lecap_tem_S16O6,1.90688788121689,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-09-30,lecap_tem_S16O6,1.8397729563002452,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-09-30,lecap_tem_S16O6,1.8397729563002447,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-10-01,lecap_tem_S16O6,1.855272441749256,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
-2026-10-02,lecap_tem_S16O6,1.8261838177319634,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
+2026-10-02,lecap_tem_S16O6,1.8261838177319636,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2026-10-05,lecap_tem_S16O6,1.803139356287442,% TEM,"Cálculo: BYMA S16O6 (vence 2026-10-16, TEM emisión 2.05%)"
 2025-12-15,lecap_tem_S30N6,2.1946032010866423,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
 2025-12-16,lecap_tem_S30N6,2.200978429705746,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
@@ -118530,6 +118547,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,lecap_tem_S30N6,1.8648142561562109,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
 2026-10-13,lecap_tem_S30N6,1.9289319551556883,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
 2026-10-14,lecap_tem_S30N6,2.001885952971949,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
+2026-10-15,lecap_tem_S30N6,1.9362886889055853,% TEM,"Cálculo: BYMA S30N6 (vence 2026-11-30, TEM emisión 2.30%)"
 2025-10-31,lecap_tem_S30O6,2.386757688836272,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
 2025-11-03,lecap_tem_S30O6,2.473460121148708,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
 2025-11-04,lecap_tem_S30O6,2.4381110887653046,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
@@ -118763,6 +118781,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,lecap_tem_S30O6,1.500212471260487,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
 2026-10-13,lecap_tem_S30O6,1.8416536054867816,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
 2026-10-14,lecap_tem_S30O6,1.9747636425273551,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
+2026-10-15,lecap_tem_S30O6,1.6160048557660067,% TEM,"Cálculo: BYMA S30O6 (vence 2026-10-30, TEM emisión 2.55%)"
 2021-01-04,m2_transaccional_privado,3906400.217,ARS M,BCRA API v4 (id 197)
 2021-01-05,m2_transaccional_privado,3863704.68,ARS M,BCRA API v4 (id 197)
 2021-01-06,m2_transaccional_privado,3834715.445,ARS M,BCRA API v4 (id 197)
@@ -122074,6 +122093,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,mep,1539.2819054390332,ARS/USD,Cálculo: AL30/AL30D (BYMA)
 2026-10-13,mep,1539.9429386590584,ARS/USD,Cálculo: AL30/AL30D (BYMA)
 2026-10-14,mep,1534.8754448398577,ARS/USD,Cálculo: AL30/AL30D (BYMA)
+2026-10-15,mep,1532.146037399822,ARS/USD,Cálculo: AL30/AL30D (BYMA)
 2018-10-29,mep_ad,36.97,ARS/USD,ArgentinaDatos
 2018-10-30,mep_ad,36.63,ARS/USD,ArgentinaDatos
 2018-10-31,mep_ad,35.93,ARS/USD,ArgentinaDatos
@@ -124983,6 +125003,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-13,mep_ad,1542.9,ARS/USD,ArgentinaDatos
 2026-10-14,mep_ad,1539.4,ARS/USD,ArgentinaDatos
 2026-10-15,mep_ad,1539.7,ARS/USD,ArgentinaDatos
+2026-10-16,mep_ad,1536.0,ARS/USD,ArgentinaDatos
 2018-10-29,mep_largo,36.97,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2018-10-30,mep_largo,36.63,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2018-10-31,mep_largo,35.93,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127166,13 +127187,13 @@ fecha,variable,valor,unidad,fuente
 2024-10-17,mep_largo,1159.1849525270932,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-18,mep_largo,1158.6540384615384,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-21,mep_largo,1167.5058689706914,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2024-10-22,mep_largo,1161.5718842120523,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2024-10-22,mep_largo,1161.5718842120525,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-23,mep_largo,1161.5726744886404,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-24,mep_largo,1159.5948889721728,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-25,mep_largo,1141.42398325903,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-28,mep_largo,1133.794508335562,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-29,mep_largo,1137.7959826523625,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2024-10-30,mep_largo,1137.9069417430767,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2024-10-30,mep_largo,1137.906941743077,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-10-31,mep_largo,1131.0722097588334,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-11-01,mep_largo,1145.7662551817327,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-11-04,mep_largo,1151.1388959084748,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127187,7 +127208,7 @@ fecha,variable,valor,unidad,fuente
 2024-11-19,mep_largo,1074.7407290482804,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-11-20,mep_largo,1074.4814472412488,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-11-21,mep_largo,1078.5700376751472,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2024-11-22,mep_largo,1080.028698695514,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2024-11-22,mep_largo,1080.0286986955139,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-11-25,mep_largo,1077.1975357961355,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-11-26,mep_largo,1075.7417756221005,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-11-27,mep_largo,1074.235118860284,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127204,17 +127225,17 @@ fecha,variable,valor,unidad,fuente
 2024-12-12,mep_largo,1057.848397876135,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-13,mep_largo,1072.7146915169722,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-16,mep_largo,1099.8830184907547,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2024-12-17,mep_largo,1144.8702185513055,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2024-12-17,mep_largo,1144.8702185513057,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-18,mep_largo,1130.814944299597,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-19,mep_largo,1130.7912019327562,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2024-12-20,mep_largo,1141.797327574027,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2024-12-20,mep_largo,1141.7973275740267,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-23,mep_largo,1161.8961780611835,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-24,mep_largo,1160.5507164480323,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-26,mep_largo,1170.48362208178,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-27,mep_largo,1170.1505012056837,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2024-12-30,mep_largo,1169.9998610559746,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-02,mep_largo,1165.9419382689402,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-01-03,mep_largo,1165.4653612688467,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-01-03,mep_largo,1165.465361268847,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-06,mep_largo,1164.66915572451,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-07,mep_largo,1165.279379802841,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-08,mep_largo,1164.3147583804964,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127222,7 +127243,7 @@ fecha,variable,valor,unidad,fuente
 2025-01-10,mep_largo,1163.6039299500578,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-13,mep_largo,1162.8123625117069,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-14,mep_largo,1162.5285835527604,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-01-15,mep_largo,1163.6397031458657,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-01-15,mep_largo,1163.6397031458655,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-16,mep_largo,1165.6200631388392,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-17,mep_largo,1165.4267770291374,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-01-20,mep_largo,1165.4768874334468,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127264,10 +127285,10 @@ fecha,variable,valor,unidad,fuente
 2025-03-13,mep_largo,1233.1220280854614,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-14,mep_largo,1237.3383836036624,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-17,mep_largo,1250.1459212458908,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-03-18,mep_largo,1298.8773631781937,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-03-18,mep_largo,1298.8773631781935,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-19,mep_largo,1286.321748982612,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-20,mep_largo,1287.135266826755,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-03-21,mep_largo,1289.949798869951,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-03-21,mep_largo,1289.9497988699513,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-25,mep_largo,1293.850789195159,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-26,mep_largo,1295.182342007435,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-03-27,mep_largo,1291.8480825276404,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127332,7 +127353,7 @@ fecha,variable,valor,unidad,fuente
 2025-06-30,mep_largo,1210.6665357766142,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-01,mep_largo,1232.406839957223,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-02,mep_largo,1238.169015917075,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-07-03,mep_largo,1237.9362764248815,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-07-03,mep_largo,1237.9362764248817,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-04,mep_largo,1246.4838947414055,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-07,mep_largo,1275.9855237761012,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-08,mep_largo,1260.3805526407834,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127344,7 +127365,7 @@ fecha,variable,valor,unidad,fuente
 2025-07-18,mep_largo,1291.614167629544,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-21,mep_largo,1280.9936883278513,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-22,mep_largo,1260.3918780368208,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-07-23,mep_largo,1264.3109528049863,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-07-23,mep_largo,1264.3109528049865,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-24,mep_largo,1272.5871336041278,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-25,mep_largo,1285.6289108650942,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-28,mep_largo,1296.248472282846,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127352,13 +127373,13 @@ fecha,variable,valor,unidad,fuente
 2025-07-30,mep_largo,1322.0129625214054,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-07-31,mep_largo,1359.393450528254,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-01,mep_largo,1361.785170305291,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-08-04,mep_largo,1355.7972121318219,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-08-04,mep_largo,1355.797212131822,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-05,mep_largo,1343.922548270972,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-06,mep_largo,1334.5335028027637,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-07,mep_largo,1327.4436299567137,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-08,mep_largo,1331.8790636061588,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-11,mep_largo,1324.299429534552,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-08-12,mep_largo,1323.1155671570957,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-08-12,mep_largo,1323.1155671570955,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-13,mep_largo,1318.3580633402662,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-14,mep_largo,1307.7778423897828,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-18,mep_largo,1301.0542043234657,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127370,7 +127391,7 @@ fecha,variable,valor,unidad,fuente
 2025-08-26,mep_largo,1352.0934179722674,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-27,mep_largo,1357.9218637832016,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-08-28,mep_largo,1343.712641883906,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-08-29,mep_largo,1356.9910966679279,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-08-29,mep_largo,1356.991096667928,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-09-01,mep_largo,1376.1435344827587,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-09-02,mep_largo,1365.253419331229,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-09-03,mep_largo,1369.7653138565424,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127391,7 +127412,7 @@ fecha,variable,valor,unidad,fuente
 2025-09-24,mep_largo,1369.1028860736908,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-09-25,mep_largo,1379.7685659336842,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-09-26,mep_largo,1431.0640423594805,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-09-29,mep_largo,1454.513513513513,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-09-29,mep_largo,1454.5135135135133,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-09-30,mep_largo,1493.640507518797,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-01,mep_largo,1522.5850020968755,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-02,mep_largo,1499.5957073267227,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127400,7 +127421,7 @@ fecha,variable,valor,unidad,fuente
 2025-10-07,mep_largo,1533.5481470848586,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-08,mep_largo,1527.5511262279097,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-09,mep_largo,1440.4144457404432,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-10-13,mep_largo,1406.3164197236263,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-10-13,mep_largo,1406.3164197236265,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-14,mep_largo,1454.6081121247455,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-15,mep_largo,1441.3817126269955,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-10-16,mep_largo,1473.134584106476,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127418,7 +127439,7 @@ fecha,variable,valor,unidad,fuente
 2025-11-03,mep_largo,1500.092951377365,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-04,mep_largo,1495.189346787701,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-05,mep_largo,1478.3349315629864,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-11-06,mep_largo,1479.8339912821775,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-11-06,mep_largo,1479.8339912821777,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-07,mep_largo,1454.3077773682269,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-10,mep_largo,1457.8109174015046,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-11,mep_largo,1455.0403682291562,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127427,7 +127448,7 @@ fecha,variable,valor,unidad,fuente
 2025-11-14,mep_largo,1450.7915455426355,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-17,mep_largo,1448.5615611371347,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-18,mep_largo,1440.114046782208,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-11-19,mep_largo,1440.7623542142599,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-11-19,mep_largo,1440.76235421426,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-20,mep_largo,1452.3709346733667,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-21,mep_largo,1459.9693698420067,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-11-25,mep_largo,1480.2972168206124,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127444,7 +127465,7 @@ fecha,variable,valor,unidad,fuente
 2025-12-11,mep_largo,1475.7376460734654,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-12-12,mep_largo,1478.3355434760965,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-12-15,mep_largo,1491.625839854557,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2025-12-16,mep_largo,1503.9024077420859,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2025-12-16,mep_largo,1503.902407742086,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-12-17,mep_largo,1513.7563587159023,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-12-18,mep_largo,1498.191099988269,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2025-12-19,mep_largo,1494.2410282514636,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127496,7 +127517,7 @@ fecha,variable,valor,unidad,fuente
 2026-03-02,mep_largo,1417.8540044126798,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-03,mep_largo,1433.9784278847976,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-04,mep_largo,1427.588756394824,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-03-05,mep_largo,1433.0746949200643,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-03-05,mep_largo,1433.0746949200645,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-06,mep_largo,1437.4042339664086,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-09,mep_largo,1430.056588765577,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-10,mep_largo,1421.9938430349332,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127512,7 +127533,7 @@ fecha,variable,valor,unidad,fuente
 2026-03-25,mep_largo,1404.4152058856653,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-26,mep_largo,1401.1537130063405,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-27,mep_largo,1429.6051424890102,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-03-30,mep_largo,1432.3742711094285,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-03-30,mep_largo,1432.3742711094283,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-03-31,mep_largo,1422.7249924902374,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-01,mep_largo,1433.912850122391,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-06,mep_largo,1429.4359418347017,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127529,7 +127550,7 @@ fecha,variable,valor,unidad,fuente
 2026-04-21,mep_largo,1414.2922368681327,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-22,mep_largo,1419.7045920385488,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-23,mep_largo,1424.2841466727027,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-04-24,mep_largo,1438.2177575680719,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-04-24,mep_largo,1438.217757568072,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-27,mep_largo,1461.6012851171026,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-28,mep_largo,1447.052872348181,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-04-29,mep_largo,1435.489150040995,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127543,7 +127564,7 @@ fecha,variable,valor,unidad,fuente
 2026-05-12,mep_largo,1418.7862251940555,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-13,mep_largo,1425.6504856115107,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-14,mep_largo,1418.680555305796,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-05-15,mep_largo,1426.3786463988417,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-05-15,mep_largo,1426.3786463988415,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-18,mep_largo,1428.2786279587808,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-19,mep_largo,1433.8784124507972,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-05-20,mep_largo,1431.5775908648825,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127558,10 +127579,10 @@ fecha,variable,valor,unidad,fuente
 2026-06-03,mep_largo,1461.0645149773286,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-04,mep_largo,1456.7767763310237,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-05,mep_largo,1458.650084753323,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-06-08,mep_largo,1466.958166332665,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-06-08,mep_largo,1466.9581663326653,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-09,mep_largo,1457.836342812148,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-10,mep_largo,1452.1677720859172,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-06-11,mep_largo,1449.102529037758,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-06-11,mep_largo,1449.1025290377581,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-12,mep_largo,1450.2365493958775,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-16,mep_largo,1453.594509370769,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-06-17,mep_largo,1461.5159140321489,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127596,24 +127617,24 @@ fecha,variable,valor,unidad,fuente
 2026-07-29,mep_largo,1524.062278839349,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-07-30,mep_largo,1508.4294587400177,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-07-31,mep_largo,1517.6678445229682,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-08-03,mep_largo,1527.870582029189,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-08-03,mep_largo,1527.8705820291893,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-04,mep_largo,1520.939197476783,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-05,mep_largo,1518.4534270650263,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-06,mep_largo,1520.276252877634,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-07,mep_largo,1524.769992922859,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-10,mep_largo,1526.2597586941092,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-08-11,mep_largo,1525.7841573631047,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-08-11,mep_largo,1525.784157363105,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-12,mep_largo,1525.190030051264,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-13,mep_largo,1520.9400954232196,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-14,mep_largo,1514.7761458149,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-08-18,mep_largo,1517.7610333692141,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-08-18,mep_largo,1517.761033369214,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-19,mep_largo,1522.2883955964628,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-20,mep_largo,1524.5693563009972,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-21,mep_largo,1535.078153398764,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-24,mep_largo,1538.4336475707034,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-25,mep_largo,1538.7407004173472,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-26,mep_largo,1542.960944595822,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-08-27,mep_largo,1536.3390441839495,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-08-27,mep_largo,1536.3390441839497,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-28,mep_largo,1537.4887082204154,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-08-31,mep_largo,1535.5210962856113,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-01,mep_largo,1532.7102803738317,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127621,9 +127642,9 @@ fecha,variable,valor,unidad,fuente
 2026-09-03,mep_largo,1528.126119670369,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-04,mep_largo,1525.393419170243,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-07,mep_largo,1528.2142857142858,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-09-08,mep_largo,1527.8125558934003,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-09-08,mep_largo,1527.8125558934005,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-09,mep_largo,1532.5485999643304,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
-2026-09-10,mep_largo,1536.3929723915383,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-09-10,mep_largo,1536.3929723915385,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-11,mep_largo,1538.157658466511,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-14,mep_largo,1534.1011337052366,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-09-15,mep_largo,1532.4465216609742,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
@@ -127647,6 +127668,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,mep_largo,1539.2819054390332,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-10-13,mep_largo,1539.9429386590584,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2026-10-14,mep_largo,1534.8754448398577,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
+2026-10-15,mep_largo,1532.146037399822,ARS/USD,"Cálculo propio (AL30); antes, ArgentinaDatos"
 2000-08-30,oro,273.8999938964844,USD/oz,Yahoo Finance (GC=F)
 2000-08-31,oro,278.29998779296875,USD/oz,Yahoo Finance (GC=F)
 2000-09-01,oro,277.0,USD/oz,Yahoo Finance (GC=F)
@@ -134203,7 +134225,8 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,oro,4190.60009765625,USD/oz,Yahoo Finance (GC=F)
 2026-10-13,oro,4177.2998046875,USD/oz,Yahoo Finance (GC=F)
 2026-10-14,oro,4107.89990234375,USD/oz,Yahoo Finance (GC=F)
-2026-10-15,oro,4178.0,USD/oz,Yahoo Finance (GC=F)
+2026-10-15,oro,4170.10009765625,USD/oz,Yahoo Finance (GC=F)
+2026-10-16,oro,4187.0,USD/oz,Yahoo Finance (GC=F)
 2003-01-02,prestamos_privados_pesos,29879.0,ARS M,BCRA API v4 (id 117)
 2003-01-03,prestamos_privados_pesos,29861.0,ARS M,BCRA API v4 (id 117)
 2003-01-06,prestamos_privados_pesos,29714.0,ARS M,BCRA API v4 (id 117)
@@ -166386,7 +166409,7 @@ fecha,variable,valor,unidad,fuente
 2017-08-01,resultado_primario_spn,-24650.600000000035,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2017-09-01,resultado_primario_spn,-31353.10000000001,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2017-10-01,resultado_primario_spn,-32494.79999999993,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
-2017-11-01,resultado_primario_spn,-29661.499999999916,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
+2017-11-01,resultado_primario_spn,-29661.49999999992,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2017-12-01,resultado_primario_spn,-119607.10000000006,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2018-01-01,resultado_primario_spn,3928.5999999999767,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2018-02-01,resultado_primario_spn,-20227.599999999977,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
@@ -166442,7 +166465,7 @@ fecha,variable,valor,unidad,fuente
 2022-04-01,resultado_primario_spn,-79184.80000000028,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2022-05-01,resultado_primario_spn,-162411.7465789998,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2022-06-01,resultado_primario_spn,-321644.40000000014,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
-2022-07-01,resultado_primario_spn,-1945.3000000002796,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
+2022-07-01,resultado_primario_spn,-1945.30000000028,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2022-08-01,resultado_primario_spn,-210051.80000000028,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2022-09-01,resultado_primario_spn,80624.29999999958,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
 2022-10-01,resultado_primario_spn,-103049.1000000008,ARS M,datos.gob.ar (452.3_RESULTADO_RIO_0_M_18_54)
@@ -171231,6 +171254,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_argentina,591.638,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_argentina,599.0980000000001,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_argentina,616.0129999999999,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_argentina,623.591,pb,BCRD (JP Morgan EMBIGD)
 1999-01-22,riesgo_pais_argentina_ad,937.0,pb,ArgentinaDatos (Ámbito)
 1999-02-01,riesgo_pais_argentina_ad,790.0,pb,ArgentinaDatos (Ámbito)
 1999-02-02,riesgo_pais_argentina_ad,769.0,pb,ArgentinaDatos (Ámbito)
@@ -178954,6 +178978,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,riesgo_pais_argentina_ad,589.0,pb,ArgentinaDatos (Ámbito)
 2026-10-13,riesgo_pais_argentina_ad,597.0,pb,ArgentinaDatos (Ámbito)
 2026-10-14,riesgo_pais_argentina_ad,611.0,pb,ArgentinaDatos (Ámbito)
+2026-10-15,riesgo_pais_argentina_ad,622.0,pb,ArgentinaDatos (Ámbito)
 1999-01-22,riesgo_pais_argentina_largo,937.0,pb,"BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)"
 1999-02-01,riesgo_pais_argentina_largo,790.0,pb,"BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)"
 1999-02-02,riesgo_pais_argentina_largo,769.0,pb,"BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)"
@@ -185955,6 +185980,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_argentina_largo,591.638,pb,"BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)"
 2026-10-13,riesgo_pais_argentina_largo,599.0980000000001,pb,"BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)"
 2026-10-14,riesgo_pais_argentina_largo,616.0129999999999,pb,"BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)"
+2026-10-15,riesgo_pais_argentina_largo,623.591,pb,"BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)"
 2012-11-30,riesgo_pais_bolivia,341.2,pb,BCRD (JP Morgan EMBIGD)
 2012-12-03,riesgo_pais_bolivia,339.855,pb,BCRD (JP Morgan EMBIGD)
 2012-12-04,riesgo_pais_bolivia,341.603,pb,BCRD (JP Morgan EMBIGD)
@@ -189422,6 +189448,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_bolivia,492.82899999999995,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_bolivia,481.131,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_bolivia,499.95500000000004,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_bolivia,498.26300000000003,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_brasil,174.591,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_brasil,173.399,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_brasil,165.654,pb,BCRD (JP Morgan EMBIGD)
@@ -194160,6 +194187,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_brasil,157.888,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_brasil,156.548,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_brasil,160.726,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_brasil,161.173,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_chile,112.26400000000001,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_chile,112.886,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_chile,111.809,pb,BCRD (JP Morgan EMBIGD)
@@ -198899,6 +198927,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_chile,94.07900000000001,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_chile,93.229,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_chile,96.108,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_chile,95.486,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_colombia,160.12,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_colombia,157.447,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_colombia,147.85299999999998,pb,BCRD (JP Morgan EMBIGD)
@@ -203638,6 +203667,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_colombia,216.56,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_colombia,214.889,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_colombia,216.33200000000002,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_colombia,216.778,pb,BCRD (JP Morgan EMBIGD)
 2012-07-31,riesgo_pais_costa_rica,484.178,pb,BCRD (JP Morgan EMBIGD)
 2012-08-01,riesgo_pais_costa_rica,472.543,pb,BCRD (JP Morgan EMBIGD)
 2012-08-02,riesgo_pais_costa_rica,477.81,pb,BCRD (JP Morgan EMBIGD)
@@ -207188,6 +207218,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_costa_rica,138.06799999999998,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_costa_rica,138.475,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_costa_rica,144.126,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_costa_rica,142.419,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_ecuador,597.284,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_ecuador,595.6999999999999,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_ecuador,575.163,pb,BCRD (JP Morgan EMBIGD)
@@ -211927,6 +211958,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_ecuador,524.0070000000001,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_ecuador,521.3580000000001,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_ecuador,524.988,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_ecuador,535.109,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_el_salvador,169.25,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_el_salvador,166.766,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_el_salvador,158.238,pb,BCRD (JP Morgan EMBIGD)
@@ -216666,6 +216698,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_el_salvador,287.786,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_el_salvador,287.657,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_el_salvador,293.446,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_el_salvador,292.86699999999996,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_global,210.11700000000002,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_global,209.184,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_global,201.04999999999998,pb,BCRD (JP Morgan EMBIGD)
@@ -221405,6 +221438,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_global,188.024,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_global,187.743,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_global,192.73499999999999,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_global,192.269,pb,BCRD (JP Morgan EMBIGD)
 2012-06-29,riesgo_pais_guatemala,370.342,pb,BCRD (JP Morgan EMBIGD)
 2012-07-02,riesgo_pais_guatemala,358.963,pb,BCRD (JP Morgan EMBIGD)
 2012-07-03,riesgo_pais_guatemala,353.884,pb,BCRD (JP Morgan EMBIGD)
@@ -224976,6 +225010,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_guatemala,124.187,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_guatemala,123.451,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_guatemala,128.07,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_guatemala,127.278,pb,BCRD (JP Morgan EMBIGD)
 2013-04-30,riesgo_pais_honduras,578.741,pb,BCRD (JP Morgan EMBIGD)
 2013-05-01,riesgo_pais_honduras,571.2080000000001,pb,BCRD (JP Morgan EMBIGD)
 2013-05-02,riesgo_pais_honduras,572.038,pb,BCRD (JP Morgan EMBIGD)
@@ -228341,6 +228376,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_honduras,173.371,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_honduras,173.424,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_honduras,179.738,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_honduras,177.479,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_latam,232.54100000000003,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_latam,230.653,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_latam,220.068,pb,BCRD (JP Morgan EMBIGD)
@@ -233080,6 +233116,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_latam,185.382,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_latam,185.089,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_latam,189.334,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_latam,189.078,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_mexico,125.739,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_mexico,126.494,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_mexico,120.928,pb,BCRD (JP Morgan EMBIGD)
@@ -237819,6 +237856,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_mexico,207.316,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_mexico,206.63,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_mexico,211.665,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_mexico,213.23,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_panama,157.24,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_panama,156.61,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_panama,145.827,pb,BCRD (JP Morgan EMBIGD)
@@ -242558,6 +242596,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_panama,123.18599999999999,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_panama,122.66699999999999,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_panama,126.0,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_panama,125.99100000000001,pb,BCRD (JP Morgan EMBIGD)
 2013-02-28,riesgo_pais_paraguay,279.265,pb,BCRD (JP Morgan EMBIGD)
 2013-03-01,riesgo_pais_paraguay,276.346,pb,BCRD (JP Morgan EMBIGD)
 2013-03-04,riesgo_pais_paraguay,274.09,pb,BCRD (JP Morgan EMBIGD)
@@ -245965,6 +246004,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_paraguay,114.26400000000001,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_paraguay,113.009,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_paraguay,118.10099999999998,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_paraguay,113.982,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_peru,145.609,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_peru,145.076,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_peru,136.579,pb,BCRD (JP Morgan EMBIGD)
@@ -250704,6 +250744,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_peru,111.72899999999998,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_peru,112.789,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_peru,115.90700000000001,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_peru,114.307,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_rep_dominicana,228.21699999999998,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_rep_dominicana,228.05900000000003,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_rep_dominicana,213.124,pb,BCRD (JP Morgan EMBIGD)
@@ -255443,6 +255484,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_rep_dominicana,177.739,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_rep_dominicana,178.58700000000002,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_rep_dominicana,183.746,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_rep_dominicana,180.666,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_uruguay,205.193,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_uruguay,201.736,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_uruguay,191.47400000000002,pb,BCRD (JP Morgan EMBIGD)
@@ -260182,6 +260224,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_uruguay,74.74499999999999,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_uruguay,75.318,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_uruguay,77.084,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_uruguay,76.61,pb,BCRD (JP Morgan EMBIGD)
 2007-10-29,riesgo_pais_venezuela,401.60099999999994,pb,BCRD (JP Morgan EMBIGD)
 2007-10-30,riesgo_pais_venezuela,399.06100000000004,pb,BCRD (JP Morgan EMBIGD)
 2007-10-31,riesgo_pais_venezuela,382.92199999999997,pb,BCRD (JP Morgan EMBIGD)
@@ -264921,6 +264964,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-09,riesgo_pais_venezuela,4083.1040000000003,pb,BCRD (JP Morgan EMBIGD)
 2026-10-13,riesgo_pais_venezuela,4129.948,pb,BCRD (JP Morgan EMBIGD)
 2026-10-14,riesgo_pais_venezuela,4167.645,pb,BCRD (JP Morgan EMBIGD)
+2026-10-15,riesgo_pais_venezuela,4179.566,pb,BCRD (JP Morgan EMBIGD)
 2000-09-15,soja_cbot,493.75,USc/bu,Yahoo Finance (ZS=F)
 2000-09-18,soja_cbot,484.0,USc/bu,Yahoo Finance (ZS=F)
 2000-09-19,soja_cbot,484.25,USc/bu,Yahoo Finance (ZS=F)
@@ -271480,7 +271524,8 @@ fecha,variable,valor,unidad,fuente
 2026-10-12,soja_cbot,1287.75,USc/bu,Yahoo Finance (ZS=F)
 2026-10-13,soja_cbot,1283.75,USc/bu,Yahoo Finance (ZS=F)
 2026-10-14,soja_cbot,1277.25,USc/bu,Yahoo Finance (ZS=F)
-2026-10-15,soja_cbot,1264.25,USc/bu,Yahoo Finance (ZS=F)
+2026-10-15,soja_cbot,1263.0,USc/bu,Yahoo Finance (ZS=F)
+2026-10-16,soja_cbot,1260.5,USc/bu,Yahoo Finance (ZS=F)
 2024-10-01,tamar,44.1875,% TNA,BCRA API v4 (id 44)
 2024-10-02,tamar,43.6875,% TNA,BCRA API v4 (id 44)
 2024-10-03,tamar,43.6875,% TNA,BCRA API v4 (id 44)
@@ -350380,6 +350425,7 @@ fecha,variable,valor,unidad,fuente
 2026-10-13,vix,15.270000457763672,índice,Yahoo Finance (^VIX)
 2026-10-14,vix,16.8700008392334,índice,Yahoo Finance (^VIX)
 2026-10-15,vix,16.459999084472656,índice,Yahoo Finance (^VIX)
+2026-10-16,vix,17.18000030517578,índice,Yahoo Finance (^VIX)
 2015-12-14,volumen_mlc,218.74,USD M,A3/MAE FOREX (volumen operado)
 2015-12-15,volumen_mlc,192.25,USD M,A3/MAE FOREX (volumen operado)
 2015-12-16,volumen_mlc,197.23,USD M,A3/MAE FOREX (volumen operado)
@@ -353018,3 +353064,4 @@ fecha,variable,valor,unidad,fuente
 2026-10-13,volumen_mlc,539.0335,USD M,A3/MAE FOREX (volumen operado)
 2026-10-14,volumen_mlc,588.23916,USD M,A3/MAE FOREX (volumen operado)
 2026-10-15,volumen_mlc,506.712,USD M,A3/MAE FOREX (volumen operado)
+2026-10-16,volumen_mlc,562.197,USD M,A3/MAE FOREX (volumen operado)

@@ -1,22 +1,22 @@
 {
- "corrida_utc": "2026-10-15T23:52:22.676771",
+ "corrida_utc": "2026-10-16T16:45:35.064858",
  "modo": "diario",
  "fuentes": {
   "bcra": {
    "estado": "ok",
-   "filas": 1465
+   "filas": 1449
   },
   "bcra_cny": {
    "estado": "ok",
-   "filas": 83
+   "filas": 82
   },
   "bcrd_embi": {
    "estado": "ok",
-   "filas": 83705
+   "filas": 83724
   },
   "argentinadatos": {
    "estado": "ok",
-   "filas": 15667
+   "filas": 15670
   },
   "byma_historicos": {
    "estado": "ok",
@@ -24,7 +24,7 @@
   },
   "rofex_futuros": {
    "estado": "ok",
-   "filas": 996
+   "filas": 984
   },
   "cammesa": {
    "estado": "ok",
@@ -40,7 +40,8 @@
   },
   "datos_gob": {
    "estado": "ok",
-   "filas": 1465
+   "filas": 1416,
+   "error": "148.3_INUCLEONAL_DICI_M_19: faltan 49 meses (primero 2017-02)"
   },
   "rem": {
    "estado": "ok",
@@ -56,11 +57,11 @@
   },
   "a3_mae": {
    "estado": "ok",
-   "filas": 345
+   "filas": 342
   },
   "lecaps": {
    "estado": "ok",
-   "filas": 212
+   "filas": 166
   },
   "byma_snapshots": {
    "estado": "ok",
