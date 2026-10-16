@@ -344,7 +344,7 @@ def cpi_eeuu():
             j = _get("https://api.bls.gov/publicAPI/v2/timeseries/data/CUSR0000SA0",
                      params={"startyear": ini, "endyear": min(ini + 9, HOY.year)}, timeout=60).json()
             for d in j["Results"]["series"][0]["data"]:
-                if d["period"].startswith("M") and d["period"] != "M13":
+                if d["period"].startswith("M") and d["period"] != "M13" and d["value"].replace(".", "", 1).isdigit():  # '-' = mes sin dato (oct-25)
                     filas.append((dt.date(int(d["year"]), int(d["period"][1:]), 1), "cpi_eeuu", float(d["value"]), "índice 1982-84=100", "BLS (CUSR0000SA0)"))
         except Exception as e:  # noqa: BLE001
             err.append(f"BLS {ini}: {e}; {str(locals().get('j', ''))[:200]}")
@@ -354,6 +354,8 @@ def cpi_eeuu():
             if str(f) >= "2014":
                 filas.append((f, "cpi_eeuu", v, "índice 1982-84=100", "FRED (CPIAUCSL)"))
     df = _df(filas)
+    if df.empty or max(df["fecha"]) < HOY - dt.timedelta(days=150):
+        raise RuntimeError("CPI incompleto: " + "; ".join(err)[:300])
     df.attrs["errores"] = err
     return df
 
@@ -396,21 +398,6 @@ def byma_intradia():
         if sym in BYMA_SIMBOLOS and (d.get("trade") or 0) > 0 and (d.get("volume") or 0) > 0:
             var, uni = BYMA_SIMBOLOS[sym]
             filas.append((HOY, var, d["trade"], uni, f"BYMA intradiario ({sym}) (provisorio)"))
-    return _df(filas)
-
-
-def bcra_a3500_hoy():
-    """A3500 del día por la API cambiaria (aparece después del cierre, antes que en la API monetaria)."""
-    filas = []
-    for f in [HOY - dt.timedelta(days=i) for i in range(4)]:
-        try:
-            j = _get(f"https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones?fecha={f}").json()
-        except Exception:  # noqa: BLE001
-            continue
-        r = j.get("results") or {}
-        for d in r.get("detalle", []):
-            if d.get("codigoMoneda") == "USD" and d.get("tipoCotizacion"):
-                filas.append((r.get("fecha", f), "tc_mayorista_a3500", d["tipoCotizacion"], "ARS/USD", "BCRA API cambiaria (A3500)"))
     return _df(filas)
 
 

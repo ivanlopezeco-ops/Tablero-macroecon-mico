@@ -327,7 +327,7 @@ def modo_completo():
 
 # Cada cuántas horas se vuelve a pedir cada fuente (0 = en todas las corridas). Las mensuales o lentas
 # no hace falta bajarlas cada hora; si una falla, se reintenta en la corrida siguiente.
-FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "cpi_eeuu": 12,
+FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "bls_cpi": 12,
                 "rem": 12, "balance_cambiario": 12, "cammesa": 6, "argentinadatos": 2}
 
 
@@ -346,12 +346,12 @@ def main():
     prev_e = DATA / "estado.json"
     previo = json.loads(prev_e.read_text(encoding="utf-8")).get("fuentes", {}) if prev_e.exists() else {}
     # Orden: lo provisorio del día primero, para que lo definitivo de la misma fecha lo pise.
-    for nombre, fn in [("byma_intradia", F.byma_intradia), ("bcra_a3500_hoy", F.bcra_a3500_hoy), ("ambito_riesgo", F.ambito_riesgo),
+    for nombre, fn in [("byma_intradia", F.byma_intradia), ("ambito_riesgo", F.ambito_riesgo),
                        ("bcra", F.bcra), ("bcra_cny", F.bcra_cny), ("bcrd_embi", F.bcrd_embi),
                        ("argentinadatos", F.argentinadatos), ("byma_historicos", F.byma_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
                        ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob), ("indec_ipc", F.indec_ipc),
-                       ("cpi_eeuu", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
+                       ("bls_cpi", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
                        ("balance_cambiario", F.balance_cambiario), ("a3_mae", F.a3_mae)]:
         if not toca(nombre, previo):
             estado[nombre] = {**previo[nombre], "omitida": True}
@@ -359,8 +359,6 @@ def main():
             continue
         try:
             d = fn()
-            if nombre == "bcra_a3500_hoy" and len(d):
-                d = d.copy()  # se valida en run(): solo se usa si coincide con la API monetaria en los días comunes
             partes.append(d)
             estado[nombre] = {"estado": "ok", "filas": len(d), "ok_utc": dt.datetime.utcnow().isoformat()}
             if d.attrs.get("errores"):
@@ -397,17 +395,7 @@ def main():
 
 
     nuevo = pd.concat(partes, ignore_index=True)
-    # A3500 de la API cambiaria: se usa solo si en las fechas que comparte con la API monetaria coincide (±0,2%)
-    m_hoy = nuevo["fuente"].eq("BCRA API cambiaria (A3500)")
-    if m_hoy.any():
-        a = nuevo[m_hoy].set_index("fecha")["valor"]
-        b = nuevo[(nuevo["variable"] == "tc_mayorista_a3500") & ~m_hoy].set_index("fecha")["valor"]
-        com = a.index.intersection(b.index)
-        ok = len(com) > 0 and ((a[com] / b[com] - 1).abs() < 0.002).all()
-        estado["bcra_a3500_hoy"]["validado"] = bool(ok)
-        estado["bcra_a3500_hoy"]["muestra"] = "; ".join(f"{f}: {a[f]:.2f} vs {b[f]:.2f}" for f in list(com)[:3])
-        if not ok:
-            nuevo = nuevo[~m_hoy]
+    # (oct-26: se probó el A3500 de la API cambiaria del BCRA; da otra cotización redondeada, no el A3500, y se descartó)
     archivo = DATA / "series.csv"
     if archivo.exists():
         viejo = pd.read_csv(archivo, parse_dates=["fecha"])
