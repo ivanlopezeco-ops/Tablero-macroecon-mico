@@ -29,10 +29,23 @@ def desde(primero):
 COLS = ["fecha", "variable", "valor", "unidad", "fuente"]
 
 
-def _get(url, **kw):
+def _get(url, intentos=3, **kw):
+    """GET con reintentos: las APIs públicas (BCRA sobre todo) devuelven errores 5xx transitorios."""
+    import time
     kw.setdefault("headers", UA)
     kw.setdefault("timeout", 90)
-    r = requests.get(url, **kw)
+    for i in range(intentos):
+        try:
+            r = requests.get(url, **kw)
+            if r.status_code >= 500 and i < intentos - 1:
+                time.sleep(4 * (i + 1))
+                continue
+            r.raise_for_status()
+            return r
+        except (requests.ConnectionError, requests.Timeout):
+            if i == intentos - 1:
+                raise
+            time.sleep(4 * (i + 1))
     r.raise_for_status()
     return r
 
@@ -74,19 +87,26 @@ BCRA_DESDE = {1: dt.date(1996, 1, 1), 15: dt.date(1996, 1, 1)}
 
 def bcra():
     """Series monetarias del BCRA desde su primer dato (1996 para reservas), paginando de a 3000."""
-    filas = []
+    filas, errores = [], []
     for idv, (var, uni) in BCRA_VARS.items():
         offset, total = 0, 1
-        while offset < total:
-            url = (f"https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/{idv}"
-                   f"?desde={desde(BCRA_DESDE.get(idv, dt.date(2003, 1, 1)))}&hasta={HOY}&limit=3000&offset={offset}")
-            j = _get(url).json()
-            total = j.get("metadata", {}).get("resultset", {}).get("count", 0)
-            for r in j["results"]:
-                for d in r["detalle"]:
-                    filas.append((d["fecha"], var, d["valor"], uni, f"BCRA API v4 (id {idv})"))
-            offset += 3000
-    return _df(filas)
+        try:
+            while offset < total:
+                url = (f"https://api.bcra.gob.ar/estadisticas/v4.0/monetarias/{idv}"
+                       f"?desde={desde(BCRA_DESDE.get(idv, dt.date(2003, 1, 1)))}&hasta={HOY}&limit=3000&offset={offset}")
+                j = _get(url).json()
+                total = j.get("metadata", {}).get("resultset", {}).get("count", 0)
+                for r in j["results"]:
+                    for d in r["detalle"]:
+                        filas.append((d["fecha"], var, d["valor"], uni, f"BCRA API v4 (id {idv})"))
+                offset += 3000
+        except Exception as e:  # noqa: BLE001
+            errores.append(f"id {idv}: {e}"[:140])
+    if not filas:
+        raise RuntimeError("; ".join(errores[:3]))
+    df = _df(filas)
+    df.attrs["errores"] = errores
+    return df
 
 
 def bcra_cny():
@@ -318,20 +338,24 @@ def indec_ipc():
 
 def cpi_eeuu():
     """CPI de EE.UU. (todos los ítems, desestacionalizado) del BLS; FRED como respaldo."""
-    filas = []
-    try:
-        for ini in range(2014, HOY.year + 1, 10):
-            r = requests.post("https://api.bls.gov/publicAPI/v2/timeseries/data/", headers={**UA, "Content-Type": "application/json"},
-                              data=json.dumps({"seriesid": ["CUSR0000SA0"], "startyear": str(ini), "endyear": str(min(ini + 9, HOY.year))}), timeout=60)
-            for d in r.json()["Results"]["series"][0]["data"]:
+    filas, err = [], []
+    for ini in range(2014, HOY.year + 1, 10):  # sin clave, el BLS da hasta 10 años por consulta
+        try:
+            j = _get("https://api.bls.gov/publicAPI/v2/timeseries/data/CUSR0000SA0",
+                     params={"startyear": ini, "endyear": min(ini + 9, HOY.year)}, timeout=60).json()
+            for d in j["Results"]["series"][0]["data"]:
                 if d["period"].startswith("M") and d["period"] != "M13":
                     filas.append((dt.date(int(d["year"]), int(d["period"][1:]), 1), "cpi_eeuu", float(d["value"]), "índice 1982-84=100", "BLS (CUSR0000SA0)"))
-    except Exception:  # noqa: BLE001
-        t = _get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL", timeout=150).text
+        except Exception as e:  # noqa: BLE001
+            err.append(f"BLS {ini}: {e}; {str(locals().get('j', ''))[:200]}")
+    if not filas:
+        t = _get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL", timeout=150, intentos=1).text
         for f, v in pd.read_csv(io.StringIO(t)).values.tolist():
             if str(f) >= "2014":
                 filas.append((f, "cpi_eeuu", v, "índice 1982-84=100", "FRED (CPIAUCSL)"))
-    return _df(filas)
+    df = _df(filas)
+    df.attrs["errores"] = err
+    return df
 
 
 # ---------------------------------------------------------------- Datos del día (provisorios)

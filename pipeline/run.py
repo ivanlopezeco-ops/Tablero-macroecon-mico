@@ -405,6 +405,7 @@ def main():
         com = a.index.intersection(b.index)
         ok = len(com) > 0 and ((a[com] / b[com] - 1).abs() < 0.002).all()
         estado["bcra_a3500_hoy"]["validado"] = bool(ok)
+        estado["bcra_a3500_hoy"]["muestra"] = "; ".join(f"{f}: {a[f]:.2f} vs {b[f]:.2f}" for f in list(com)[:3])
         if not ok:
             nuevo = nuevo[~m_hoy]
     archivo = DATA / "series.csv"
