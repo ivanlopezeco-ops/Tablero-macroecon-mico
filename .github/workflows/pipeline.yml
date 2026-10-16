@@ -1,9 +1,13 @@
-name: Actualización diaria
+name: Actualización del tablero
 
+# GitHub no garantiza el horario de los cron (en oct-26 se vieron atrasos de 2 a 4,5 horas).
+# Por eso corre cada hora en la rueda: aunque una corrida se atrase o se saltee, la siguiente toma el dato.
+# Horarios en UTC (Argentina = UTC-3).
 on:
   schedule:
-    - cron: "40 21 * * 1-5"   # 18:40 hora Argentina: cierre de mercado (caución, futuros, A3500)
-    - cron: "10 12 * * 1-6"   # 09:10 hora Argentina: lo que el BCRA, el BCRD y EE.UU. publican de noche
+    - cron: "7 13-22 * * 1-5"   # 10:07 a 19:07 hora argentina, cada hora: datos del día (BYMA, Ámbito, A3, Yahoo)
+    - cron: "7 0 * * 2-6"       # 21:07: cierres, A3500 del día y lo que el BCRA publica a la tarde
+    - cron: "7 11 * * 1-6"      # 08:07: lo que el BCRD, el Tesoro de EE.UU. y el BCRA publican de noche (sábado: historia completa)
   workflow_dispatch:
   push:
     paths:
@@ -24,28 +28,38 @@ concurrency:
 jobs:
   actualizar:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main   # la última versión de main, con los datos que dejó la corrida anterior
+          ref: main
+      # La base de datos vive en la rama "datos", con un solo commit que se reemplaza en cada corrida:
+      # así el repositorio no crece con cada actualización horaria.
+      - name: Traer la base acumulada
+        run: |
+          if git fetch --depth 1 origin datos; then
+            rm -rf data && git checkout FETCH_HEAD -- data && git reset -q data
+          fi
+          ls -la data
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: .github/workflows/pipeline.yml
       - run: pip install requests pandas openpyxl
       - run: python pipeline/run.py
-      - name: Guardar datos
+      - name: Guardar la base en la rama datos
         run: |
+          rm -rf /tmp/datos && mkdir -p /tmp/datos && cp -r data /tmp/datos/
+          cd /tmp/datos
+          git init -q -b datos
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add data
-          git commit -m "Datos $(date -u +%Y-%m-%d)" || echo "sin cambios"
-          # si otra corrida empujó datos mientras tanto, gana la base de esta corrida (es la más nueva)
-          git pull --rebase -X theirs || (git rebase --abort; git pull --no-rebase -X ours --no-edit)
-          git push
+          git add -A && git commit -qm "Datos $(date -u +%Y-%m-%dT%H:%M)Z"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" datos
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

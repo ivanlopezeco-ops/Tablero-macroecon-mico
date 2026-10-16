@@ -238,7 +238,9 @@ def treasury():
 
 
 YAHOO = {"^VIX": ("vix", "índice"), "BZ=F": ("brent", "USD/bbl"), "DX-Y.NYB": ("dxy", "índice"),
-         "BRL=X": ("brl_usd", "BRL/USD"), "GC=F": ("oro", "USD/oz"), "ZS=F": ("soja_cbot", "USc/bu")}
+         "BRL=X": ("brl_usd", "BRL/USD"), "GC=F": ("oro", "USD/oz"), "ZS=F": ("soja_cbot", "USc/bu"),
+         "ZW=F": ("trigo_cbot", "USc/bu"), "ZC=F": ("maiz_cbot", "USc/bu"), "HG=F": ("cobre", "USD/lb"),
+         "NG=F": ("gas_natural_hh", "USD/MMBtu"), "^GSPC": ("sp500", "índice")}
 
 
 def yahoo():
@@ -300,6 +302,94 @@ def datos_gob():
     return df
 
 
+# ---------------------------------------------------------------- INDEC directo (llega antes que datos.gob.ar)
+def indec_ipc():
+    """IPC nacional nivel general y núcleo desde el CSV del INDEC (se actualiza el día de publicación)."""
+    t = _get("https://www.indec.gob.ar/ftp/cuadros/economia/serie_ipc_divisiones.csv", verify=False).content.decode("latin-1")
+    df = pd.read_csv(io.StringIO(t), sep=";", dtype=str)
+    df = df[df["Region"].eq("Nacional")]
+    filas = []
+    for cond, var in [(df["Codigo"].eq("0"), "ipc_nivel_general"), (df["Codigo"].str.lower().str.startswith("n") & df["Clasificador"].eq("Categorias"), "ipc_nucleo")]:
+        for _, r in df[cond].iterrows():
+            f = dt.date(int(r["Periodo"][:4]), int(r["Periodo"][4:6]), 1)
+            filas.append((f, var, float(r["Indice_IPC"].replace(",", ".")), "índice dic-16=100", "INDEC (serie_ipc_divisiones.csv)"))
+    return _df(filas)
+
+
+def cpi_eeuu():
+    """CPI de EE.UU. (todos los ítems, desestacionalizado) del BLS; FRED como respaldo."""
+    filas = []
+    try:
+        for ini in range(2014, HOY.year + 1, 10):
+            r = requests.post("https://api.bls.gov/publicAPI/v2/timeseries/data/", headers={**UA, "Content-Type": "application/json"},
+                              data=json.dumps({"seriesid": ["CUSR0000SA0"], "startyear": str(ini), "endyear": str(min(ini + 9, HOY.year))}), timeout=60)
+            for d in r.json()["Results"]["series"][0]["data"]:
+                if d["period"].startswith("M") and d["period"] != "M13":
+                    filas.append((dt.date(int(d["year"]), int(d["period"][1:]), 1), "cpi_eeuu", float(d["value"]), "índice 1982-84=100", "BLS (CUSR0000SA0)"))
+    except Exception:  # noqa: BLE001
+        t = _get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL", timeout=150).text
+        for f, v in pd.read_csv(io.StringIO(t)).values.tolist():
+            if str(f) >= "2014":
+                filas.append((f, "cpi_eeuu", v, "índice 1982-84=100", "FRED (CPIAUCSL)"))
+    return _df(filas)
+
+
+# ---------------------------------------------------------------- Datos del día (provisorios)
+AR = ZoneInfo("America/Argentina/Buenos_Aires")
+
+
+def en_rueda():
+    """Entre la apertura y un rato después del cierre de BYMA, en días hábiles."""
+    ahora = dt.datetime.now(AR)
+    return ahora.weekday() < 5 and dt.time(11, 15) <= ahora.time() <= dt.time(19, 30)
+
+
+def ambito_riesgo():
+    """Riesgo país de Argentina en el día (Ámbito, en base a JP Morgan). Se reemplaza por el del BCRD cuando sale."""
+    filas = []
+    j = _get("https://mercados.ambito.com//riesgopais/variacion").json()
+    f = dt.datetime.strptime(j["fecha"], "%d-%m-%Y").date()
+    filas.append((f, "riesgo_pais_argentina_ambito", float(str(j["ultimo"]).replace(".", "").replace(",", ".")), "pb", "Ámbito (en el día)"))
+    h = _get(f"https://mercados.ambito.com//riesgopais/historico-general/{HOY - dt.timedelta(days=40)}/{HOY}").json()
+    for fila in h[1:]:
+        filas.append((dt.datetime.strptime(fila[0], "%d-%m-%Y").date(), "riesgo_pais_argentina_ambito",
+                      float(str(fila[1]).replace(".", "").replace(",", ".")), "pb", "Ámbito"))
+    df = _df(filas).drop_duplicates(["fecha", "variable"], keep="first")
+    return df
+
+
+def byma_intradia():
+    """Último precio operado de los bonos (BYMA, con 20 minutos de demora), fechado hoy. Solo durante la rueda."""
+    if not en_rueda():
+        return _df([])
+    r = requests.post(f"{BYMA}/public-bonds", json={"excludeZeroPxAndQty": True, "T2": False, "T1": True, "T0": False,
+                      "Content-Type": "application/json"}, headers=BYMA_H, verify=False, timeout=60)
+    data = r.json()
+    data = data.get("data", data) if isinstance(data, dict) else data
+    filas = []
+    for d in data:
+        sym = f"{d.get('symbol')} 24HS"
+        if sym in BYMA_SIMBOLOS and (d.get("trade") or 0) > 0 and (d.get("volume") or 0) > 0:
+            var, uni = BYMA_SIMBOLOS[sym]
+            filas.append((HOY, var, d["trade"], uni, f"BYMA intradiario ({sym}) (provisorio)"))
+    return _df(filas)
+
+
+def bcra_a3500_hoy():
+    """A3500 del día por la API cambiaria (aparece después del cierre, antes que en la API monetaria)."""
+    filas = []
+    for f in [HOY - dt.timedelta(days=i) for i in range(4)]:
+        try:
+            j = _get(f"https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones?fecha={f}").json()
+        except Exception:  # noqa: BLE001
+            continue
+        r = j.get("results") or {}
+        for d in r.get("detalle", []):
+            if d.get("codigoMoneda") == "USD" and d.get("tipoCotizacion"):
+                filas.append((r.get("fecha", f), "tc_mayorista_a3500", d["tipoCotizacion"], "ARS/USD", "BCRA API cambiaria (A3500)"))
+    return _df(filas)
+
+
 # ---------------------------------------------------------------- Archivos para inspeccionar
 ARCHIVOS = {}
 
@@ -354,9 +444,45 @@ BC_CODIGOS = {
     "bal025": "bc_ied", "bal028": "bc_portafolio", "bal031": "bc_prestamos_titulos_deuda",
     "bal034": "bc_fmi", "bal037": "bc_otros_organismos", "bal040": "bc_billetes_divisas_spnf",
     "bal050": "bc_var_reservas_transacciones",
+    # ampliación oct-26: brutos y componentes de la cuenta financiera
+    "bal006": "bc_servicios_ingresos", "bal007": "bc_servicios_egresos", "bal008": "bc_ingreso_primario",
+    "bal013": "bc_intereses_otros_org", "bal014": "bc_intereses_otros", "bal015": "bc_intereses_otros_gob",
+    "bal017": "bc_utilidades_ingresos", "bal018": "bc_utilidades_egresos", "bal019": "bc_ingreso_secundario",
+    "bal023": "bc_cuenta_capital", "bal026": "bc_ied_ingresos", "bal027": "bc_ied_egresos",
+    "bal029": "bc_portafolio_ingresos", "bal030": "bc_portafolio_egresos",
+    "bal032": "bc_prestamos_ingresos", "bal033": "bc_prestamos_egresos",
+    "bal035": "bc_fmi_ingresos", "bal036": "bc_fmi_egresos", "bal038": "bc_otros_org_ingresos", "bal039": "bc_otros_org_egresos",
+    "bal041": "bc_billetes_ventas", "bal042": "bc_billetes_compras", "bal043": "bc_canje",
+    "bal044": "bc_fae_sector_financiero", "bal045": "bc_fae_sector_publico", "bal046": "bc_titulos_valores",
+    "bal047": "bc_otras_spn", "bal048": "bc_otros_movimientos", "bal049": "bc_no_informado",
+    "bal051": "bc_var_reservas_contable", "bal052": "bc_ajuste_valuacion", "bal053": "bc_tarjetas_exterior",
 }
+# Hoja "Cta. Financiera por sector"
+BC_FIN_SECTOR = {"cap001": "bcs_total", "cap002": "bcs_spnf", "cap003": "bcs_financiero", "cap004": "bcs_gobierno_bcra", "cap005": "bcs_otros"}
+# Hoja "Anexo tarjetas y viajes"
+BC_VIAJES = {"viajes001": "bc_tarjetas_neto", "viajes026": "bc_viajes_pasajes_neto", "viajes024": "bc_viajes_ingresos",
+             "viajes025": "bc_viajes_egresos", "viajes019": "bc_pasajes_egresos"}
+# Hoja "MC por concepto": hojas de último nivel (USD; con signo)
+BC_CONCEPTOS = {"Cobros anticipados de exportaciones": "mcc_cobros_anticipados", "Cobros de exportaciones": "mcc_cobros_expo",
+                "Financiaciones locales de exportaciones": "mcc_financ_locales_expo", "Prefinanciaciones de exportaciones del exterior": "mcc_prefinanciaciones",
+                "Pagos a la vista de importaciones": "mcc_impo_vista", "Pagos anticipados de importaciones": "mcc_impo_anticipados",
+                "Pagos diferidos de importaciones y otros egresos por bienes": "mcc_impo_diferidos", "Billetes - Ingresos": "mcc_billetes_ventas",
+                "Divisas - Ingresos": "mcc_divisas_ventas", "Billetes - Egresos": "mcc_billetes_compras",
+                "Inversiones directas de residentes en el exterior": "mcc_ide_residentes", "Otras inversiones": "mcc_otras_inversiones",
+                "Financiaciones locales - Ingresos": "mcc_financ_locales_ing", "Financiaciones locales - Egresos": "mcc_financ_locales_egr",
+                "Otros préstamos del exterior y títulos de deuda - Ingresos": "mcc_deuda_ext_ing",
+                "Otros préstamos del exterior y títulos de deuda - Egresos": "mcc_deuda_ext_egr",
+                "Inversión directa - Ingresos": "mcc_ied_ing", "Inversión directa - Egresos": "mcc_ied_egr",
+                "Inversión de portafolio - Ingresos": "mcc_portafolio_ing", "Inversión de portafolio - Egresos": "mcc_portafolio_egr"}
 BC_SECTORES = {"Personas Humanas": "mc_personas_humanas", "Oleaginosos y Cerealeros": "mc_oleaginosos_cerealeros",
-               "Petróleo": "mc_petroleo", "Mineria": "mc_mineria", "Total general": "mc_total"}
+               "Petróleo": "mc_petroleo", "Mineria": "mc_mineria", "Total general": "mc_total",
+               "Electricidad (Generación, Transporte, Distribución)": "mc_electricidad",
+               "Gas (Extracción, Transporte, Distribución)": "mc_gas", "Industria Automotriz": "mc_automotriz",
+               "Maquinarias y Equipos": "mc_maquinarias", "Metales Comunes y Elaboración": "mc_metales_comunes",
+               "Industria Química, Caucho y Plástico": "mc_quimica", "Alimentos, Bebidas y Tabaco": "mc_alimentos",
+               "Comercio": "mc_comercio", "Sector Público": "mc_sector_publico",
+               "Entidades financieras y cambiarias": "mc_entidades_financieras", "Informática": "mc_informatica",
+               "Turismo y Hotelería": "mc_turismo", "Transporte": "mc_transporte", "Comunicaciones": "mc_comunicaciones"}
 
 
 def balance_cambiario():
@@ -366,10 +492,14 @@ def balance_cambiario():
     filas = []
     meses = b[b[0].apply(lambda x: isinstance(x, (dt.datetime, pd.Timestamp)))]
     meses = meses[pd.to_datetime(meses[0]) >= pd.Timestamp("2003-01-01")]
+    # En la hoja los egresos van con signo positivo; acá se pasan a negativo para que todo sume con su signo.
+    egresos = {"bal004", "bal007", "bal011", "bal012", "bal013", "bal014", "bal015", "bal018", "bal021", "bal027",
+               "bal030", "bal033", "bal036", "bal039", "bal042"}
     for col, cod in enumerate(codigos):
         if cod in BC_CODIGOS:
+            sg = -1 if cod in egresos else 1
             for f, v in zip(meses[0], meses[col]):
-                filas.append((f, BC_CODIGOS[cod], v, "USD M", f"BCRA balance cambiario ({cod})"))
+                filas.append((f, BC_CODIGOS[cod], pd.to_numeric(v, errors="coerce") * sg, "USD M", f"BCRA balance cambiario ({cod})"))
     s = pd.read_excel(io.BytesIO(contenido), sheet_name="MC por sector", header=None)
     fila_fechas = s.index[s[0].astype(str).str.strip().eq("Sector")][0]
     fechas = s.iloc[fila_fechas].tolist()
@@ -380,6 +510,26 @@ def balance_cambiario():
                 if isinstance(f, (dt.datetime, pd.Timestamp)) and f >= dt.datetime(2003, 1, 1):
                     filas.append((f, BC_SECTORES[nombre], pd.to_numeric(v, errors="coerce") / 1e6, "USD M",
                                   "BCRA mercado de cambios por sector (neto)"))
+    for hoja, mapa, fu in [("Cta. Financiera por sector", BC_FIN_SECTOR, "BCRA cuenta financiera por sector"),
+                           ("Anexo tarjetas y viajes", BC_VIAJES, "BCRA anexo tarjetas y viajes")]:
+        h = pd.read_excel(io.BytesIO(contenido), sheet_name=hoja, header=None)
+        fila_cod = h.index[h[0].astype(str).str.strip().isin(["cap000", "mes000"])][0]
+        cods = h.iloc[fila_cod].tolist()
+        ms = h[h[0].apply(lambda x: isinstance(x, (dt.datetime, pd.Timestamp)))]
+        for col, cod in enumerate(cods):
+            if cod in mapa:
+                for f, v in zip(ms[0], ms[col]):
+                    filas.append((f, mapa[cod], v, "USD M", f"{fu} ({cod})"))
+    c = pd.read_excel(io.BytesIO(contenido), sheet_name="MC por concepto", header=None)
+    fila_f = c.index[c.iloc[:, 4].apply(lambda x: isinstance(x, (dt.datetime, pd.Timestamp)))][0]
+    fechas = c.iloc[fila_f].tolist()
+    for _, r in c.iloc[fila_f + 1:].iterrows():
+        hoja = next((str(x).strip() for x in r.tolist()[3::-1] if str(x).strip() not in ("nan", "")), "")
+        if hoja in BC_CONCEPTOS and str(r[3]).strip() not in ("nan", ""):
+            for f, v in zip(fechas[4:], r.tolist()[4:]):
+                if isinstance(f, (dt.datetime, pd.Timestamp)):
+                    filas.append((f, BC_CONCEPTOS[hoja], pd.to_numeric(v, errors="coerce") / 1e6, "USD M",
+                                  "BCRA mercado de cambios por concepto"))
     return _df(filas)
 
 

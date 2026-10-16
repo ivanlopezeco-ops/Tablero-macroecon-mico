@@ -31,6 +31,44 @@ def serie(df, var):
     return s[~s.index.duplicated(keep="last")]
 
 
+def serie_def(df, var):
+    """Como serie(), sin los datos provisorios del día (para que no se arrastren de una corrida a otra)."""
+    d = df[(df["variable"] == var) & ~df["fuente"].astype(str).str.contains("provisorio")]
+    return serie(d, var)
+
+
+def provisorio(frame, fechas):
+    """Marca como provisorias las filas de esas fechas."""
+    if len(frame) and len(fechas):
+        m = pd.to_datetime(frame["fecha"]).isin(pd.to_datetime(list(fechas)))
+        frame.loc[m, "fuente"] = frame.loc[m, "fuente"] + " (provisorio)"
+    return frame
+
+
+def diario_desde_mensual(m, extra_meses=0, tasa_extra=None):
+    """Índice mensual (fechado el día 1) -> diario, interpolando en logaritmos entre los días 15.
+    Se extiende extra_meses con la tasa mensual tasa_extra(mes) (en %). Devuelve (diario, primer mes estimado)."""
+    m = m.dropna().sort_index()
+    m.index = m.index.to_period("M").to_timestamp()
+    est = None
+    for _ in range(extra_meses):
+        sig = m.index[-1] + pd.offsets.MonthBegin(1)
+        r = tasa_extra(sig) if tasa_extra else 0
+        m.loc[sig] = m.iloc[-1] * (1 + r / 100)
+        est = est or sig
+    mid = pd.Series(m.values, index=m.index + pd.Timedelta(days=14))
+    dias = pd.date_range(m.index[0], m.index[-1] + pd.offsets.MonthEnd(0), freq="D")
+    import numpy as np
+    lg = pd.Series(np.log(mid.values), index=mid.index).reindex(dias.union(mid.index)).interpolate(method="time", limit_direction="both")
+    # fuera de los extremos, se extrapola con la pendiente del último tramo
+    d = np.exp(lg.reindex(dias))
+    if len(mid) > 1:
+        pend = (np.log(mid.iloc[-1]) - np.log(mid.iloc[-2])) / (mid.index[-1] - mid.index[-2]).days
+        tras = dias[dias > mid.index[-1]]
+        d.loc[tras] = np.exp(np.log(mid.iloc[-1]) + pend * (tras - mid.index[-1]).days)
+    return d, est
+
+
 def vigente(lista, fechas):
     """Parámetro escalonado: valor de la última entrada con 'desde' <= fecha."""
     t = pd.Series({pd.Timestamp(x["desde"]): x["usd_millones"] for x in lista}).sort_index()
@@ -56,24 +94,62 @@ def derivadas(df):
     out, notas = [], {}
 
     a3500 = serie(df, "tc_mayorista_a3500")
+    fu = df["fuente"].astype(str)
+    prov_byma = set(df.loc[df["variable"].isin(["al30_ars", "al30_usd_mep", "al30_usd_ccl"]) & fu.str.contains("provisorio"), "fecha"])
+    P = lambda frame: provisorio(frame, prov_byma)  # noqa: E731
     # MEP y CCL propios con AL30
     al30 = serie(df, "al30_ars")
     mep = al30 / serie(df, "al30_usd_mep")
     ccl = al30 / serie(df, "al30_usd_ccl")
-    out += [largo(mep, "mep", "ARS/USD", "Cálculo: AL30/AL30D (BYMA)"),
-            largo(ccl, "ccl", "ARS/USD", "Cálculo: AL30/AL30C (BYMA)")]
+    out += [P(largo(mep, "mep", "ARS/USD", "Cálculo: AL30/AL30D (BYMA)")),
+            P(largo(ccl, "ccl", "ARS/USD", "Cálculo: AL30/AL30C (BYMA)"))]
+    # Riesgo país de Argentina: EMBIGD del BCRD y, para los días que el BCRD todavía no publicó, Ámbito
+    rp = serie_def(df, "riesgo_pais_argentina")
+    amb = serie(df, "riesgo_pais_argentina_ambito")
+    cola = amb[amb.index > rp.index.max()] if not rp.empty else amb.iloc[0:0]
+    out += [largo(rp, "riesgo_pais_argentina", "pb", "BCRD (JP Morgan EMBIGD)"),
+            largo(cola, "riesgo_pais_argentina", "pb", "Ámbito (provisorio)")]
+    df = pd.concat([df[df["variable"] != "riesgo_pais_argentina"], out[-2], out[-1]], ignore_index=True)
     # Series largas: antes del primer dato propio (BYMA da unos dos años), ArgentinaDatos
     tmp = pd.concat([df, largo(mep, "mep", "", ""), largo(ccl, "ccl", "", "")], ignore_index=True)
     ccl_l, mep_l = empalmar(tmp, "ccl", "ccl_ad"), empalmar(tmp, "mep", "mep_ad")
-    out += [largo(ccl_l, "ccl_largo", "ARS/USD", "Cálculo propio (AL30); antes, ArgentinaDatos"),
-            largo(mep_l, "mep_largo", "ARS/USD", "Cálculo propio (AL30); antes, ArgentinaDatos")]
-    out.append(largo((ccl_l / a3500.reindex(ccl_l.index) - 1) * 100, "brecha_ccl", "%", "Cálculo: CCL/A3500-1"))
-    out.append(largo((ccl_l / mep_l - 1) * 100, "canje_ccl_mep", "%", "Cálculo: CCL/MEP-1"))
-    out += [largo(empalmar(df, "riesgo_pais_argentina", "riesgo_pais_argentina_ad"), "riesgo_pais_argentina_largo", "pb",
-                  "BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)"),
-]
+    out += [P(largo(ccl_l, "ccl_largo", "ARS/USD", "Cálculo propio (AL30); antes, ArgentinaDatos")),
+            P(largo(mep_l, "mep_largo", "ARS/USD", "Cálculo propio (AL30); antes, ArgentinaDatos"))]
+    a3500_ff = a3500.reindex(a3500.index.union(ccl_l.index)).ffill()  # en la rueda, el CCL del día contra el último A3500
+    out.append(P(largo((ccl_l / a3500_ff.reindex(ccl_l.index) - 1) * 100, "brecha_ccl", "%", "Cálculo: CCL/A3500-1")))
+    out.append(P(largo((ccl_l / mep_l - 1) * 100, "canje_ccl_mep", "%", "Cálculo: CCL/MEP-1")))
+    rpl = largo(empalmar(df, "riesgo_pais_argentina", "riesgo_pais_argentina_ad"), "riesgo_pais_argentina_largo", "pb",
+                "BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)")
+    out.append(provisorio(rpl, set(cola.index.date)))
     techo = serie(df, "banda_techo")
     out.append(largo((techo / a3500 - 1) * 100, "distancia_techo_banda", "%", "Cálculo: techo/A3500-1"))
+
+    # Tipo de cambio real con bandas
+    ipc, cpi = serie(df, "ipc_nivel_general"), serie(df, "cpi_eeuu")
+    if not ipc.empty and not cpi.empty and not a3500.empty:
+        rem_m = serie(df, "rem_inflacion_mes_siguiente")
+        def tasa_ar(mes):  # REM relevado el mes anterior; si no hay, el último
+            r = rem_m[(rem_m.index.to_period("M") == (mes - pd.offsets.MonthBegin(1)).to_period("M"))]
+            return float(r.iloc[-1] if len(r) else rem_m.iloc[-1]) if len(rem_m) else 2.0
+        hoy_m = pd.Timestamp(F.HOY).to_period("M").to_timestamp()
+        n_ar = max(0, (hoy_m.year - ipc.index[-1].year) * 12 + hoy_m.month - ipc.index[-1].month + 1)
+        p_ar, est_ar = diario_desde_mensual(ipc, n_ar, tasa_ar)
+        tasas_us = (cpi.pct_change() * 100).dropna().tail(6).mean()
+        n_us = max(0, (hoy_m.year - cpi.index[-1].year) * 12 + hoy_m.month - cpi.index[-1].month + 1)
+        p_us, _ = diario_desde_mensual(cpi, n_us, lambda m: tasas_us)
+        base = ipc.index[-1] + pd.Timedelta(days=14)            # precios del último mes con IPC publicado
+        k = (p_ar.loc[base] / p_ar) * (p_us / p_us.loc[base])     # multiplica un tipo de cambio nominal
+        mes_base = f"{ipc.index[-1]:%Y-%m}"
+        desde_est = f"{(ipc.index[-1] + pd.offsets.MonthBegin(1)):%Y-%m-%d}"
+        fu_r = f"Cálculo: A3500 x CPI EE.UU. / IPC, a precios de {mes_base}; desde {desde_est}, IPC estimado con el REM"
+        for v, nom in [(a3500, "tcr_bilateral"), (serie(df, "banda_techo"), "tcr_bilateral_techo"), (serie(df, "banda_piso"), "tcr_bilateral_piso")]:
+            out.append(largo(v * k.reindex(v.index), nom, f"ARS/USD de {mes_base}", fu_r))
+        notas["tcr_base"] = mes_base
+    tcrm = serie(df, "tcrm")
+    if not tcrm.empty:
+        for v, nom in [(serie(df, "banda_techo"), "tcrm_techo"), (serie(df, "banda_piso"), "tcrm_piso")]:
+            r = (tcrm * v / a3500.reindex(a3500.index.union(tcrm.index)).ffill().reindex(tcrm.index)).dropna()
+            out.append(largo(r, nom, "índice 17-12-15=100", "Cálculo: ITCRM x banda / A3500"))
 
     # Compras acumuladas en el año
     comp = serie(df, "compras_bcra_mlc")
@@ -242,26 +318,51 @@ VERSION_HISTORIA = 3  # subir este número fuerza una descarga histórica comple
 
 
 def modo_completo():
-    """Histórico completo si nunca se hizo con esta versión, los sábados (para tomar revisiones) o a pedido."""
+    """Histórico completo si nunca se hizo con esta versión, una vez cada sábado (revisiones) o a pedido."""
     marca = RAW / "historia.json"
-    hecho = json.loads(marca.read_text())["version"] if marca.exists() else 0
-    return hecho < VERSION_HISTORIA or F.HOY.weekday() == 5 or os.environ.get("HISTORIA") == "1"
+    m = json.loads(marca.read_text()) if marca.exists() else {}
+    sabado = F.HOY.weekday() == 5 and m.get("fecha") != str(F.HOY)
+    return m.get("version", 0) < VERSION_HISTORIA or sabado or os.environ.get("HISTORIA") == "1"
+
+
+# Cada cuántas horas se vuelve a pedir cada fuente (0 = en todas las corridas). Las mensuales o lentas
+# no hace falta bajarlas cada hora; si una falla, se reintenta en la corrida siguiente.
+FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "cpi_eeuu": 12,
+                "rem": 12, "balance_cambiario": 12, "cammesa": 6, "argentinadatos": 2}
+
+
+def toca(nombre, previo):
+    h = FRECUENCIA_H.get(nombre, 0)
+    p = previo.get(nombre, {})
+    if F.COMPLETO or not h or p.get("estado") != "ok" or not p.get("ok_utc"):
+        return True
+    return (dt.datetime.utcnow() - dt.datetime.fromisoformat(p["ok_utc"])).total_seconds() / 3600 >= h - 0.25
 
 
 def main():
     F.COMPLETO = modo_completo()
     print("modo:", "histórico completo" if F.COMPLETO else f"diario (últimos {F.VENTANA} días)")
     estado, partes = {}, []
-    for nombre, fn in [("bcra", F.bcra), ("bcra_cny", F.bcra_cny), ("bcrd_embi", F.bcrd_embi),
+    prev_e = DATA / "estado.json"
+    previo = json.loads(prev_e.read_text(encoding="utf-8")).get("fuentes", {}) if prev_e.exists() else {}
+    # Orden: lo provisorio del día primero, para que lo definitivo de la misma fecha lo pise.
+    for nombre, fn in [("byma_intradia", F.byma_intradia), ("bcra_a3500_hoy", F.bcra_a3500_hoy), ("ambito_riesgo", F.ambito_riesgo),
+                       ("bcra", F.bcra), ("bcra_cny", F.bcra_cny), ("bcrd_embi", F.bcrd_embi),
                        ("argentinadatos", F.argentinadatos), ("byma_historicos", F.byma_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
-                       ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob),
-                       ("rem", F.rem), ("itcrm", F.itcrm),
+                       ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob), ("indec_ipc", F.indec_ipc),
+                       ("cpi_eeuu", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
                        ("balance_cambiario", F.balance_cambiario), ("a3_mae", F.a3_mae)]:
+        if not toca(nombre, previo):
+            estado[nombre] = {**previo[nombre], "omitida": True}
+            print(nombre, "omitida (frecuencia)")
+            continue
         try:
             d = fn()
+            if nombre == "bcra_a3500_hoy" and len(d):
+                d = d.copy()  # se valida en run(): solo se usa si coincide con la API monetaria en los días comunes
             partes.append(d)
-            estado[nombre] = {"estado": "ok", "filas": len(d)}
+            estado[nombre] = {"estado": "ok", "filas": len(d), "ok_utc": dt.datetime.utcnow().isoformat()}
             if d.attrs.get("errores"):
                 estado[nombre]["error"] = " | ".join(d.attrs["errores"])
         except Exception as e:  # noqa: BLE001
@@ -296,6 +397,16 @@ def main():
 
 
     nuevo = pd.concat(partes, ignore_index=True)
+    # A3500 de la API cambiaria: se usa solo si en las fechas que comparte con la API monetaria coincide (±0,2%)
+    m_hoy = nuevo["fuente"].eq("BCRA API cambiaria (A3500)")
+    if m_hoy.any():
+        a = nuevo[m_hoy].set_index("fecha")["valor"]
+        b = nuevo[(nuevo["variable"] == "tc_mayorista_a3500") & ~m_hoy].set_index("fecha")["valor"]
+        com = a.index.intersection(b.index)
+        ok = len(com) > 0 and ((a[com] / b[com] - 1).abs() < 0.002).all()
+        estado["bcra_a3500_hoy"]["validado"] = bool(ok)
+        if not ok:
+            nuevo = nuevo[~m_hoy]
     archivo = DATA / "series.csv"
     if archivo.exists():
         viejo = pd.read_csv(archivo, parse_dates=["fecha"])

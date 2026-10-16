@@ -2,18 +2,22 @@
 "use strict";
 
 let D = null;              // series
-const R = { dias: 365, desde: null, hasta: null };   // período visible: botones (dias, 0 = todo) o selector (desde/hasta)
+// Período general (encabezado). Cada tarjeta arranca con una copia y puede cambiar el suyo.
+const R = { dias: 365, desde: null, hasta: null };
 let TAB = "resumen";
 const charts = [];         // instancias ECharts vivas
 
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const COL = () => ({ azul: css("--azul"), celeste: css("--celeste"), gris: css("--gris"), naranja: css("--naranja"),
-  tinta: css("--tinta"), texto2: css("--texto2"), nota: css("--nota"), grilla: css("--grilla"), eje: css("--eje"), card: css("--card") });
+  verde: css("--verde"), violeta: css("--violeta"), ocre: css("--ocre"), rojo: css("--rojo"), turquesa: css("--turquesa"), marron: css("--marron"),
+  tinta: css("--tinta"), texto2: css("--texto2"), nota: css("--nota"), grilla: css("--grilla"), eje: css("--eje"), card: css("--card"), borde: css("--borde") });
+const PALETA = ["azul", "gris", "celeste", "naranja", "verde", "violeta", "ocre", "turquesa", "rojo", "marron"];
 
 // ------------------------------------------------------------------ formato
 const nf = (dec) => new Intl.NumberFormat("es-AR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
 const fmt = (v, dec = 0) => (v == null || isNaN(v) ? "s/d" : nf(dec).format(v));
+const fmtS = (v, dec = 0) => (v == null || isNaN(v) ? "s/d" : (v > 0 ? "+" : "") + nf(dec).format(v));
 const fechaCorta = (s) => { const [y, m, d] = s.split("-"); return `${+d}-${MESES[+m - 1]}-${y.slice(2)}`; };
 const mesCorto = (s) => { const [y, m] = s.split("-"); return `${MESES[+m - 1]}-${y.slice(2)}`; };
 
@@ -22,16 +26,18 @@ const S = (v) => (D.series[v] ? D.series[v].d : []);
 const meta = (v) => D.series[v] || { u: "", f: "" };
 const ult = (v) => { const s = S(v); return s.length ? s[s.length - 1] : [null, null]; };
 const prev = (v) => { const s = S(v); return s.length > 1 ? s[s.length - 2] : [null, null]; };
+const esProv = (v) => { const p = meta(v).p; const f = ult(v)[0]; return !!(p && f && f >= p); };
+const valEn = (v, f) => { const s = S(v); for (let i = s.length - 1; i >= 0; i--) if (s[i][0] <= f) return s[i][1]; return null; };
 const iso = (t) => new Date(t).toISOString().slice(0, 10);
 const hoy = () => iso(Date.now());
-function rango() {                 // [desde, hasta] en ISO
-  if (R.desde) return [R.desde, R.hasta || hoy()];
-  return [R.dias ? iso(Date.now() - R.dias * 864e5) : "1900-01-01", hoy()];
+function rango(r = R) {            // [desde, hasta] en ISO
+  if (r.desde) return [r.desde, r.hasta || hoy()];
+  return [r.dias ? iso(Date.now() - r.dias * 864e5) : "1900-01-01", hoy()];
 }
-function recortar(serie, mensual) {
-  let [a, b] = rango();
-  if (mensual && (Date.parse(b) - Date.parse(a)) / 864e5 < 730) a = iso(Date.parse(b) - 730 * 864e5);  // mensuales: al menos dos años
-  return serie.filter((p) => p[0] >= a && p[0] <= b);
+function ventana(r, mensual) {     // como rango(), con al menos dos años para series mensuales
+  let [a, b] = rango(r);
+  if (mensual && (Date.parse(b) - Date.parse(a)) / 864e5 < 730) a = iso(Date.parse(b) - 730 * 864e5);
+  return [a, b];
 }
 function aMensual(serie, modo) {   // diaria -> mensual (suma o promedio), fechada el día 1
   const g = new Map();
@@ -51,80 +57,121 @@ function deflactar(v) {            // serie diaria nominal -> a precios del últ
     return [f, x * base / ipc[j][1]];
   });
 }
+function restar(a, b) {            // a - b por fecha (b tomada al último dato disponible)
+  const sb = S(b); let j = 0;
+  return S(a).map(([f, x]) => { while (j + 1 < sb.length && sb[j + 1][0] <= f) j++; return sb[j] && sb[j][0] <= f ? [f, x - sb[j][1]] : [f, null]; })
+    .filter((p) => p[1] != null);
+}
+function sumar(vs, factor = 1) {   // suma por fecha de varias series mensuales
+  const g = new Map();
+  vs.forEach((v) => S(v).forEach(([f, x]) => { if (x != null) g.set(f, (g.get(f) || 0) + x * factor); }));
+  return [...g].sort((p, q) => (p[0] < q[0] ? -1 : 1));
+}
+const tmp = (nombre, d) => { D.series[nombre] = { u: "", f: "", d }; return nombre; };
 
 // ------------------------------------------------------------------ gráfico de líneas / barras
-// cfg.series: [{v | datos, nombre, color, escala, estimadoAntes}] · cfg.agregar: "suma" | "prom" pasa barras diarias
-// a mensuales cuando el período supera dos años · cfg.desdeEmpalme: v cuyo primer dato marca el fin del tramo de otra fuente
+// cfg.series: [{v | datos, nombre, color, escala, estimadoAntes, estimadoDesde, eje2, stack, tipo}]
+// cfg.agregar: "suma" | "prom" pasa barras diarias a mensuales cuando el período supera dos años.
+// cfg.base100: cada serie = 100 al inicio del período visible. cfg.leyenda: leyenda arriba en vez de etiquetas.
+// El período sale de la tarjeta (card._r). Debajo del gráfico va un selector con asas propio.
 function grafico(el, cfg) {
   const c = COL();
+  const card = el.closest(".card");
+  const r = cfg.r || (card && card._r) || R;
   const ch = echarts.init(el, null, { renderer: "canvas" });
   charts.push(ch);
-  const paleta = [c.azul, c.gris, c.celeste, c.naranja];
   const series = [];
-  const [ra, rb] = rango();
+  const ancho = el.clientWidth || 600;
+  const chica = ancho < 420;
+  const [ra, rb] = ventana(r, cfg.mensual);
   const agregado = cfg.agregar && !cfg.mensual && (Date.parse(rb) - Date.parse(ra)) / 864e5 > 730;
   const mensual = cfg.mensual || agregado;
-  const muestra = Math.abs(((cfg.series[0].datos || S(cfg.series[0].v)).slice(-1)[0] || [0, 0])[1] * (cfg.series[0].escala || 1));
-  const dec = cfg.dec ?? (muestra >= 1000 ? 0 : 1);
-  const ancho = el.clientWidth || 600;
-  const margen = cfg.sinEtiquetas ? 16 : Math.round(Math.min(cfg.margenDer || 150, Math.max(84, ancho * 0.3)));
-  const chica = ancho < 420;
-  let fMin = null, fMax = null; const visibles = [];
-  cfg.series.forEach((s, i) => {
+  const dosEjes = cfg.series.some((s) => s.eje2);
+  const hayBarras = (cfg.tipo === "bar") || cfg.series.some((s) => s.tipo === "bar");  // las barras siempre arrancan en cero
+  const leyenda = cfg.leyenda || dosEjes;
+  const sinEtq = cfg.sinEtiquetas || leyenda;
+  const margen = sinEtq ? 16 : Math.round(Math.min(cfg.margenDer || 150, Math.max(84, ancho * 0.3)));
+  let fMin = null, fMax = null; const visibles = [[], []];
+  const prepar = cfg.series.map((s) => {
     let datos = s.datos || S(s.v);
     if (s.escala) datos = datos.map(([f, x]) => [f, x * s.escala]);
-    datos = recortar(datos, cfg.mensual);
-    if (agregado) datos = aMensual(datos, cfg.agregar);
-    datos.forEach((p) => { if (p[1] != null) visibles.push(p[1]); });
+    if (agregado) datos = aMensual(datos, s.agregar || cfg.agregar);
+    if (cfg.base100) {
+      const p0 = datos.find((p) => p[0] >= ra && p[1] != null);
+      datos = p0 ? datos.map(([f, x]) => [f, x == null ? null : (x / p0[1]) * 100]) : [];
+    }
+    return datos;
+  });
+  const muestraV = (prepar[0].filter((p) => p[0] >= ra && p[0] <= rb).slice(-1)[0] || prepar[0].slice(-1)[0] || [0, 0])[1];
+  const dec = cfg.dec ?? (Math.abs(muestraV || 0) >= 1000 ? 0 : 1);
+  cfg.series.forEach((s, i) => {
+    const datos = prepar[i];
+    const enVentana = datos.filter((p) => p[0] >= ra && p[0] <= rb);
+    enVentana.forEach((p) => { if (p[1] != null) visibles[s.eje2 ? 1 : 0].push(p[1]); });
     if (datos.length) { fMin = fMin && fMin < datos[0][0] ? fMin : datos[0][0]; fMax = fMax && fMax > datos.at(-1)[0] ? fMax : datos.at(-1)[0]; }
-    const color = s.color ? c[s.color] : paleta[i];
+    const color = c[s.color || PALETA[i % PALETA.length]];
+    const tipo = s.tipo || cfg.tipo || "line";
     const grosor = i === 0 ? 2.4 : 1.6;
     const etiqueta = {
-      show: !cfg.sinEtiquetas, formatter: (p) => `${s.nombre} ${fmt(p.value[1], dec)}`,
+      show: !sinEtq, formatter: (p) => `${s.nombre} ${fmt(p.value[1], dec)}`,
       color, fontWeight: 600, fontSize: chica ? 10 : 11, fontFamily: "Poppins", distance: 6,
     };
     const base = {
-      name: s.nombre, type: s.tipo || cfg.tipo || "line", showSymbol: !!cfg.mensual && (s.tipo || cfg.tipo) !== "bar" && datos.length < 80,
+      name: s.nombre, type: tipo, showSymbol: !!cfg.mensual && tipo !== "bar" && enVentana.length < 80,
       symbol: "emptyCircle", symbolSize: 5, itemStyle: { color, borderColor: color }, lineStyle: { width: grosor, color },
-      emphasis: { disabled: true }, z: 10 - i, barMaxWidth: 14, labelLayout: { moveOverlap: "shiftY" },
-      sampling: datos.length > 1500 ? "lttb" : undefined, large: datos.length > 1500,
+      emphasis: { disabled: true }, z: 10 - i, barMaxWidth: 14, labelLayout: { moveOverlap: "shiftY" }, yAxisIndex: s.eje2 ? 1 : 0,
+      sampling: datos.length > 1500 && tipo === "line" ? "lttb" : undefined, large: datos.length > 3000 && tipo === "bar", stack: s.stack,
     };
-    if (base.type === "bar") base.itemStyle = { color: (p) => (p.value[1] < 0 && cfg.negGris ? c.gris : color) };
-    if (s.estimadoAntes) {     // tramo estimado u otra fuente, punteado
-      const a = datos.filter((p) => p[0] < s.estimadoAntes), b = datos.filter((p) => p[0] >= s.estimadoAntes);
-      if (a.length && b.length) a.push(b[0]);
-      series.push({ ...base, name: s.nombre + " (estimado)", data: a, lineStyle: { ...base.lineStyle, type: [5, 4] }, endLabel: { ...etiqueta, show: !b.length && !cfg.sinEtiquetas } });
-      series.push({ ...base, data: b, endLabel: etiqueta });
+    if (tipo === "bar" && !s.stack) base.itemStyle = { color: (p) => (p.value[1] < 0 && cfg.negGris ? c.gris : color) };
+    const corte = s.estimadoAntes || s.estimadoDesde;
+    if (corte) {     // tramo estimado u otra fuente, punteado
+      const antes = datos.filter((p) => p[0] < corte), despues = datos.filter((p) => p[0] >= corte);
+      const [pun, lleno] = s.estimadoAntes ? [antes, despues] : [despues, antes];
+      if (s.estimadoAntes && antes.length && despues.length) antes.push(despues[0]);
+      if (s.estimadoDesde && antes.length && despues.length) despues.unshift(antes.at(-1));
+      const finalEsPunteado = s.estimadoDesde ? !!despues.length : !despues.length;
+      series.push({ ...base, data: lleno, endLabel: { ...etiqueta, show: !finalEsPunteado && !sinEtq } });
+      series.push({ ...base, name: s.nombre + " (estimado)", data: pun, lineStyle: { ...base.lineStyle, type: [5, 4] }, endLabel: { ...etiqueta, show: finalEsPunteado && !sinEtq } });
     } else {
-      series.push({ ...base, data: datos, endLabel: base.type === "line" ? etiqueta : undefined });
+      series.push({ ...base, data: datos, endLabel: tipo === "line" ? etiqueta : undefined });
     }
   });
   if (cfg.cero || cfg.lineas) {
     const ml = [];
-    if (cfg.cero) ml.push({ yAxis: 0, lineStyle: { color: c.eje, type: "solid", width: 1 }, label: { show: false } });
+    if (cfg.cero) ml.push({ yAxis: cfg.base100 ? 100 : 0, lineStyle: { color: c.eje, type: "solid", width: 1 }, label: { show: false } });
     (cfg.lineas || []).filter((l) => l.x >= (fMin || "") && l.x <= (fMax || "9")).forEach((l) => ml.push({ xAxis: l.x, lineStyle: { color: c.nota, type: [3, 3] },
       label: { formatter: l.txt, color: c.nota, fontSize: 10, position: "insideEndTop" } }));
     series[0].markLine = { symbol: "none", silent: true, data: ml, animation: false };
   }
-  const anios = fMin ? (Date.parse(fMax) - Date.parse(fMin)) / 864e5 / 365 : 0;
+  const anios = (Date.parse(rb) - Date.parse(ra > (fMin || ra) ? ra : (fMin || ra))) / 864e5 / 365;
   el.dataset.agregado = agregado ? cfg.agregar : "";
   let techo;   // recorte de picos: si unos pocos días aplastan la escala, el eje se corta en el percentil 97
-  if (cfg.recortePicos && visibles.length > 20) {
-    const o = [...visibles].sort((a, b) => a - b); const p97 = o[Math.floor(o.length * 0.97)];
+  if (cfg.recortePicos && visibles[0].length > 20) {
+    const o = [...visibles[0]].sort((a, b) => a - b); const p97 = o[Math.floor(o.length * 0.97)];
     if (p97 > 0 && o.at(-1) > p97 * 1.5) techo = Math.ceil((p97 * 1.25) / 10) * 10;
   }
   el.dataset.recorte = techo ?? "";
   // niveles de precios en pesos: si en el período el valor se multiplica más de 10 veces, escala logarítmica
-  const log = cfg.logAuto && visibles.length && Math.min(...visibles) > 0 && Math.max(...visibles) / Math.min(...visibles) > 10;
+  const vis = visibles[0];
+  const log = cfg.logAuto && vis.length && Math.min(...vis) > 0 && Math.max(...vis) / Math.min(...vis) > 10;
   el.dataset.log = log ? "1" : "";
+  const ejeY = (i) => ({
+    type: log && i === 0 ? "log" : "value", logBase: 10, scale: !cfg.desdeCero && !hayBarras, max: i === 0 ? techo : undefined,
+    axisLine: { show: dosEjes, lineStyle: { color: dosEjes ? c[cfg.series.find((s) => !!s.eje2 === (i === 1))?.color || (i ? "gris" : "azul")] : c.eje } },
+    axisTick: { show: false }, splitLine: { show: i === 0, lineStyle: { color: c.grilla } },
+    axisLabel: { color: dosEjes ? c[cfg.series.find((s) => !!s.eje2 === (i === 1))?.color || (i ? "gris" : "azul")] : c.texto2, fontSize: 11, formatter: (v) => fmt(v, cfg.decEje ?? 0) },
+  });
+  const t0 = fMin ? Date.parse(fMin) : Date.parse(ra), t1 = Math.max(fMax ? Date.parse(fMax) : Date.now(), Date.now() - 864e5);
+  const zoomA = Math.max(Date.parse(ra), t0), zoomB = Math.min(Date.parse(rb) + 864e5, t1 + 864e5);
   ch.setOption({
     animation: false, textStyle: { fontFamily: "Poppins" },
-    grid: { left: 8, right: margen, top: 14, bottom: 22, containLabel: true },
+    legend: leyenda ? { top: 0, left: 0, itemWidth: 14, itemHeight: 8, textStyle: { color: c.texto2, fontSize: 11 }, data: cfg.series.map((s) => s.nombre) } : undefined,
+    grid: { left: 8, right: margen, top: leyenda ? 10 + 20 * Math.ceil(cfg.series.reduce((t, s) => t + s.nombre.length * 6.6 + 34, 0) / Math.max(200, ancho - 16)) : 14, bottom: 46, containLabel: true },
     tooltip: {
       trigger: "axis", backgroundColor: c.card, borderColor: c.eje, textStyle: { color: c.tinta, fontSize: 12 }, confine: true,
       formatter: (ps) => {
         const f = ps[0].value[0];
-        const filas = ps.filter((p) => !p.seriesName.endsWith("(estimado)") || !ps.some((q) => q.seriesName === p.seriesName.replace(" (estimado)", "") && q.value[0] === f))
+        const filas = ps.filter((p) => p.value[1] != null && (!p.seriesName.endsWith("(estimado)") || !ps.some((q) => q.seriesName === p.seriesName.replace(" (estimado)", "") && q.value[0] === f)))
           .map((p) => `<span style="color:${p.color}">●</span> ${p.seriesName.replace(" (estimado)", "*")}: <b>${fmt(p.value[1], dec)}</b>`);
         return `<div style="font-size:11px;color:${c.texto2}">${mensual ? mesCorto(f) : fechaCorta(f)}</div>${filas.join("<br>")}`;
       },
@@ -135,36 +182,69 @@ function grafico(el, cfg) {
       axisLabel: { color: c.texto2, fontSize: 11, hideOverlap: true, formatter: (v) => { const d = new Date(v);
         return anios > 4 ? String(d.getFullYear()) : `${MESES[d.getMonth()]}-${String(d.getFullYear()).slice(2)}`; } },
     },
-    yAxis: {
-      type: log ? "log" : "value", logBase: 10, scale: !cfg.desdeCero, max: techo, axisLine: { show: false }, axisTick: { show: false },
-      splitLine: { lineStyle: { color: c.grilla } }, axisLabel: { color: c.texto2, fontSize: 11, formatter: (v) => fmt(v, cfg.decEje ?? 0) },
-    },
+    yAxis: dosEjes ? [ejeY(0), ejeY(1)] : ejeY(0),
+    dataZoom: cfg.sinZoom ? undefined : [{ type: "slider", xAxisIndex: 0, filterMode: "weakFilter", realtime: false, height: 16, bottom: 4, left: 46, right: Math.max(46, margen - 10),
+      startValue: zoomA, endValue: zoomB, brushSelect: false, borderColor: c.borde, backgroundColor: "transparent", fillerColor: c.azul + "1f",
+      dataBackground: { lineStyle: { color: c.gris, width: 1 }, areaStyle: { color: c.gris, opacity: 0.1 } },
+      selectedDataBackground: { lineStyle: { color: c.azul, width: 1 }, areaStyle: { color: c.azul, opacity: 0.12 } },
+      handleSize: "120%", handleStyle: { color: c.card, borderColor: c.azul }, moveHandleSize: 0, showDetail: true,
+      textStyle: { color: c.texto2, fontSize: 10, fontFamily: "Poppins" }, labelFormatter: (v) => (v ? (mensual ? mesCorto(iso(v)) : fechaCorta(iso(v))) : "") }],
     series,
   });
+  if (!cfg.sinZoom && card) {
+    ch.on("datazoom", () => {
+      const z = ch.getOption().dataZoom[0];
+      if (z.startValue == null) return;
+      const a = iso(z.startValue), b = iso(z.endValue);
+      card._r = { dias: null, desde: a, hasta: b >= iso(Date.now() - 2 * 864e5) ? null : b };
+      clearTimeout(card._tz); card._tz = setTimeout(() => card._redibujar(), 30);
+    });
+  }
   return ch;
 }
 
 // ------------------------------------------------------------------ tarjetas
+const RANGOS_D = [["1M", 30], ["3M", 90], ["6M", 180], ["1A", 365], ["2A", 730], ["5A", 1826], ["Todo", 0]];
+const RANGOS_M = [["2A", 730], ["5A", 1826], ["10A", 3652], ["Todo", 0]];
+
 function tarjeta(cont, cfg) {
   const card = document.createElement("section");
   card.className = "card" + (cfg.ancha ? " ancha" : "");
+  card._r = { ...R };
   const titulo = typeof cfg.titulo === "function" ? cfg.titulo() : cfg.titulo;
-  const bajada = typeof cfg.bajada === "function" ? cfg.bajada() : (cfg.bajada || "");
-  card.innerHTML = `<h3>${titulo}${cfg.badge ? `<span class="badge">${cfg.badge}</span>` : ""}</h3>
-    <p class="bajada">${bajada}</p><div class="chips"></div><div class="chart"></div><p class="fuente">${cfg.fuente}</p>`;
+  const conRango = !cfg.sinRango && (cfg.series || cfg.conRango);
+  card.innerHTML = `<div class="card-top"><h3>${titulo}${cfg.badge ? `<span class="badge">${cfg.badge}</span>` : ""}</h3>${conRango ? '<div class="mini-rangos" role="group" aria-label="Período de este gráfico"></div>' : ""}</div>
+    <p class="bajada"></p><div class="chips"></div><div class="chart"></div><p class="fuente">${cfg.fuente}</p>`;
   cont.appendChild(card);
   if (!cfg.chips) card.querySelector(".chips").remove();
   const el = card.querySelector(".chart");
   if (cfg.alto) el.style.height = cfg.alto + "px";
-  if (cfg.render) cfg.render(el, card); else grafico(el, cfg);
-  const baj = card.querySelector(".bajada");
-  if (el.dataset.log) baj.textContent += " · Escala logarítmica";
-  if (el.dataset.recorte) baj.textContent += ` · Eje cortado en ${el.dataset.recorte}: hay picos fuera de escala`;
-  if (el.dataset.agregado) baj.textContent += el.dataset.agregado === "suma" ? " · Sumas mensuales" : " · Promedios mensuales";
-  if (cfg.series && cfg.series[0].v) {   // aviso si la serie principal dejó de actualizarse
-    const f = ult(cfg.series[0].v)[0]; const dias = f ? (Date.now() - Date.parse(f)) / 864e5 : 0;
-    if (f && dias > (cfg.mensual ? 110 : 10)) baj.insertAdjacentHTML("beforeend", ` · <span class="viejo">último dato: ${cfg.mensual ? mesCorto(f) : fechaCorta(f)}</span>`);
+  const botones = card.querySelector(".mini-rangos");
+  if (botones) {
+    (cfg.mensual ? RANGOS_M : RANGOS_D).forEach(([t, d]) => {
+      const b = document.createElement("button"); b.textContent = t; b.dataset.r = d;
+      b.onclick = () => { card._r = { dias: d, desde: null, hasta: null }; card._redibujar(); };
+      botones.appendChild(b);
+    });
   }
+  const baj = card.querySelector(".bajada");
+  card._redibujar = () => {
+    card.querySelectorAll(".chart, .chart *").forEach((n) => { const i = echarts.getInstanceByDom(n); if (i) { const k = charts.indexOf(i); if (k >= 0) charts.splice(k, 1); i.dispose(); } });
+    el.innerHTML = ""; el.removeAttribute("style"); if (cfg.alto) el.style.height = cfg.alto + "px";
+    const chips = card.querySelector(".chips"); if (chips) chips.innerHTML = "";
+    if (cfg.render) cfg.render(el, card); else grafico(el, cfg);
+    if (botones) botones.querySelectorAll("button").forEach((b) => b.classList.toggle("on", !card._r.desde && +b.dataset.r === card._r.dias));
+    baj.innerHTML = typeof cfg.bajada === "function" ? cfg.bajada() : (cfg.bajada || "");
+    if (el.dataset.log) baj.innerHTML += " · Escala logarítmica";
+    if (el.dataset.recorte) baj.innerHTML += ` · Eje cortado en ${el.dataset.recorte}: hay picos fuera de escala`;
+    if (el.dataset.agregado) baj.innerHTML += el.dataset.agregado === "suma" ? " · Sumas mensuales" : " · Promedios mensuales";
+    if (cfg.series && cfg.series[0].v) {   // aviso si la serie principal dejó de actualizarse, o si el último dato es del día
+      const v0 = cfg.series[0].v; const f = ult(v0)[0]; const dias = f ? (Date.now() - Date.parse(f)) / 864e5 : 0;
+      if (f && dias > (cfg.mensual ? 110 : 10)) baj.insertAdjacentHTML("beforeend", ` · <span class="viejo">último dato: ${cfg.mensual ? mesCorto(f) : fechaCorta(f)}</span>`);
+      if (esProv(v0)) baj.insertAdjacentHTML("beforeend", ` · <span class="prov" title="${meta(v0).f}">dato del día, provisorio</span>`);
+    }
+  };
+  card._redibujar();
   return card;
 }
 
@@ -177,8 +257,9 @@ function kpi(cont, k) {
   const dt = d == null ? "" : `${d > 0 ? "▲" : d < 0 ? "▼" : "="} ${fmt(Math.abs(d), k.decD ?? k.dec ?? 0)}`;
   const atraso = f ? Math.round((Date.now() - Date.parse(f)) / 864e5) : 0;
   const viejo = f && atraso > (k.mensual ? 110 : 9);
+  const pv = esProv(k.v);
   el.innerHTML = `<div class="lbl">${k.lbl}</div><div class="val">${val}<small>${k.u || ""}</small></div>
-    <div class="meta"><span>${dt}</span><span class="${viejo ? "viejo" : ""}" title="${viejo ? `Último dato hace ${atraso} días` : ""}">${f ? (k.mensual ? mesCorto(f) : fechaCorta(f)) : ""}</span></div><div class="spark"></div>`;
+    <div class="meta"><span>${dt}</span><span class="${viejo ? "viejo" : pv ? "prov" : ""}" title="${viejo ? `Último dato hace ${atraso} días` : pv ? "Dato del día, provisorio" : ""}">${f ? (k.mensual ? mesCorto(f) : fechaCorta(f)) + (pv ? " ·prov." : "") : ""}</span></div><div class="spark"></div>`;
   cont.appendChild(el);
   const s = S(k.v).slice(-(k.n || 90)); const c = COL();
   const ch = echarts.init(el.querySelector(".spark")); charts.push(ch);
@@ -237,8 +318,10 @@ const F = {
   bcra: "Fuente: elaboración propia en base a BCRA.",
   byma: "Fuente: elaboración propia en base a BYMA.",
   a3: "Fuente: elaboración propia en base a A3 Mercados (MAE y Matba Rofex).",
-  bcrd: "Fuente: elaboración propia en base a JP Morgan (EMBI Global Diversified) publicado por el BCRD.",
+  bcrd: "Fuente: elaboración propia en base a JP Morgan (EMBI Global Diversified) publicado por el BCRD. Dato del día de Argentina: Ámbito, provisorio hasta que publica el BCRD.",
   indec: "Fuente: elaboración propia en base a INDEC.",
+  yahoo: "Fuente: elaboración propia en base a Yahoo Finance.",
+  bc: "Fuente: elaboración propia en base a BCRA (balance cambiario).",
 };
 
 const CARD_TABLA_RES = { titulo: "De reservas brutas a súper netas", bajada: "Composición por fecha, método Machado · En millones de USD",
@@ -258,9 +341,82 @@ const SECCIONES = [
 
 function grilla(main) { const g = document.createElement("div"); g.className = "grilla"; main.appendChild(g); return g; }
 
+// ------------------------------------------------------------------ novedades en palabras (reglas fijas, sin IA)
+function pctVar(v, f0) {            // variación % entre el último dato y el valor vigente en f0
+  const [, x] = ult(v); const y = valEn(v, f0); return x != null && y ? (x / y - 1) * 100 : null;
+}
+function difVar(v, f0) { const [, x] = ult(v); const y = valEn(v, f0); return x != null && y != null ? x - y : null; }
+const finMesAnt = (f) => f.slice(0, 7) + "-00";
+function extremoDesde(v) {          // ¿el último dato es el más alto / bajo desde cuándo? (solo si pasaron más de 3 meses)
+  const s = S(v); if (s.length < 30) return null;
+  const [f, x] = s.at(-1);
+  let i = s.length - 2; while (i >= 0 && s[i][1] < x) i--;
+  const alto = i < 0 ? "inicio" : s[i][0];
+  let j = s.length - 2; while (j >= 0 && s[j][1] > x) j--;
+  const bajo = j < 0 ? "inicio" : s[j][0];
+  const lejos = (g) => g === "inicio" || (Date.parse(f) - Date.parse(g)) / 864e5 > 90;
+  if (lejos(alto)) return { tipo: "alto", desde: alto };
+  if (lejos(bajo)) return { tipo: "bajo", desde: bajo };
+  return null;
+}
+const desdeTxt = (e, mens) => (e.desde === "inicio" ? "de toda la serie" : `desde ${mens ? mesCorto(e.desde) : fechaCorta(e.desde)}`);
+
+function novedades() {
+  const L = [];
+  const [fA, a] = ult("tc_mayorista_a3500");
+  if (a) {
+    const dD = pctVar("tc_mayorista_a3500", prev("tc_mayorista_a3500")[0]);
+    const dM = pctVar("tc_mayorista_a3500", finMesAnt(fA));
+    L.push(`El <b>dólar mayorista</b> (A3500) cerró a $${fmt(a, 2)} el ${fechaCorta(fA)}, con una variación de ${fmtS(dD, 2)}% en el día y de ${fmtS(dM, 1)}% en el mes. Está ${fmt(ult("distancia_techo_banda")[1], 1)}% por debajo del techo de la banda.`);
+  }
+  const [fC, ccl] = ult("ccl");
+  if (ccl) {
+    const pv = esProv("ccl") ? " (precios del día, con 20 minutos de demora)" : "";
+    L.push(`El <b>contado con liqui</b> cotiza a $${fmt(ccl, 0)} y el MEP a $${fmt(ult("mep")[1], 0)}${pv}. La brecha con el mayorista es de ${fmt(ult("brecha_ccl")[1], 1)}% y el canje, de ${fmt(ult("canje_ccl_mep")[1], 1)}%.`);
+  }
+  const [fR, rp] = ult("riesgo_pais_argentina");
+  if (rp) {
+    const d1 = difVar("riesgo_pais_argentina", prev("riesgo_pais_argentina")[0]);
+    const d30 = difVar("riesgo_pais_argentina", iso(Date.parse(fR) - 30 * 864e5));
+    const e = extremoDesde("riesgo_pais_argentina");
+    L.push(`El <b>riesgo país</b> marca ${fmt(rp)} puntos${esProv("riesgo_pais_argentina") ? " (dato del día de Ámbito)" : ""}, ${fmtS(d1)} contra la rueda anterior y ${fmtS(d30)} en 30 días.${e ? ` Es el nivel más ${e.tipo} ${desdeTxt(e)}.` : ""}`);
+  }
+  const [fB, brutas] = ult("reservas_brutas");
+  if (brutas) {
+    const dN = difVar("reservas_netas", finMesAnt(fB));
+    L.push(`Las <b>reservas brutas</b> suman USD ${fmt(brutas)} millones al ${fechaCorta(fB)} y las netas, USD ${fmt(ult("reservas_netas")[1])} millones, ${fmtS(dN)} millones contra el cierre del mes anterior.`);
+  }
+  const [fK, comp] = ult("compras_bcra_mlc");
+  if (comp != null) {
+    const mes = S("compras_bcra_mlc").filter((p) => p[0].slice(0, 7) === fK.slice(0, 7)).reduce((s, p) => s + p[1], 0);
+    L.push(`El <b>BCRA</b> ${comp >= 0 ? "compró" : "vendió"} USD ${fmt(Math.abs(comp))} millones en la última rueda informada (${fechaCorta(fK)}). En el mes acumula ${fmtS(mes)} millones y en el año, ${fmtS(ult("compras_bcra_acum_anio")[1])} millones. El BCRA publica este dato con unos cuatro días hábiles de rezago.`);
+  }
+  const cau = ult("caucion_a3_pesos_1d")[1], tam = ult("tamar")[1], tr = ult("tasa_real_ex_ante_tamar")[1];
+  if (cau != null) L.push(`En <b>tasas</b>, la caución a un día rinde ${fmt(cau, 1)}% anual y la TAMAR, ${fmt(tam, 1)}%. La tasa real esperada es de ${fmt(tr, 2)}% mensual.`);
+  const im = varMensual("ipc_nivel_general"), nm = varMensual("ipc_nucleo");
+  if (im.length) {
+    const [fi, x] = im.at(-1); const y = (nm.at(-1) || [])[1];
+    L.push(`La <b>inflación</b> de ${mesCorto(fi)} fue de ${fmt(x, 1)}% (núcleo ${fmt(y, 1)}%), y el REM espera ${fmt(ult("rem_inflacion_12m")[1], 1)}% para los próximos 12 meses.`);
+  }
+  const [fT, tcrm] = ult("tcrm");
+  if (tcrm) L.push(`El <b>tipo de cambio real multilateral</b> está en ${fmt(tcrm, 1)} puntos, ${fmtS(pctVar("tcrm", iso(Date.parse(fT) - 365 * 864e5)), 1)}% interanual.`);
+  const mov = [["dxy", "el DXY", 1, 0.8], ["brl_usd", "el real", 1, 1.5], ["brent", "el Brent", 1, 2.5], ["soja_cbot", "la soja", 1, 2], ["oro", "el oro", 1, 2],
+    ["vix", "el VIX", 1, 10], ["sp500", "el S&P 500", 1, 1.5]].map(([v, n, , u]) => [n, pctVar(v, prev(v)[0]), u]).filter(([, x, u]) => x != null && Math.abs(x) >= u);
+  const ust = difVar("ust_10y", prev("ust_10y")[0]);
+  const partes = mov.map(([n, x]) => `${n} ${x > 0 ? "sube" : "baja"} ${fmt(Math.abs(x), 1)}%`);
+  if (ust != null && Math.abs(ust) >= 0.08) partes.push(`la tasa del Tesoro a 10 años ${ust > 0 ? "sube" : "baja"} ${fmt(Math.abs(ust) * 100)} puntos básicos`);
+  L.push(partes.length ? `En los <b>mercados internacionales</b>, ${partes.join(", ").replace(/, ([^,]*)$/, " y $1")} en la última rueda.` : "Los <b>mercados internacionales</b> se movieron poco en la última rueda.");
+  const [fbc, cc] = ult("bc_cuenta_corriente");
+  if (cc != null) L.push(`En el <b>balance cambiario</b> de ${mesCorto(fbc)}, la cuenta corriente dio ${fmtS(cc)} millones de USD, la financiera ${fmtS(ult("bc_cuenta_financiera")[1])} millones y las personas humanas hicieron compras netas por USD ${fmt(-ult("mc_personas_humanas")[1])} millones.`);
+  return L;
+}
+
 function resumen(main) {
+  const n = document.createElement("section"); n.className = "card ancha novedades"; main.appendChild(n);
+  n.innerHTML = `<h3>Novedades</h3><ul>${novedades().map((x) => `<li>${x}</li>`).join("")}</ul>
+    <p class="fuente">Texto armado automáticamente con reglas fijas a partir de los últimos datos de cada serie.</p>`;
   const k = document.createElement("div"); k.className = "kpis"; main.appendChild(k);
-  const ipcM = varMensual("ipc_nivel_general"); if (ipcM.length) D.series._ipc_m = { u: "%", f: "", d: ipcM };
+  tmp("_ipc_m", varMensual("ipc_nivel_general"));
   [
     { lbl: "Dólar mayorista (A3500)", v: "tc_mayorista_a3500", dec: 1, u: " $" },
     { lbl: "Contado con liqui", v: "ccl", dec: 1, u: " $" },
@@ -290,13 +446,25 @@ function resumen(main) {
     dec: 0, series: [{ v: "riesgo_pais_argentina_largo", nombre: "Argentina", estimadoAntes: inicio("riesgo_pais_argentina") }, { v: "riesgo_pais_latam", nombre: "América Latina" }] });
 }
 
+function estimadoDesdeFuente(v) { return ((meta(v).f || "").match(/desde (\d{4}-\d{2}-\d{2})/) || [])[1]; }
+
 function cambiario(main) {
   const g = grilla(main);
   tarjeta(g, { titulo: () => `El mayorista está ${fmt(ult("distancia_techo_banda")[1], 1)}% por debajo del techo de la banda`,
-    bajada: "A3500 y límites de la banda cambiaria · En pesos por dólar", fuente: F.bcra, logAuto: true,
+    bajada: "A3500 y límites de la banda cambiaria · En pesos por dólar corrientes", fuente: F.bcra, logAuto: true,
     series: [{ v: "tc_mayorista_a3500", nombre: "A3500" }, { v: "banda_techo", nombre: "Techo" }, { v: "banda_piso", nombre: "Piso", color: "gris" }] });
+  const base = (meta("tcr_bilateral").u.match(/de (\d{4}-\d{2})/) || [])[1];
+  const est = estimadoDesdeFuente("tcr_bilateral");
+  tarjeta(g, { titulo: () => `En términos reales, el mayorista vale $${fmt(ult("tcr_bilateral")[1], 0)} a precios de ${base ? mesCorto(base + "-01") : ""}`,
+    bajada: `Tipo de cambio real bilateral con EE.UU. y bandas en términos reales · En pesos por dólar de ${base ? mesCorto(base + "-01") : ""}`,
+    fuente: F.bcra + " Deflactado por IPC (INDEC) y CPI de EE.UU. (BLS), interpolados por día. *Tramo punteado: inflación del mes en curso estimada con el REM.",
+    logAuto: true, series: [{ v: "tcr_bilateral", nombre: "A3500 real", estimadoDesde: est }, { v: "tcr_bilateral_techo", nombre: "Techo", estimadoDesde: est },
+      { v: "tcr_bilateral_piso", nombre: "Piso", color: "gris", estimadoDesde: est }] });
+  tarjeta(g, { titulo: () => `El tipo de cambio real multilateral está en ${fmt(ult("tcrm")[1], 1)} puntos`,
+    bajada: "ITCRM y bandas cambiarias llevadas a la misma escala · Índice 17-12-15 = 100", fuente: F.bcra + " Las bandas se expresan como ITCRM x banda / A3500 del día.", dec: 1,
+    series: [{ v: "tcrm", nombre: "ITCRM" }, { v: "tcrm_techo", nombre: "Techo" }, { v: "tcrm_piso", nombre: "Piso", color: "gris" }] });
   tarjeta(g, { titulo: () => `El CCL cotiza a $${fmt(ult("ccl")[1], 0)} y el MEP a $${fmt(ult("mep")[1], 0)}`,
-    bajada: "Dólares financieros calculados con el AL30 · En pesos por dólar", fuente: F.byma + " " + NOTA_AD, logAuto: true,
+    bajada: "Dólares financieros calculados con el AL30 · En pesos por dólar", fuente: F.byma + " En la rueda, último precio operado con 20 minutos de demora. " + NOTA_AD, logAuto: true,
     series: [{ v: "ccl_largo", nombre: "CCL", estimadoAntes: inicio("ccl") }, { v: "mep_largo", nombre: "MEP", color: "celeste", estimadoAntes: inicio("mep") }, { v: "tc_mayorista_a3500", nombre: "A3500", color: "gris" }] });
   tarjeta(g, { titulo: () => `La brecha es de ${fmt(ult("brecha_ccl")[1], 1)}% y el canje de ${fmt(ult("canje_ccl_mep")[1], 1)}%`,
     bajada: "Brecha CCL / A3500 y canje CCL / MEP · En %", fuente: F.byma + ` Antes de ${mesCorto(inicio("ccl") || "2024-10")}, CCL y MEP de ArgentinaDatos.`, cero: true,
@@ -312,19 +480,19 @@ function cambiario(main) {
 function reservas(main) {
   const g = grilla(main);
   tarjeta(g, { ancha: true, titulo: () => `Las reservas netas suman USD ${fmt(ult("reservas_netas")[1])} millones y las súper netas USD ${fmt(ult("reservas_super_netas")[1])} millones`,
-    bajada: "Método Machado · En millones de USD", fuente: F.bcra + " *Tramo discontinuo: BIS, repos y Bopreal estimados por calibración contra el gráfico de F. Machado.",
+    bajada: "Método Machado · En millones de USD", fuente: F.bcra + " *Tramo discontinuo: BIS, repos y Bopreal estimados por calibración contra el gráfico de F. Machado. El BCRA publica las reservas con dos o tres días hábiles de rezago.",
     cero: true, series: [{ v: "reservas_netas", nombre: "Netas", estimadoAntes: "2026-07-01" },
       { v: "reservas_super_netas", nombre: "Súper netas", estimadoAntes: "2026-09-30", color: "celeste" }] });
   tarjeta(g, CARD_TABLA_RES);
   tarjeta(g, { titulo: () => `Las reservas brutas suman USD ${fmt(ult("reservas_brutas")[1])} millones`,
     bajada: "Stock diario · En millones de USD", fuente: F.bcra, series: [{ v: "reservas_brutas", nombre: "Brutas" }] });
   tarjeta(g, { titulo: () => `El BCRA compró USD ${fmt(ult("compras_bcra_acum_anio")[1])} millones en el año`,
-    bajada: "Compras diarias en el mercado de cambios · En millones de USD", fuente: F.bcra, tipo: "bar", sinEtiquetas: true, cero: true, agregar: "suma", negGris: true,
+    bajada: "Compras diarias en el mercado de cambios · En millones de USD", fuente: F.bcra + " El BCRA publica este dato con unos cuatro días hábiles de rezago.", tipo: "bar", sinEtiquetas: true, cero: true, agregar: "suma", negGris: true,
     series: [{ v: "compras_bcra_mlc", nombre: "Compras" }] });
   tarjeta(g, { titulo: () => `Las compras equivalen al ${fmt(ult("compras_bcra_pct_volumen")[1], 1)}% del volumen del MLC`,
     bajada: "Compras del BCRA sobre volumen operado · En %", fuente: F.bcra + " Volumen de A3 Mercados.", tipo: "bar", sinEtiquetas: true, cero: true, agregar: "prom",
     series: [{ v: "compras_bcra_pct_volumen", nombre: "Compras / volumen" }] });
-  tarjeta(g, { ancha: true, titulo: () => `El Tesoro tiene USD ${fmt(ult("res_dep_tesoro")[1])} millones depositados en el BCRA`,
+  tarjeta(g, { titulo: () => `El Tesoro tiene USD ${fmt(ult("res_dep_tesoro")[1])} millones depositados en el BCRA`,
     bajada: "Depósitos del gobierno en moneda extranjera · En millones de USD", fuente: F.bcra,
     series: [{ v: "res_dep_tesoro", nombre: "Depósitos" }] });
 }
@@ -357,38 +525,46 @@ function tasas(main) {
     } });
 }
 
+const PAISES = { brasil: "Brasil", chile: "Chile", colombia: "Colombia", ecuador: "Ecuador", mexico: "México", peru: "Perú",
+  uruguay: "Uruguay", paraguay: "Paraguay", bolivia: "Bolivia", el_salvador: "El Salvador", panama: "Panamá",
+  costa_rica: "Costa Rica", guatemala: "Guatemala", honduras: "Honduras", rep_dominicana: "Rep. Dominicana", venezuela: "Venezuela" };
+const RIESGO = { sel: ["brasil", "ecuador", "colombia"], vista: "dosejes" };
+const VISTAS = [["niveles", "Mismo eje"], ["dosejes", "Dos ejes"], ["base100", "Base 100"], ["latam", "Diferencia con América Latina"]];
+
 function riesgo(main) {
   const g = grilla(main);
   tarjeta(g, { titulo: () => `El riesgo país de Argentina está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
     bajada: "EMBI Global Diversified · Argentina y América Latina · En puntos básicos", fuente: F.bcrd + " Desde el 4/9/26 cambió la metodología de JP Morgan. *Tramo punteado (antes de oct-07): ArgentinaDatos (Ámbito), que coincide con el BCRD en el período común.",
     lineas: [{ x: "2026-09-04", txt: "cambio metodológico" }],
     dec: 0, series: [{ v: "riesgo_pais_argentina_largo", nombre: "Argentina", estimadoAntes: inicio("riesgo_pais_argentina") }, { v: "riesgo_pais_latam", nombre: "América Latina" }] });
-  const paises = { brasil: "Brasil", chile: "Chile", colombia: "Colombia", ecuador: "Ecuador", mexico: "México", peru: "Perú",
-    uruguay: "Uruguay", paraguay: "Paraguay", bolivia: "Bolivia", el_salvador: "El Salvador", panama: "Panamá",
-    costa_rica: "Costa Rica", guatemala: "Guatemala", honduras: "Honduras", rep_dominicana: "Rep. Dominicana", venezuela: "Venezuela" };
-  let sel = ["brasil", "ecuador", "colombia"];
-  tarjeta(g, { titulo: "Argentina frente a otros países de la región", chips: true,
-    bajada: "Elegí hasta tres países · En puntos básicos", fuente: F.bcrd,
+  tarjeta(g, { titulo: "Argentina frente a otros países de la región", chips: true, conRango: true,
+    bajada: () => ({ niveles: "Todos en el mismo eje · En puntos básicos", dosejes: "Argentina en el eje izquierdo y el resto en el derecho · En puntos básicos",
+      base100: "Cada país = 100 al inicio del período elegido", latam: "Spread de cada país menos el de América Latina · En puntos básicos" })[RIESGO.vista],
+    fuente: F.bcrd,
     render: (el, card) => {
       const chips = card.querySelector(".chips");
-      const dibujar = () => {
-        const viejo = echarts.getInstanceByDom(el); if (viejo) viejo.dispose();
-        grafico(el, { dec: 0, series: [{ v: "riesgo_pais_argentina", nombre: "Argentina" },
-          ...sel.map((p, i) => ({ v: "riesgo_pais_" + p, nombre: paises[p], color: ["gris", "celeste", "naranja"][i] }))] });
-      };
-      Object.entries(paises).forEach(([k, n]) => {
-        const b = document.createElement("button"); b.textContent = n; if (sel.includes(k)) b.className = "on";
-        b.onclick = () => { if (sel.includes(k)) sel = sel.filter((x) => x !== k); else { sel.push(k); if (sel.length > 3) sel.shift(); }
-          chips.querySelectorAll("button").forEach((x, i) => x.classList.toggle("on", sel.includes(Object.keys(paises)[i]))); dibujar(); };
+      const seg = document.createElement("div"); seg.className = "segmento";
+      VISTAS.forEach(([k, n]) => { const b = document.createElement("button"); b.textContent = n; b.className = RIESGO.vista === k ? "on" : "";
+        b.onclick = () => { RIESGO.vista = k; card._redibujar(); }; seg.appendChild(b); });
+      chips.appendChild(seg);
+      Object.entries(PAISES).forEach(([k, n]) => {
+        const b = document.createElement("button"); b.textContent = n; if (RIESGO.sel.includes(k)) b.className = "on";
+        b.onclick = () => { if (RIESGO.sel.includes(k)) RIESGO.sel = RIESGO.sel.filter((x) => x !== k); else { RIESGO.sel.push(k); if (RIESGO.sel.length > 4) RIESGO.sel.shift(); } card._redibujar(); };
         chips.appendChild(b);
       });
-      dibujar();
+      const colores = ["gris", "celeste", "naranja", "verde"];
+      const v = RIESGO.vista;
+      const otros = RIESGO.sel.map((p, i) => ({ v: "riesgo_pais_" + p, nombre: PAISES[p], color: colores[i] }));
+      let series = [{ v: "riesgo_pais_argentina", nombre: "Argentina", color: "azul" }, ...otros];
+      if (v === "dosejes") series = series.map((s, i) => ({ ...s, eje2: i > 0 }));
+      if (v === "latam") series = series.map((s) => ({ ...s, v: undefined, datos: restar(s.v, "riesgo_pais_latam") }));
+      grafico(el, { dec: v === "base100" ? 1 : 0, base100: v === "base100", cero: v === "base100" || v === "latam", series });
     } });
   tarjeta(g, { ancha: true, titulo: "Ranking regional de riesgo país", alto: 380,
-    bajada: () => "", fuente: F.bcrd + " Venezuela fuera de escala, excluida del gráfico.",
+    bajada: () => `Último dato de cada país · En puntos básicos`, fuente: F.bcrd + " Venezuela fuera de escala, excluida del gráfico.",
     render: (el) => {
-      const ks = Object.keys(D.series).filter((k) => k.startsWith("riesgo_pais_") && !["riesgo_pais_venezuela", "riesgo_pais_global"].includes(k) && !/_(ad|bcrp|largo)$/.test(k));
-      const pts = ks.map((k) => [k === "riesgo_pais_latam" ? "América Latina" : (paises[k.slice(12)] || "Argentina"), ult(k)[1]]).sort((a, b) => a[1] - b[1]);
+      const ks = Object.keys(D.series).filter((k) => k.startsWith("riesgo_pais_") && !["riesgo_pais_venezuela", "riesgo_pais_global"].includes(k) && !/_(ad|bcrp|largo|ambito)$/.test(k));
+      const pts = ks.map((k) => [k === "riesgo_pais_latam" ? "América Latina" : (PAISES[k.slice(12)] || "Argentina"), ult(k)[1]]).sort((a, b) => a[1] - b[1]);
       const c = COL(); const ch = echarts.init(el); charts.push(ch);
       ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" }, grid: { left: 16, right: 50, top: 6, bottom: 6, containLabel: true },
         xAxis: { type: "value", show: false }, yAxis: { type: "category", data: pts.map((p) => p[0]), axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: c.texto2, width: 120, overflow: "none" } },
@@ -401,9 +577,9 @@ function dinero(main) {
   const g = grilla(main);
   const ultIpc = ult("ipc_nivel_general")[0];
   const aPrecios = ultIpc ? `a precios de ${mesCorto(ultIpc)} · Desde dic-16 (inicio del IPC nacional)` : "";
-  D.series._m2r = { u: "", f: "", d: deflactar("m2_transaccional_privado").map(([f, x]) => [f, x / 1e6]) };
-  D.series._bmr = { u: "", f: "", d: deflactar("base_monetaria").map(([f, x]) => [f, x / 1e6]) };
-  D.series._prr = { u: "", f: "", d: deflactar("prestamos_privados_pesos").map(([f, x]) => [f, x / 1e6]) };
+  tmp("_m2r", deflactar("m2_transaccional_privado").map(([f, x]) => [f, x / 1e6]));
+  tmp("_bmr", deflactar("base_monetaria").map(([f, x]) => [f, x / 1e6]));
+  tmp("_prr", deflactar("prestamos_privados_pesos").map(([f, x]) => [f, x / 1e6]));
   tarjeta(g, { titulo: "Demanda de dinero: M2 privado transaccional en términos reales",
     bajada: `En billones de pesos ${aPrecios}`, fuente: F.bcra + " Deflactado por IPC del INDEC.", dec: 1, decEje: 0,
     series: [{ v: "_m2r", nombre: "M2 transaccional" }, { v: "_bmr", nombre: "Base monetaria" }] });
@@ -417,8 +593,8 @@ function dinero(main) {
 
 function actividad(main) {
   const g = grilla(main);
-  D.series._ipc_m = { u: "%", f: "", d: varMensual("ipc_nivel_general") };
-  D.series._nuc_m = { u: "%", f: "", d: varMensual("ipc_nucleo") };
+  tmp("_ipc_m", varMensual("ipc_nivel_general"));
+  tmp("_nuc_m", varMensual("ipc_nucleo"));
   tarjeta(g, { titulo: () => `La inflación de ${mesCorto(ult("_ipc_m")[0])} fue de ${fmt(ult("_ipc_m")[1], 1)}%`,
     bajada: "IPC nivel general y núcleo · Variación % mensual", fuente: F.indec, mensual: true, dec: 1, decEje: 1,
     series: [{ v: "_ipc_m", nombre: "General" }, { v: "_nuc_m", nombre: "Núcleo", color: "celeste" }] });
@@ -436,7 +612,7 @@ function actividad(main) {
     bajada: "Intercambio comercial de bienes · En millones de USD", fuente: F.indec, mensual: true,
     series: [{ v: "exportaciones", nombre: "Expo" }, { v: "importaciones", nombre: "Impo" }] });
   const ultIpc = ult("ipc_nivel_general")[0];
-  D.series._rpr = { u: "", f: "", d: deflactar("resultado_primario_spn").map(([f, x]) => [f, x / 1e3]) };
+  tmp("_rpr", deflactar("resultado_primario_spn").map(([f, x]) => [f, x / 1e3]));
   tarjeta(g, { titulo: () => { const v = ult("_rpr")[1]; return `En ${mesCorto(ult("_rpr")[0])} hubo un ${v >= 0 ? "superávit" : "déficit"} primario de $${fmt(Math.abs(v))} miles de millones`; },
     bajada: `Sector público nacional, base caja · En miles de millones de pesos a precios de ${ultIpc ? mesCorto(ultIpc) : ""}`,
     fuente: "Fuente: elaboración propia en base a Ministerio de Economía. Deflactado por IPC del INDEC.", mensual: true, tipo: "bar", sinEtiquetas: true, cero: true, negGris: true,
@@ -447,35 +623,97 @@ function actividad(main) {
 }
 
 function balance(main) {
-  const g = grilla(main);
+  const intro = document.createElement("p"); intro.className = "seccion-intro";
+  const fu = ult("bc_cuenta_corriente")[0];
+  intro.textContent = `Datos mensuales del balance cambiario del BCRA${fu ? `, último mes publicado: ${mesCorto(fu)}` : ""}. Netos en millones de USD: positivo = ingreso de divisas, negativo = salida.`;
+  main.appendChild(intro);
   const m = { mensual: true, dec: 0 };
+  const h = (t) => { const x = document.createElement("h2"); x.className = "subtitulo"; x.textContent = t; main.appendChild(x); return grilla(main); };
+  const barras = (lista) => lista.map(([v, nombre, color]) => ({ v, nombre, color, tipo: "bar", stack: "s" }));
+
+  let g = h("Resultado global");
+  tarjeta(g, { ...m, ancha: true, titulo: () => `En ${mesCorto(fu)} las reservas variaron ${fmtS(ult("bc_var_reservas_transacciones")[1])} millones de USD por transacciones`,
+    bajada: "Cuentas del balance cambiario y variación de reservas por transacciones · En millones de USD", fuente: F.bc, leyenda: true, cero: true,
+    series: [...barras([["bc_cuenta_corriente", "Cuenta corriente", "azul"], ["bc_cuenta_capital", "Cuenta capital", "ocre"], ["bc_cuenta_financiera", "Cuenta financiera", "celeste"]]),
+      { v: "bc_var_reservas_transacciones", nombre: "Variación de reservas", color: "naranja" }] });
+
+  g = h("Cuenta corriente");
+  tarjeta(g, { ...m, titulo: () => `La cuenta corriente cambiaria dio ${fmtS(ult("bc_cuenta_corriente")[1])} millones en ${mesCorto(fu)}`,
+    bajada: "Componentes · En millones de USD", fuente: F.bc, leyenda: true, cero: true,
+    series: barras([["bc_bienes", "Bienes", "azul"], ["bc_servicios", "Servicios", "celeste"], ["bc_ingreso_primario", "Ingreso primario", "naranja"], ["bc_ingreso_secundario", "Ingreso secundario", "gris"]]) });
+  tarjeta(g, { ...m, titulo: () => `El saldo de bienes fue de ${fmtS(ult("bc_bienes")[1])} millones`,
+    bajada: "Cobros de exportaciones y pagos de importaciones (con signo negativo) · En millones de USD", fuente: F.bc, cero: true,
+    series: [{ v: "bc_cobros_exportaciones", nombre: "Cobros expo" }, { v: "bc_pagos_importaciones", nombre: "Pagos impo", color: "naranja" }, { v: "bc_bienes", nombre: "Saldo", color: "gris", tipo: "bar" }] });
+  tarjeta(g, { ...m, titulo: "Cómo se cobran las exportaciones", bajada: "Cobros por modalidad · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true,
+    series: barras([["mcc_cobros_expo", "Cobros", "azul"], ["mcc_cobros_anticipados", "Anticipados", "celeste"], ["mcc_prefinanciaciones", "Prefinanciaciones del exterior", "verde"], ["mcc_financ_locales_expo", "Financiaciones locales", "ocre"]]) });
+  tarjeta(g, { ...m, titulo: "Cómo se pagan las importaciones", bajada: "Pagos por modalidad, con signo negativo · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true,
+    series: barras([["mcc_impo_diferidos", "Diferidos y otros", "azul"], ["mcc_impo_vista", "A la vista", "celeste"], ["mcc_impo_anticipados", "Anticipados", "naranja"]]) });
+  tarjeta(g, { ...m, titulo: () => `Viajes y pasajes restaron ${fmt(-ult("bc_viajes_pasajes_neto")[1])} millones en ${mesCorto(ult("bc_viajes_pasajes_neto")[0])}`,
+    bajada: "Turismo: viajes y pasajes (estimación del BCRA) y consumos con tarjeta en el exterior · Netos en millones de USD", fuente: F.bc + " Anexo tarjetas y viajes.", cero: true,
+    series: [{ v: "bc_viajes_pasajes_neto", nombre: "Viajes y pasajes" }, { v: "bc_tarjetas_neto", nombre: "Tarjetas", color: "celeste" }, { v: "bc_servicios", nombre: "Servicios totales", color: "gris" }] });
+  tarjeta(g, { ...m, titulo: "Intereses y utilidades", bajada: "Pagos de intereses por acreedor y giro de utilidades y dividendos · En millones de USD", fuente: F.bc, leyenda: true, cero: true,
+    series: barras([["bc_intereses_fmi", "Intereses FMI", "naranja"], ["bc_intereses_otros_org", "Intereses otros organismos", "ocre"], ["bc_intereses_otros", "Otros intereses", "gris"],
+      ["bc_utilidades_egresos", "Utilidades y dividendos", "celeste"]]) });
+
+  g = h("Cuenta financiera");
+  tarjeta(g, { ...m, ancha: true, titulo: () => `La cuenta financiera cambiaria dio ${fmtS(ult("bc_cuenta_financiera")[1])} millones en ${mesCorto(fu)}`,
+    bajada: "Componentes por concepto · En millones de USD", fuente: F.bc, leyenda: true, cero: true, alto: 380,
+    series: [...barras([["bc_billetes_divisas_spnf", "Billetes y divisas (SPNF)", "naranja"], ["bc_prestamos_titulos_deuda", "Préstamos y títulos de deuda", "azul"], ["bc_ied", "Inversión directa", "verde"],
+      ["bc_portafolio", "Portafolio", "turquesa"], ["bc_fmi", "FMI", "rojo"], ["bc_otros_organismos", "Otros organismos", "ocre"], ["bc_fae_sector_financiero", "FAE sector financiero", "violeta"],
+      ["bc_fae_sector_publico", "FAE sector público", "marron"], ["bc_canje", "Canje", "celeste"], ["bc_otros_movimientos", "Otros movimientos", "gris"]]),
+    { v: "bc_cuenta_financiera", nombre: "Total", color: "tinta" }] });
+  tarjeta(g, { ...m, titulo: "Cuenta financiera por sector", bajada: "Sector privado no financiero, financiero y gobierno general y BCRA · En millones de USD", fuente: F.bc + " Hoja Cta. Financiera por sector.", leyenda: true, cero: true,
+    series: barras([["bcs_spnf", "Privado no financiero", "azul"], ["bcs_financiero", "Financiero", "celeste"], ["bcs_gobierno_bcra", "Gobierno y BCRA", "naranja"], ["bcs_otros", "Otros", "gris"]]) });
   tarjeta(g, { ...m, titulo: () => `Las personas humanas demandaron USD ${fmt(-ult("mc_personas_humanas")[1])} millones netos en ${mesCorto(ult("mc_personas_humanas")[0])}`,
-    bajada: "Operaciones netas de personas humanas en el mercado de cambios · En millones de USD", fuente: F.bcra, tipo: "bar", sinEtiquetas: true, cero: true,
-    series: [{ v: "mc_personas_humanas", nombre: "Personas humanas" }] });
-  tarjeta(g, { ...m, titulo: "Oferta neta de los sectores exportadores", bajada: "Agro, petróleo y minería · En millones de USD", fuente: F.bcra,
-    series: [{ v: "mc_oleaginosos_cerealeros", nombre: "Agro" }, { v: "mc_petroleo", nombre: "Petróleo" }, { v: "mc_mineria", nombre: "Minería", color: "celeste" }] });
-  tarjeta(g, { ...m, titulo: "Giro de utilidades y financiamiento con deuda", bajada: "Netos del balance cambiario · En millones de USD", fuente: F.bcra, cero: true,
-    series: [{ v: "bc_prestamos_titulos_deuda", nombre: "Deuda" }, { v: "bc_utilidades_dividendos", nombre: "Utilidades" }] });
-  tarjeta(g, { ...m, titulo: "Cuenta corriente y cuenta financiera cambiarias", bajada: "En millones de USD", fuente: F.bcra, cero: true,
-    series: [{ v: "bc_cuenta_corriente", nombre: "Corriente" }, { v: "bc_cuenta_financiera", nombre: "Financiera" }] });
+    bajada: "Operaciones de personas humanas en el mercado de cambios · En millones de USD", fuente: F.bc, cero: true,
+    series: [{ v: "mc_personas_humanas", nombre: "Neto", tipo: "bar", color: "naranja" }] });
+  tarjeta(g, { ...m, titulo: "Formación de activos externos: compras y ventas", bajada: "Billetes y divisas sin fines específicos del sector privado no financiero · En millones de USD", fuente: F.bc + " Detalle de compras: hoja MC por concepto.", leyenda: true, cero: true,
+    series: [...barras([["mcc_billetes_compras", "Compras de billetes", "naranja"], ["mcc_otras_inversiones", "Otras inversiones en el exterior", "ocre"], ["mcc_ide_residentes", "Inversión directa en el exterior", "marron"],
+      ["mcc_billetes_ventas", "Ventas de billetes", "celeste"], ["mcc_divisas_ventas", "Ventas de divisas", "azul"]]), { v: "bc_billetes_divisas_spnf", nombre: "Neto", color: "tinta" }] });
+  tarjeta(g, { ...m, titulo: () => `La deuda financiera privada y pública dejó ${fmtS(ult("bc_prestamos_titulos_deuda")[1])} millones netos`,
+    bajada: "Préstamos financieros, títulos de deuda y líneas de crédito: ingresos y cancelaciones · En millones de USD", fuente: F.bc, cero: true,
+    series: [{ v: "bc_prestamos_ingresos", nombre: "Ingresos" }, { v: "bc_prestamos_egresos", nombre: "Cancelaciones", color: "naranja" }, { v: "bc_prestamos_titulos_deuda", nombre: "Neto", color: "gris", tipo: "bar" }] });
+  tarjeta(g, { ...m, titulo: "Deuda por instrumento", bajada: "Financiaciones locales y deuda con el exterior, netas · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true, cero: true,
+    series: [{ datos: sumar(["mcc_financ_locales_ing", "mcc_financ_locales_egr"]), nombre: "Financiaciones locales", tipo: "bar", stack: "s", color: "celeste" },
+      { datos: sumar(["mcc_deuda_ext_ing", "mcc_deuda_ext_egr"]), nombre: "Préstamos del exterior y títulos", tipo: "bar", stack: "s", color: "azul" }] });
+  tarjeta(g, { ...m, titulo: "Inversión de no residentes", bajada: "Inversión directa y de portafolio, netas · En millones de USD", fuente: F.bc, cero: true,
+    series: [{ v: "bc_ied", nombre: "Directa", tipo: "bar", stack: "s", color: "verde" }, { v: "bc_portafolio", nombre: "Portafolio", tipo: "bar", stack: "s", color: "turquesa" }], leyenda: true });
+  tarjeta(g, { ...m, titulo: "Organismos internacionales", bajada: "FMI y otros organismos (desembolsos menos pagos de capital) · En millones de USD", fuente: F.bc, cero: true, leyenda: true,
+    series: barras([["bc_fmi", "FMI", "rojo"], ["bc_otros_organismos", "Otros organismos", "ocre"]]) });
+
+  g = h("Por sector de actividad");
+  tmp("_mc_energia", sumar(["mc_petroleo", "mc_gas", "mc_electricidad"]));
+  tarjeta(g, { ...m, titulo: "Oferta neta de los sectores exportadores", bajada: "Agro, energía (petróleo, gas y electricidad) y minería · Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
+    series: [{ v: "mc_oleaginosos_cerealeros", nombre: "Agro" }, { v: "_mc_energia", nombre: "Energía", color: "naranja" }, { v: "mc_mineria", nombre: "Minería", color: "celeste" }] });
+  tarjeta(g, { ...m, titulo: "Demanda neta de la industria", bajada: "Automotriz, maquinarias y equipos, metales comunes y química · Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
+    series: [{ v: "mc_automotriz", nombre: "Automotriz" }, { v: "mc_maquinarias", nombre: "Maquinarias", color: "celeste" }, { v: "mc_metales_comunes", nombre: "Metales comunes", color: "naranja" }, { v: "mc_quimica", nombre: "Química", color: "gris" }] });
+  tarjeta(g, { ...m, titulo: "Comercio, alimentos y sector público", bajada: "Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
+    series: [{ v: "mc_alimentos", nombre: "Alimentos" }, { v: "mc_comercio", nombre: "Comercio", color: "celeste" }, { v: "mc_sector_publico", nombre: "Sector público", color: "naranja" }] });
+  tarjeta(g, { ...m, titulo: "Energía por rama", bajada: "Petróleo, gas y electricidad · Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
+    series: [{ v: "mc_petroleo", nombre: "Petróleo" }, { v: "mc_gas", nombre: "Gas", color: "celeste" }, { v: "mc_electricidad", nombre: "Electricidad", color: "naranja" }] });
 }
 
 function internacional(main) {
   const g = grilla(main);
+  const y = (cfg) => tarjeta(g, { fuente: F.yahoo, ...cfg });
   tarjeta(g, { titulo: () => `El bono del Tesoro a 10 años rinde ${fmt(ult("ust_10y")[1], 2)}%`, bajada: "Rendimiento de bonos del Tesoro de EE.UU. · En %",
     fuente: "Fuente: elaboración propia en base a US Treasury.", dec: 2, decEje: 1,
-    series: [{ v: "ust_10y", nombre: "10 años" }, { v: "ust_2y", nombre: "2 años" }] });
-  tarjeta(g, { titulo: () => `El VIX está en ${fmt(ult("vix")[1], 1)} puntos`, bajada: "Volatilidad implícita del S&P 500 · Índice",
-    fuente: "Fuente: elaboración propia en base a Yahoo Finance.", dec: 1, series: [{ v: "vix", nombre: "VIX" }] });
-  tarjeta(g, { titulo: "Dólar global y real brasileño", bajada: "Índice DXY y reales por dólar", fuente: "Fuente: elaboración propia en base a Yahoo Finance.", dec: 2,
-    render: (el) => { el.style.display = "grid"; el.style.gridTemplateColumns = "1fr 1fr"; el.style.gap = "8px";
-      const a = document.createElement("div"), b = document.createElement("div"); el.append(a, b);
-      grafico(a, { dec: 1, margenDer: 70, series: [{ v: "dxy", nombre: "DXY" }] });
-      grafico(b, { dec: 2, decEje: 2, margenDer: 70, series: [{ v: "brl_usd", nombre: "BRL" }] }); } });
-  tarjeta(g, { titulo: "Materias primas", bajada: "Brent (USD/barril), oro (USD/onza) y soja (centavos de USD/bushel)", fuente: "Fuente: elaboración propia en base a Yahoo Finance.",
-    render: (el) => { el.style.display = "grid"; el.style.gridTemplateColumns = "1fr 1fr 1fr"; el.style.gap = "6px";
-      ["brent", "oro", "soja_cbot"].forEach((v, i) => { const d = document.createElement("div"); el.appendChild(d);
-        grafico(d, { dec: v === "brent" ? 1 : 0, margenDer: 64, series: [{ v, nombre: ["Brent", "Oro", "Soja"][i] }] }); }); } });
+    series: [{ v: "ust_10y", nombre: "10 años" }, { v: "ust_2y", nombre: "2 años", color: "celeste" }, { v: "ust_30y", nombre: "30 años", color: "gris" }] });
+  y({ titulo: () => `El VIX está en ${fmt(ult("vix")[1], 1)} puntos`, bajada: "Volatilidad implícita del S&P 500 · Índice", dec: 1, recortePicos: true, series: [{ v: "vix", nombre: "VIX" }] });
+  y({ titulo: () => `El S&P 500 está en ${fmt(ult("sp500")[1], 0)} puntos`, bajada: "Índice bursátil de EE.UU.", dec: 0, series: [{ v: "sp500", nombre: "S&P 500" }] });
+  y({ titulo: () => `El dólar global (DXY) está en ${fmt(ult("dxy")[1], 1)}`, bajada: "Índice del dólar frente a una canasta de monedas", dec: 1, series: [{ v: "dxy", nombre: "DXY" }] });
+  y({ titulo: () => `El real cotiza a R$ ${fmt(ult("brl_usd")[1], 2)} por dólar`, bajada: "Reales por dólar", dec: 2, decEje: 2, series: [{ v: "brl_usd", nombre: "BRL" }] });
+  y({ titulo: () => `El Brent cotiza a USD ${fmt(ult("brent")[1], 1)} por barril`, bajada: "Petróleo Brent, contrato más cercano · En USD por barril", dec: 1, series: [{ v: "brent", nombre: "Brent" }] });
+  y({ titulo: () => `El gas natural cotiza a USD ${fmt(ult("gas_natural_hh")[1], 2)} por MMBtu`, bajada: "Henry Hub, contrato más cercano · En USD por MMBtu", dec: 2, decEje: 1, recortePicos: true, series: [{ v: "gas_natural_hh", nombre: "Gas natural" }] });
+  y({ titulo: () => `La soja cotiza a USD ${fmt(ult("soja_cbot")[1] * 0.367437, 0)} por tonelada`, bajada: "Soja en Chicago, contrato más cercano · En USD por tonelada", dec: 0,
+    series: [{ v: "soja_cbot", nombre: "Soja", escala: 0.367437 }] });
+  y({ titulo: () => `El maíz cotiza a USD ${fmt(ult("maiz_cbot")[1] * 0.393679, 0)} por tonelada`, bajada: "Maíz en Chicago, contrato más cercano · En USD por tonelada", dec: 0,
+    series: [{ v: "maiz_cbot", nombre: "Maíz", escala: 0.393679 }] });
+  y({ titulo: () => `El trigo cotiza a USD ${fmt(ult("trigo_cbot")[1] * 0.367437, 0)} por tonelada`, bajada: "Trigo en Chicago, contrato más cercano · En USD por tonelada", dec: 0,
+    series: [{ v: "trigo_cbot", nombre: "Trigo", escala: 0.367437 }] });
+  y({ titulo: () => `El oro cotiza a USD ${fmt(ult("oro")[1], 0)} por onza`, bajada: "Oro, contrato más cercano · En USD por onza troy", dec: 0, series: [{ v: "oro", nombre: "Oro" }] });
+  y({ titulo: () => `El cobre cotiza a USD ${fmt(ult("cobre")[1] * 2204.62, 0)} por tonelada`, bajada: "Cobre en Nueva York (COMEX), contrato más cercano · En USD por tonelada", dec: 0,
+    series: [{ v: "cobre", nombre: "Cobre", escala: 2204.62 }] });
 }
 
 // ------------------------------------------------------------------ armado general
