@@ -1,0 +1,76 @@
+{
+ "S13N6": {
+  "tem": null,
+  "emision": "2026-06-30",
+  "vencimiento": "2026-11-13",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 13 DE NOVIEMBRE DE 2026",
+  "interes": "Pagarán una tasa efectiva mensual capitalizable mensualmente hasta el vencimiento del instrumento.\n",
+  "crudo": {
+   "ley": "Nacional",
+   "formaAmortizacion": "Integra al vencimiento ",
+   "denominacionMinima": 1,
+   "fechaVencimiento": "2026-11-13 00:00:00.0",
+   "tipoGarantia": "Común",
+   "fechaEmision": "2026-06-30 00:00:00.0",
+   "fechaDevenganIntereses": "",
+   "codigoIsin": "AR0087656622",
+   "tipoEspecie": "Títulos Públicos",
+   "default": "",
+   "tipoObligacion": "Valores Públicos Nacionales",
+   "montoNominal": 7846440480249,
+   "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 13 DE NOVIEMBRE DE 2026",
+   "insType": "BOND",
+   "paisLey": "",
+   "moneda": "Pesos",
+   "montoResidual": 7846440480249,
+   "interes": "Pagarán una tasa efectiva mensual capitalizable mensualmente hasta el vencimiento del instrumento.\n",
+   "emisor": "Gobierno Nacional"
+  }
+ },
+ "S16O6": {
+  "tem": 0.020499999999999997,
+  "emision": "2026-07-31",
+  "vencimiento": "2026-10-16",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 16 DE OCTUBRE DE 2026"
+ },
+ "S29E7": {
+  "tem": null,
+  "emision": "2026-08-31",
+  "vencimiento": "2027-01-29",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 29 DE ENERO DE 2027",
+  "interes": "Pagarán una tasa efectiva mensual capitalizable mensualmente hasta el vencimiento del instrumento ",
+  "crudo": {
+   "ley": "Nacional",
+   "formaAmortizacion": "Integra al vencimiento",
+   "denominacionMinima": 1,
+   "fechaVencimiento": "2027-01-29 00:00:00.0",
+   "tipoGarantia": "Común",
+   "fechaEmision": "2026-08-31 00:00:00.0",
+   "fechaDevenganIntereses": "",
+   "codigoIsin": "AR0048313164",
+   "tipoEspecie": "Títulos Públicos",
+   "default": "",
+   "tipoObligacion": "Valores Públicos Nacionales",
+   "montoNominal": 4976325953251,
+   "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 29 DE ENERO DE 2027",
+   "insType": "BOND",
+   "paisLey": "",
+   "moneda": "Pesos",
+   "montoResidual": 4976325953251,
+   "interes": "Pagarán una tasa efectiva mensual capitalizable mensualmente hasta el vencimiento del instrumento ",
+   "emisor": "Gobierno Nacional"
+  }
+ },
+ "S30N6": {
+  "tem": 0.023,
+  "emision": "2025-12-15",
+  "vencimiento": "2026-11-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE NOVIEMBRE DE 2026"
+ },
+ "S30O6": {
+  "tem": 0.0255,
+  "emision": "2025-10-31",
+  "vencimiento": "2026-10-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE OCTUBRE DE 2026"
+ }
+}

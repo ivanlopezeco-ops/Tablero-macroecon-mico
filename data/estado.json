@@ -1,0 +1,109 @@
+{
+ "corrida_utc": "2026-10-17T14:19:49.702383",
+ "modo": "completo",
+ "fuentes": {
+  "byma_intradia": {
+   "estado": "ok",
+   "filas": 0,
+   "ok_utc": "2026-10-17T14:11:04.819346"
+  },
+  "ambito_riesgo": {
+   "estado": "ok",
+   "filas": 30,
+   "ok_utc": "2026-10-17T14:11:06.713631"
+  },
+  "bcra": {
+   "estado": "ok",
+   "filas": 81335,
+   "ok_utc": "2026-10-17T14:11:36.864020"
+  },
+  "bcra_cny": {
+   "estado": "ok",
+   "filas": 698,
+   "ok_utc": "2026-10-17T14:11:46.167151"
+  },
+  "bcrd_embi": {
+   "estado": "ok",
+   "filas": 83724,
+   "ok_utc": "2026-10-17T14:11:47.501032"
+  },
+  "argentinadatos": {
+   "estado": "ok",
+   "filas": 15673,
+   "ok_utc": "2026-10-17T14:11:48.242951"
+  },
+  "byma_historicos": {
+   "estado": "ok",
+   "filas": 2916,
+   "ok_utc": "2026-10-17T14:11:51.660282"
+  },
+  "rofex_futuros": {
+   "estado": "ok",
+   "filas": 19170,
+   "ok_utc": "2026-10-17T14:12:19.707796"
+  },
+  "cammesa": {
+   "estado": "ok",
+   "filas": 1,
+   "ok_utc": "2026-10-17T14:12:20.744515"
+  },
+  "treasury": {
+   "estado": "ok",
+   "filas": 19109,
+   "ok_utc": "2026-10-17T14:12:29.827432"
+  },
+  "yahoo": {
+   "estado": "ok",
+   "filas": 69942,
+   "ok_utc": "2026-10-17T14:12:31.590443"
+  },
+  "datos_gob": {
+   "estado": "ok",
+   "filas": 1465,
+   "ok_utc": "2026-10-17T14:12:54.311082"
+  },
+  "indec_ipc": {
+   "estado": "ok",
+   "filas": 236,
+   "ok_utc": "2026-10-17T14:12:56.321521"
+  },
+  "bls_cpi": {
+   "estado": "ok",
+   "filas": 152,
+   "ok_utc": "2026-10-17T14:12:56.835185"
+  },
+  "rem": {
+   "estado": "ERROR",
+   "error": "HTTPError: 502 Server Error: Bad Gateway for url: https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/relevamiento-expectativas-mercado-historico.xlsx",
+   "traza": ", in main\n    d = fn()\n        ^^^^\n  File \"/home/runner/work/Tablero-macroecon-mico/Tablero-macroecon-mico/pipeline/fuentes.py\", line 412, in rem\n    df = pd.read_excel(io.BytesIO(_get(url).content), sheet_name=\"Base de Datos Completa\", header=1)\n                                  ^^^^^^^^^\n  File \"/home/runner/work/Tablero-macroecon-mico/Tablero-macroecon-mico/pipeline/fuentes.py\", line 43, in _get\n    r.raise_for_status()\n  File \"/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/requests/models.py\", line 1167, in raise_for_status\n    raise HTTPError(http_error_msg, response=self)\nrequests.exceptions.HTTPError: 502 Server Error: Bad Gateway for url: https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/relevamiento-expectativas-mercado-historico.xlsx\n"
+  },
+  "itcrm": {
+   "estado": "ERROR",
+   "error": "HTTPError: 502 Server Error: Bad Gateway for url: https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/ITCRMSerie.xlsx",
+   "traza": "con-mico/pipeline/run.py\", line 361, in main\n    d = fn()\n        ^^^^\n  File \"/home/runner/work/Tablero-macroecon-mico/Tablero-macroecon-mico/pipeline/fuentes.py\", line 437, in itcrm\n    df = pd.read_excel(io.BytesIO(_get(F_ITCRM).content), sheet_name=\"ITCRM y bilaterales\", header=1)\n                                  ^^^^^^^^^^^^^\n  File \"/home/runner/work/Tablero-macroecon-mico/Tablero-macroecon-mico/pipeline/fuentes.py\", line 43, in _get\n    r.raise_for_status()\n  File \"/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/requests/models.py\", line 1167, in raise_for_status\n    raise HTTPError(http_error_msg, response=self)\nrequests.exceptions.HTTPError: 502 Server Error: Bad Gateway for url: https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/ITCRMSerie.xlsx\n"
+  },
+  "balance_cambiario": {
+   "estado": "ERROR",
+   "error": "HTTPError: 502 Server Error: Bad Gateway for url: https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/anexo-estadistico-mercado-cambios-balance-cambiario.xlsx",
+   "traza": "roecon-mico/Tablero-macroecon-mico/pipeline/run.py\", line 361, in main\n    d = fn()\n        ^^^^\n  File \"/home/runner/work/Tablero-macroecon-mico/Tablero-macroecon-mico/pipeline/fuentes.py\", line 500, in balance_cambiario\n    contenido = _get(F_BC).content\n                ^^^^^^^^^^\n  File \"/home/runner/work/Tablero-macroecon-mico/Tablero-macroecon-mico/pipeline/fuentes.py\", line 43, in _get\n    r.raise_for_status()\n  File \"/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/requests/models.py\", line 1167, in raise_for_status\n    raise HTTPError(http_error_msg, response=self)\nrequests.exceptions.HTTPError: 502 Server Error: Bad Gateway for url: https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/anexo-estadistico-mercado-cambios-balance-cambiario.xlsx\n"
+  },
+  "a3_mae": {
+   "estado": "ok",
+   "filas": 5633,
+   "ok_utc": "2026-10-17T14:19:42.540871"
+  },
+  "lecaps": {
+   "estado": "ok",
+   "filas": 441
+  },
+  "byma_snapshots": {
+   "estado": "ok",
+   "filas": 0
+  }
+ },
+ "notas": {
+  "tcr_base": "2026-09",
+  "swap_cny_millones_usado": 130010.5,
+  "dep_tesoro": "BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500"
+ }
+}
