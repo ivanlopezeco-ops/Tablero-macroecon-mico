@@ -1,5 +1,7 @@
 {
  "_nota": "TEM de emisión (en %, ej. 2.15) de las LECAP/BONCAP cuya ficha técnica de BYMA no informa la tasa. Completar desde el resultado de licitación del Ministerio de Economía. null = sin dato.",
- "S13N6": null,
- "S29E7": null
+ "S13N6": 2.10,
+ "_S13N6": "Comunicado de resultados de Finanzas del 26/6/26 (emisión nueva, TEM de corte 2,10%)",
+ "S29E7": 2.25,
+ "_S29E7": "Comunicado de resultados de Finanzas del 27/8/26 (emisión nueva, TEM de corte 2,25%)"
 }

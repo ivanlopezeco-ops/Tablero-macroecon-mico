@@ -49,6 +49,16 @@ function varMensual(v) {           // índice -> variación % mensual
   for (let i = 1; i < s.length; i++) out.push([s[i][0], (s[i][1] / s[i - 1][1] - 1) * 100]);
   return out;
 }
+const mesAtras = (f, n) => { const [y, m] = f.split("-").map(Number); const t = y * 12 + m - 1 - n; return `${Math.floor(t / 12)}-${String(t % 12 + 1).padStart(2, "0")}-01`; };
+function varIA(v, real) {          // serie mensual -> variación % interanual; real: deflactada por el IPC nacional
+  const m = new Map(S(v)); const ipc = new Map(S("ipc_nivel_general"));
+  return S(v).map(([f, x]) => {
+    const y = m.get(mesAtras(f, 12)); if (y == null || !y) return [f, null];
+    if (!real) return [f, (x / y - 1) * 100];
+    const p1 = ipc.get(f), p0 = ipc.get(mesAtras(f, 12));
+    return [f, p1 && p0 ? ((x / y) / (p1 / p0) - 1) * 100 : null];
+  }).filter((p) => p[1] != null);
+}
 function deflactar(v) {            // serie diaria nominal -> a precios del último IPC (solo desde el inicio del IPC, dic-16)
   const ipc = S("ipc_nivel_general"); if (!ipc.length) return [];
   const base = ipc[ipc.length - 1][1]; let j = 0;
@@ -124,7 +134,7 @@ function grafico(el, cfg) {
       emphasis: { disabled: true }, z: 10 - i, barMaxWidth: 14, labelLayout: { moveOverlap: "shiftY" }, yAxisIndex: s.eje2 ? 1 : 0,
       sampling: datos.length > 1500 && tipo === "line" ? "lttb" : undefined, large: datos.length > 3000 && tipo === "bar", stack: s.stack,
     };
-    if (tipo === "bar" && !s.stack) base.itemStyle = { color: (p) => (p.value[1] < 0 && cfg.negGris ? c.gris : color) };
+    if (tipo === "bar" && !s.stack && cfg.negGris) base.itemStyle = { color: (p) => (p.value[1] < 0 && cfg.negGris ? c.gris : color) };
     const corte = s.estimadoAntes || s.estimadoDesde;
     if (corte) {     // tramo estimado u otra fuente, punteado
       const antes = datos.filter((p) => p[0] < corte), despues = datos.filter((p) => p[0] >= corte);
@@ -405,9 +415,12 @@ const SECCIONES = [
   { id: "reservas", nombre: "Reservas", armar: reservas },
   { id: "tasas", nombre: "Tasas", armar: tasas },
   { id: "bonos", nombre: "Bonos", armar: bonos },
+  { id: "acciones", nombre: "Acciones", armar: acciones },
   { id: "riesgo", nombre: "Riesgo país", armar: riesgo },
   { id: "dinero", nombre: "Dinero y crédito", armar: dinero },
+  { id: "fiscal", nombre: "Fiscal", armar: fiscal },
   { id: "actividad", nombre: "Precios y actividad", armar: actividad },
+  { id: "industria", nombre: "Industria", armar: industria },
   { id: "bc", nombre: "Balance cambiario", armar: balance },
   { id: "internacional", nombre: "Internacional", armar: internacional },
 ];
@@ -480,6 +493,10 @@ function novedades() {
   const partes = mov.map(([n, x]) => `${n} ${x > 0 ? "sube" : "baja"} ${fmt(Math.abs(x), 1)}%`);
   if (ust != null && Math.abs(ust) >= 0.08) partes.push(`la tasa del Tesoro a 10 años ${ust > 0 ? "sube" : "baja"} ${fmt(Math.abs(ust) * 100)} puntos básicos`);
   L.push(partes.length ? `En los <b>mercados internacionales</b>, ${partes.join(", ").replace(/, ([^,]*)$/, " y $1")} en la última rueda.` : "Los <b>mercados internacionales</b> se movieron poco en la última rueda.");
+  const [fMv, mv] = ult("merval_usd");
+  if (mv) L.push(`El <b>Merval</b> vale USD ${fmt(mv)} al contado con liqui${esProv("merval_usd") ? " (dato del día)" : ""}, ${fmtS(pctVar("merval_usd", prev("merval_usd")[0]), 1)}% en el día y ${fmtS(pctVar("merval_usd", iso(Date.parse(fMv) - 30 * 864e5)), 1)}% en 30 días.`);
+  const lic = (D.licitaciones || []).at(-1);
+  if (lic && (Date.now() - Date.parse(lic.f)) / 864e5 < 20) L.push(`En la <b>licitación del Tesoro</b> del ${fechaCorta(lic.f)} se adjudicaron $${fmt(lic.adjudicado / 1e6, 2)} billones${lic.ofertado ? ` sobre ofertas por $${fmt(lic.ofertado / 1e6, 2)} billones` : ""}.`);
   const [fbc, cc] = ult("bc_cuenta_corriente");
   if (cc != null) L.push(`En el <b>balance cambiario</b> de ${mesCorto(fbc)}, la cuenta corriente dio ${fmtS(cc)} millones de USD, la financiera ${fmtS(ult("bc_cuenta_financiera")[1])} millones y las personas humanas hicieron compras netas por USD ${fmt(-ult("mc_personas_humanas")[1])} millones.`);
   return L;
@@ -999,12 +1016,6 @@ function actividad(main) {
   tarjeta(g, { mide: "comercio", titulo: () => `En ${mesCorto(ult("exportaciones")[0])} se exportaron USD ${fmt(ult("exportaciones")[1])} millones`,
     bajada: "Intercambio comercial de bienes · En millones de USD", fuente: F.indec, mensual: true,
     series: [{ v: "exportaciones", nombre: "Expo" }, { v: "importaciones", nombre: "Impo" }] });
-  const ultIpc = ult("ipc_nivel_general")[0];
-  tmp("_rpr", deflactar("resultado_primario_spn").map(([f, x]) => [f, x / 1e3]));
-  tarjeta(g, { mide: "resultado_primario", titulo: () => { const v = ult("_rpr")[1]; return `En ${mesCorto(ult("_rpr")[0])} hubo un ${v >= 0 ? "superávit" : "déficit"} primario de $${fmt(Math.abs(v))} miles de millones`; },
-    bajada: `Sector público nacional, base caja · En miles de millones de pesos a precios de ${ultIpc ? mesCorto(ultIpc) : ""}`,
-    fuente: "Fuente: elaboración propia en base a Ministerio de Economía. Deflactado por IPC del INDEC.", mensual: true, tipo: "bar", sinEtiquetas: true, cero: true, negGris: true,
-    series: [{ v: "_rpr", nombre: "Resultado primario" }] });
   tarjeta(g, { mide: "tcrm_bilat", ancha: true, titulo: () => `El tipo de cambio real multilateral está en ${fmt(ult("tcrm")[1], 1)}`,
     bajada: "Índice de tipo de cambio real multilateral y bilaterales · Base 17-12-15 = 100", fuente: F.bcra, dec: 1,
     series: [{ v: "tcrm", nombre: "Multilateral" }, { v: "tcr_brasil", nombre: "Brasil" }, { v: "tcr_eeuu", nombre: "EE.UU.", color: "celeste" }] });
@@ -1102,6 +1113,146 @@ function internacional(main) {
   y({ mide: "oro", titulo: () => `El oro cotiza a USD ${fmt(ult("oro")[1], 0)} por onza`, bajada: "Oro, contrato más cercano · En USD por onza troy", dec: 0, series: [{ v: "oro", nombre: "Oro" }] });
   y({ mide: "cobre", titulo: () => `El cobre cotiza a USD ${fmt(ult("cobre")[1] * 2204.62, 0)} por tonelada`, bajada: "Cobre en Nueva York (COMEX), contrato más cercano · En USD por tonelada", dec: 0,
     series: [{ v: "cobre", nombre: "Cobre", escala: 2204.62 }] });
+}
+
+// ------------------------------------------------------------------ acciones
+const ADRS = [["GGAL", "Galicia"], ["BMA", "Macro"], ["BBAR", "BBVA"], ["SUPV", "Supervielle"], ["YPF", "YPF"], ["PAM", "Pampa"], ["VIST", "Vista"],
+  ["TGS", "TGS"], ["CEPU", "Central Puerto"], ["EDN", "Edenor"], ["LOMA", "Loma Negra"], ["TEO", "Telecom"], ["CRESY", "Cresud"], ["IRS", "IRSA"]];
+const adrV = (t) => "adr_" + t.toLowerCase();
+const F_MERVAL = "Fuente: elaboración propia en base a Yahoo Finance (S&P Merval hasta el 16/10/26) y BYMA (MSCI MERVAL desde el 19/10/26). CCL propio con AL30.";
+
+function tablaAdrs(el) {
+  el.style.height = "auto";
+  const filas = ADRS.map(([t, n]) => {
+    const v = adrV(t), s = S(v);
+    if (!s.length) return `<tr><td>${t}</td><td class="izq">${n}</td><td colspan="5">s/d</td></tr>`;
+    const [f, x] = s.at(-1);
+    const desde = (fd) => { const b = valEn(v, fd); return b ? (x / b - 1) * 100 : null; };
+    const cel = (d) => (d == null ? "<td></td>" : `<td class="${Math.abs(d) < 0.005 ? "" : d > 0 ? "dif-pos" : "dif-neg"}">${fmtS(d, 1)}%</td>`);
+    return `<tr><td>${t}</td><td class="izq">${n}</td><td>${fmt(x, 2)}</td>${cel(desde(prev(v)[0]))}${cel(desde(iso(Date.parse(f) - 30 * 864e5)))}` +
+      `${cel(desde(f.slice(0, 4) + "-00"))}${cel(desde(iso(Date.parse(f) - 365 * 864e5)))}<td>${fechaCorta(f)}</td></tr>`;
+  }).join("");
+  const tw = document.createElement("div"); tw.className = "tw";
+  tw.innerHTML = `<table class="tabla"><tr><th>ADR</th><th class="izq">Empresa</th><th>USD</th><th>Día</th><th>30 días</th><th>En el año</th><th>12 meses</th><th>Dato</th></tr>${filas}</table>`;
+  el.appendChild(tw);
+}
+
+function acciones(main) {
+  const g = grilla(main);
+  tarjeta(g, { mide: "merval_usd", ancha: true, titulo: () => `El Merval vale USD ${fmt(ult("merval_usd")[1], 0)} al contado con liqui`,
+    bajada: "Merval dividido por el dólar CCL · En dólares", fuente: F_MERVAL + " Antes del primer dato propio del CCL, CCL de ArgentinaDatos.", logAuto: true, dec: 0,
+    lineas: [{ x: "2026-10-19", txt: "pasa a MSCI" }], series: [{ v: "merval_usd", nombre: "Merval USD" }] });
+  tarjeta(g, { mide: "merval", titulo: () => `El Merval está en ${fmt(ult("merval")[1], 0)} puntos`,
+    bajada: "Índice en pesos, en la escala del S&P Merval · En puntos", fuente: F_MERVAL, logAuto: true, dec: 0,
+    series: [{ v: "merval", nombre: "Merval" }] });
+  tarjeta(g, { mide: "adr_base100", titulo: "Los ADR más operados", leyenda: true, base100: true, cero: true, dec: 1,
+    bajada: "Cotización en Nueva York, base 100 al inicio del período · En dólares", fuente: F.yahoo,
+    series: [{ v: "adr_ggal", nombre: "Galicia" }, { v: "adr_ypf", nombre: "YPF", color: "celeste" }, { v: "adr_pam", nombre: "Pampa", color: "naranja" },
+      { v: "adr_bma", nombre: "Macro", color: "gris" }, { v: "adr_vist", nombre: "Vista", color: "verde" }] });
+  tarjeta(g, { mide: "tabla_adrs", ancha: true, titulo: "ADR argentinos en Nueva York", bajada: "Último precio y variaciones · En USD por ADR",
+    fuente: F.yahoo, render: tablaAdrs });
+}
+
+// ------------------------------------------------------------------ fiscal y licitaciones del Tesoro
+function licEtiqueta(i) {         // ticker, o tipo y vencimiento cuando la letra es nueva y el comunicado no da el ticker
+  if (i.t) return i.t;
+  const m = i.d.match(/VENCIMIENTO (\d{1,2}) DE (\w+) DE (\d{4})/i);
+  const MES = { ENERO: 0, FEBRERO: 1, MARZO: 2, ABRIL: 3, MAYO: 4, JUNIO: 5, JULIO: 6, AGOSTO: 7, SEPTIEMBRE: 8, OCTUBRE: 9, NOVIEMBRE: 10, DICIEMBRE: 11 };
+  return m && MES[m[2].toUpperCase()] != null ? `Nueva (vto. ${m[1]}-${MESES[MES[m[2].toUpperCase()]]}-${m[3].slice(2)})` : "Nueva";
+}
+
+function licTipo(t) {             // encabezado de la tabla del comunicado -> tipo corto
+  const x = t.toLowerCase();
+  return x.includes("dual") ? "Dual" : x.includes("cer") ? "CER" : x.includes("linked") ? "Dólar linked" : x.includes("variable") || x.includes("tamar") ? "TAMAR"
+    : x.includes("fija") ? "Tasa fija" : x.includes("dólar") || x.includes("dolar") ? "En dólares" : t.replace(/^(a|en)\s+/i, "");
+}
+
+function licitacionesGrafico(el, card) {
+  const c = COL(); const ch = echarts.init(el); charts.push(ch);
+  const [a, b] = rango(card._r);
+  const L = (D.licitaciones || []).filter((x) => x.f >= a && x.f <= b);
+  ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" },
+    legend: { top: 0, left: 0, itemWidth: 12, itemHeight: 8, textStyle: { color: c.texto2, fontSize: 11 } },
+    grid: { left: 8, right: 16, top: 34, bottom: 28, containLabel: true },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, backgroundColor: c.card, borderColor: c.eje, textStyle: { color: c.tinta, fontSize: 12 }, confine: true,
+      formatter: (ps) => { const x = L[ps[0].dataIndex];
+        return `<div style="font-size:11px;color:${c.texto2}">${fechaCorta(x.f)}</div>Ofertado: <b>${fmt(x.ofertado / 1e6, 2)}</b> billones<br>Adjudicado: <b>${fmt(x.adjudicado / 1e6, 2)}</b> billones` +
+          (x.ofertado ? `<br>Adjudicado / ofertado: ${fmt(x.adjudicado / x.ofertado * 100)}%` : "") + (x.suma_instrumentos ? "<br><i>Suma de los instrumentos del comunicado</i>" : ""); } },
+    xAxis: { type: "category", data: L.map((x) => fechaCorta(x.f)), axisLabel: { color: c.texto2, fontSize: 10, hideOverlap: true }, axisLine: { lineStyle: { color: c.eje } }, axisTick: { show: false } },
+    yAxis: { type: "value", splitLine: { lineStyle: { color: c.grilla } }, axisLabel: { color: c.texto2, fontSize: 11, formatter: (v) => fmt(v, 0) } },
+    series: [{ name: "Ofertado", type: "bar", barGap: "-100%", barMaxWidth: 18, itemStyle: { color: c.gris, opacity: 0.35 }, data: L.map((x) => (x.ofertado ? x.ofertado / 1e6 : null)) },
+      { name: "Adjudicado", type: "bar", barMaxWidth: 18, itemStyle: { color: c.azul }, data: L.map((x) => x.adjudicado / 1e6) }] });
+}
+
+function tablaLicitaciones(el) {
+  el.style.height = "auto";
+  const L = (D.licitaciones || []).slice(-6).reverse();
+  const filas = L.map((x) => {
+    const ins = x.inst.filter((i) => i.ve);
+    return ins.map((i, k) => `<tr>${k === 0 ? `<td rowspan="${ins.length}">${fechaCorta(x.f)}<br><span class="est">${fmt(x.adjudicado / 1e6, 2)} bill.</span></td>` : ""}` +
+      `<td class="izq">${licEtiqueta(i)}</td><td class="izq">${licTipo(i.tipo)}</td><td>${fmt(i.ve / 1e6, 2)}</td><td>${i.tirea == null ? "" : fmt(i.tirea, 2) + "%"}</td></tr>`).join("");
+  }).join("");
+  const tw = document.createElement("div"); tw.className = "tw";
+  tw.innerHTML = `<table class="tabla"><tr><th>Licitación</th><th class="izq">Instrumento</th><th class="izq">Tipo</th><th>Adjudicado (billones $)</th><th>TIREA de corte</th></tr>${filas}</table>`;
+  el.appendChild(tw);
+}
+
+function fiscal(main) {
+  const g = grilla(main);
+  const ultIpc = ult("ipc_nivel_general")[0];
+  const aPrecios = ultIpc ? mesCorto(ultIpc) : "";
+  tmp("_rpr", deflactar("resultado_primario_spn").map(([f, x]) => [f, x / 1e3]));
+  tmp("_int", deflactar("intereses_netos_spn").map(([f, x]) => [f, -x / 1e3]));
+  const intereses = new Map(S("_int"));   // financiero = primario - intereses netos (los intereses ya van con signo negativo)
+  tmp("_rfr", S("_rpr").filter(([f]) => intereses.has(f)).map(([f, x]) => [f, x + intereses.get(f)]));
+  tarjeta(g, { mide: "resultado_primario", titulo: () => { const v = ult("_rpr")[1], w = ult("_rfr")[1];
+      return `En ${mesCorto(ult("_rpr")[0])} hubo un ${v >= 0 ? "superávit" : "déficit"} primario de $${fmt(Math.abs(v))} y un ${w >= 0 ? "superávit" : "déficit"} financiero de $${fmt(Math.abs(w))} miles de millones`; },
+    bajada: `Sector público nacional, base caja · En miles de millones de pesos a precios de ${aPrecios}`, leyenda: true,
+    fuente: "Fuente: elaboración propia en base a Ministerio de Economía (Secretaría de Hacienda). Deflactado por IPC del INDEC.", mensual: true, cero: true,
+    series: [{ v: "_rpr", nombre: "Resultado primario", tipo: "bar" }, { v: "_int", nombre: "Intereses (con signo negativo)", tipo: "bar", color: "naranja" },
+      { v: "_rfr", nombre: "Resultado financiero", color: "gris" }] });
+  tmp("_rec_t", varIA("recaudacion_total", true)); tmp("_rec_dgi", varIA("recaudacion_dgi", true));
+  tmp("_rec_dga", varIA("recaudacion_dga", true));
+  tarjeta(g, { mide: "recaudacion", titulo: () => { const v = ult("_rec_t")[1]; return `En ${mesCorto(ult("_rec_t")[0])} la recaudación ${v >= 0 ? "creció" : "cayó"} ${fmt(Math.abs(v), 1)}% interanual en términos reales`; },
+    bajada: "Recaudación tributaria nacional deflactada por IPC · Variación % interanual", leyenda: true, mensual: true, cero: true, dec: 1,
+    fuente: "Fuente: elaboración propia en base a ARCA (vía datos.gob.ar) e IPC del INDEC.",
+    series: [{ v: "_rec_t", nombre: "Total" }, { v: "_rec_dgi", nombre: "Impositiva (DGI)", color: "celeste" }, { v: "_rec_dga", nombre: "Aduana (DGA)", color: "naranja" }] });
+  const ultLic = () => (D.licitaciones || []).at(-1) || { f: "2000-01-01", adjudicado: 0 };
+  tarjeta(g, { mide: "licitaciones", ancha: true, conRango: true, alto: 320,
+    titulo: () => `En la última licitación (${fechaCorta(ultLic().f)}) el Tesoro adjudicó $${fmt(ultLic().adjudicado / 1e6, 2)} billones`,
+    bajada: "Licitaciones por efectivo del Tesoro: valor efectivo ofertado y adjudicado · En billones de pesos corrientes",
+    fuente: "Fuente: elaboración propia en base a los comunicados de resultados de la Secretaría de Finanzas. No incluye canjes, conversiones ni emisiones en dólares.",
+    render: licitacionesGrafico });
+  tarjeta(g, { mide: "tabla_licitaciones", ancha: true, titulo: "Qué colocó el Tesoro en las últimas licitaciones",
+    bajada: "Valor efectivo adjudicado y tasa de corte por instrumento · TIREA: tasa interna de retorno efectiva anual; en los bonos CER es tasa real",
+    fuente: "Fuente: elaboración propia en base a los comunicados de resultados de la Secretaría de Finanzas.", render: tablaLicitaciones });
+}
+
+// ------------------------------------------------------------------ industria
+function industria(main) {
+  const g = grilla(main);
+  tmp("_ipi_m", varMensual("ipi_desest")); tmp("_isac_m", varMensual("isac_desest"));
+  const fI = ult("ipi_desest")[0];
+  tarjeta(g, { mide: "ipi", ancha: true, titulo: () => `En ${mesCorto(fI)} la industria ${ult("_ipi_m")[1] >= 0 ? "creció" : "cayó"} ${fmt(Math.abs(ult("_ipi_m")[1]), 1)}% y la construcción ${ult("_isac_m")[1] >= 0 ? "creció" : "cayó"} ${fmt(Math.abs(ult("_isac_m")[1]), 1)}% contra el mes anterior`,
+    bajada: "IPI manufacturero e ISAC, series desestacionalizadas · Índice 2004 = 100", fuente: F.indec, mensual: true, dec: 1,
+    series: [{ v: "ipi_desest", nombre: "Industria (IPI)" }, { v: "isac_desest", nombre: "Construcción (ISAC)", color: "naranja" }] });
+  tarjeta(g, { mide: "ipi_metalmecanica", titulo: "Ramas metalmecánicas", leyenda: true,
+    bajada: "IPI manufacturero por división, desestacionalizado · Índice 2004 = 100", fuente: F.indec, mensual: true, dec: 1,
+    series: [{ v: "ipi_div_metalicas_basicas_desest", nombre: "Metálicas básicas" }, { v: "ipi_div_productos_metal_desest", nombre: "Productos de metal", color: "celeste" },
+      { v: "ipi_div_maquinaria_desest", nombre: "Maquinaria y equipo", color: "naranja" }, { v: "ipi_div_automotriz_desest", nombre: "Automotriz", color: "gris" },
+      { v: "ipi_div_otros_equipos_desest", nombre: "Otros equipos", color: "verde" }] });
+  const ia = (v) => tmp("_ia_" + v, varIA(v));
+  tarjeta(g, { mide: "ipi_subclases", titulo: () => `La siderurgia ${ult(ia("ipi_siderurgia"))[1] >= 0 ? "creció" : "cayó"} ${fmt(Math.abs(ult("_ia_ipi_siderurgia")[1]), 1)}% interanual en ${mesCorto(fI)}`, leyenda: true, cero: true,
+    bajada: "Subclases del IPI manufacturero, serie original · Variación % interanual", fuente: F.indec, mensual: true, dec: 1,
+    series: [{ v: ia("ipi_siderurgia"), nombre: "Siderurgia" }, { v: ia("ipi_vehiculos"), nombre: "Vehículos", color: "celeste" },
+      { v: ia("ipi_autopartes"), nombre: "Autopartes", color: "naranja" }, { v: ia("ipi_maq_agricola"), nombre: "Maquinaria agrícola", color: "verde" }] });
+  tarjeta(g, { mide: "ipi_bienes_metal", leyenda: true, cero: true, titulo: "Maquinaria, línea blanca y estructuras metálicas",
+    bajada: "Subclases del IPI manufacturero, serie original · Variación % interanual", fuente: F.indec, mensual: true, dec: 1,
+    series: [{ v: ia("ipi_maq_uso_general"), nombre: "Maquinaria de uso general" }, { v: ia("ipi_aparatos_domesticos"), nombre: "Aparatos de uso doméstico", color: "celeste" },
+      { v: ia("ipi_metalicos_estructurales"), nombre: "Metálicos estructurales", color: "naranja" }] });
+  tarjeta(g, { mide: "isac_insumos", leyenda: true, cero: true, titulo: () => `El cemento portland ${ult(ia("isac_cemento"))[1] >= 0 ? "creció" : "cayó"} ${fmt(Math.abs(ult("_ia_isac_cemento")[1]), 1)}% interanual`,
+    bajada: "Insumos de la construcción del ISAC, serie original · Variación % interanual", fuente: F.indec, mensual: true, dec: 1,
+    series: [{ v: ia("isac_cemento"), nombre: "Cemento portland" }, { v: ia("isac_hierro_redondo"), nombre: "Hierro redondo y aceros", color: "naranja" }, { v: ia("isac_original"), nombre: "ISAC total", color: "gris" }] });
 }
 
 // ------------------------------------------------------------------ armado general

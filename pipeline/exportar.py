@@ -43,8 +43,10 @@ def exportar():
     calendario = json.loads(cal_path.read_text(encoding="utf-8")) if cal_path.exists() else []
     sd_path = BASE / "data" / "servicio_deuda.json"
     servicio_deuda = json.loads(sd_path.read_text(encoding="utf-8")) if sd_path.exists() else []
+    lic_path = BASE / "data" / "licitaciones.json"
+    licitaciones = json.loads(lic_path.read_text(encoding="utf-8")) if lic_path.exists() else []
     texto = json.dumps({"generado": dt.datetime.utcnow().isoformat() + "Z", "estado": estado, "series": out, "calendario": calendario,
-                        "servicio_deuda": servicio_deuda},
+                        "servicio_deuda": servicio_deuda, "licitaciones": licitaciones},
                        ensure_ascii=False, separators=(",", ":"))
     (site / "data.json").write_text(texto, encoding="utf-8")
     print("data.json:", len(out), "variables,", round(len(texto) / 1e6, 2), "MB")

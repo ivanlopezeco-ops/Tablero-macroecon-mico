@@ -311,19 +311,58 @@ def treasury():
 YAHOO = {"^VIX": ("vix", "índice"), "BZ=F": ("brent", "USD/bbl"), "DX-Y.NYB": ("dxy", "índice"),
          "BRL=X": ("brl_usd", "BRL/USD"), "GC=F": ("oro", "USD/oz"), "ZS=F": ("soja_cbot", "USc/bu"),
          "ZW=F": ("trigo_cbot", "USc/bu"), "ZC=F": ("maiz_cbot", "USc/bu"), "HG=F": ("cobre", "USD/lb"),
-         "NG=F": ("gas_natural_hh", "USD/MMBtu"), "^GSPC": ("sp500", "índice")}
+         "NG=F": ("gas_natural_hh", "USD/MMBtu"), "^GSPC": ("sp500", "índice"),
+         # S&P Merval: S&P lo calculó hasta el 16/10/26; desde el 19/10/26 lo reemplaza el MSCI MERVAL (byma_indices)
+         "^MERV": ("merval_sp", "puntos")}
+# ADR argentinos en Nueva York (USD por ADR)
+ADRS = ["GGAL", "YPF", "BMA", "PAM", "VIST", "TGS", "CEPU", "LOMA", "SUPV", "BBAR", "EDN", "TEO", "CRESY", "IRS"]
+YAHOO.update({t: (f"adr_{t.lower()}", "USD") for t in ADRS})
 
 
 def yahoo():
     filas = []
+    errores = []
     for t, (var, uni) in YAHOO.items():
         p1 = int(dt.datetime.combine(desde(dt.date(2000, 1, 1)), dt.time()).timestamp())
-        j = _get(f"https://query1.finance.yahoo.com/v8/finance/chart/{t}",
-                 params={"period1": p1, "period2": int(dt.datetime.now().timestamp()),
-                         "interval": "1d"}).json()["chart"]["result"][0]
+        try:  # un ticker que falla no frena al resto
+            j = _get(f"https://query1.finance.yahoo.com/v8/finance/chart/{t}",
+                     params={"period1": p1, "period2": int(dt.datetime.now().timestamp()),
+                             "interval": "1d"}).json()["chart"]["result"][0]
+        except Exception as e:  # noqa: BLE001
+            errores.append(f"{t}: {e}"[:100])
+            continue
         for ts, c in zip(j["timestamp"], j["indicators"]["quote"][0]["close"]):
-            if c is not None:
-                filas.append((dt.datetime.utcfromtimestamp(ts).date(), var, c, uni, f"Yahoo Finance ({t})"))
+            f = dt.datetime.utcfromtimestamp(ts).date()
+            if c is not None and not (var == "merval_sp" and f > MERVAL_FIN_SP):
+                filas.append((f, var, c, uni, f"Yahoo Finance ({t})"))
+    if not filas:
+        raise RuntimeError("; ".join(errores[:3]))
+    df = _df(filas)
+    df.attrs["errores"] = errores
+    return df
+
+
+# ---------------------------------------------------------------- Merval de MSCI (desde el 19/10/26)
+# BYMA pasó el cálculo de sus índices de S&P a MSCI. El MSCI MERVAL vale 100.000 el 16/10/26, último día del
+# S&P Merval (base verificada en la serie histórica de Rava, que muestra 100.000 ese día). BYMA no da historia
+# del índice nuevo: se acumula corrida a corrida con el panel de índices. Los dos primeros cierres se cargan acá.
+MERVAL_FIN_SP = dt.date(2026, 10, 16)
+MERVAL_MSCI_BASE = 100000.0
+MERVAL_MSCI_SEMILLA = {dt.date(2026, 10, 16): 100000.0, dt.date(2026, 10, 19): 98165.4}  # 19/10: cierre anterior que informa BYMA el 20/10
+
+
+def byma_indices():
+    """MSCI MERVAL del panel de índices de BYMA: cierre si ya está, si no último valor (provisorio)."""
+    r = requests.post(f"{BYMA}/index-price", json={}, headers=BYMA_H, verify=False, timeout=60)
+    filas = [(f, "merval_msci", v, "puntos", "MSCI MERVAL (Rava, base 16/10/26 = 100.000)") for f, v in MERVAL_MSCI_SEMILLA.items()]
+    for d in r.json().get("data", []):
+        if d.get("symbol") != "MMSCI":
+            continue
+        f = dt.date.fromisoformat(d["date"][:10])
+        if d.get("closingPrice"):
+            filas.append((f, "merval_msci", d["closingPrice"], "puntos", "BYMA (MSCI MERVAL)"))
+        elif d.get("price") and en_rueda():
+            filas.append((f, "merval_msci", d["price"], "puntos", "BYMA (MSCI MERVAL, en la rueda) (provisorio)"))
     return _df(filas)
 
 
@@ -335,6 +374,13 @@ DATOS_GOB = {
     "74.3_IET_0_M_16": ("exportaciones", "USD M"),
     "74.3_IIT_0_M_25": ("importaciones", "USD M"),
     "452.3_RESULTADO_RIO_0_M_18_54": ("resultado_primario_spn", "ARS M"),
+    "452.3_INTERESES_TOS_0_M_15_62": ("intereses_netos_spn", "ARS M"),
+    # (oct-26: el resultado financiero 452.3_RESULTADO_ERO_0_M_20_25 y la seguridad social 172.3_SRIDAD_IAL_M_0_0_16
+    # figuran en el buscador pero la API los devuelve vacíos; el financiero se calcula como primario menos intereses)
+    # Recaudación tributaria nacional (ARCA), en millones de pesos corrientes por mes
+    "172.3_TL_RECAION_M_0_0_17": ("recaudacion_total", "ARS M"),
+    "172.3_SOTAL_DDGI_M_0_0_12": ("recaudacion_dgi", "ARS M"),
+    "172.3_SOTAL_DDGA_M_0_0_12": ("recaudacion_dga", "ARS M"),
 }
 
 
@@ -409,6 +455,170 @@ def indec_emae():
     return _df(filas)
 
 
+# ---------------------------------------------------------------- industria y construcción (INDEC)
+# El nombre del Excel lleva el año (sh_ipi_manufacturero_2026.xls): se toma el enlace de la página del tema
+# y, si no aparece, se prueba con el año en curso y el anterior.
+INDEC_PAGINAS = {"ipi": ("https://www.indec.gob.ar/Nivel4/Tema/3/6/14", r"sh_ipi_manufacturero_\d{4}\.xls"),
+                 "isac": ("https://www.indec.gob.ar/Nivel4/Tema/3/3/42", r"sh_isac_\d{4}\.xls")}
+# IPI, cuadro 5 (desestacionalizado por división): código CLaNAE -> variable
+IPI_DIVISIONES = {"D": "ipi_desest", "15": "ipi_div_alimentos_desest", "24": "ipi_div_quimicos_desest",
+                  "26": "ipi_div_minerales_no_met_desest", "27": "ipi_div_metalicas_basicas_desest",
+                  "28": "ipi_div_productos_metal_desest", "29": "ipi_div_maquinaria_desest",
+                  "30-33": "ipi_div_otros_equipos_desest", "34": "ipi_div_automotriz_desest"}
+# IPI, cuadro 2 (serie original): subclase -> variable
+IPI_SUBCLASES = {"IPI Manufacturero": "ipi_original", "Industria siderúrgica": "ipi_siderurgia",
+                 "Vehículos automotores": "ipi_vehiculos", "Autopartes": "ipi_autopartes",
+                 "Maquinaria agropecuaria": "ipi_maq_agricola", "Maquinaria de uso general": "ipi_maq_uso_general",
+                 "Aparatos de uso doméstico": "ipi_aparatos_domesticos", "Cemento": "ipi_cemento",
+                 "Productos metálicos para uso estructural": "ipi_metalicos_estructurales"}
+# ISAC: cuadro 1 (nivel general) y 2.1 (insumos, serie original)
+ISAC_INSUMOS = {"Cemento portland": "isac_cemento", "Hierro redondo y aceros para la construcción": "isac_hierro_redondo"}
+
+
+def _excel_indec(clave):
+    pagina, patron = INDEC_PAGINAS[clave]
+    nombres = []
+    try:
+        nombres = sorted(set(re.findall(patron, _get(pagina, verify=False).text)), reverse=True)
+    except Exception:  # noqa: BLE001
+        pass
+    base = "https://www.indec.gob.ar/ftp/cuadros/economia/"
+    for n in nombres + [patron.replace(r"\d{4}\.xls", f"{a}.xls").replace("\\", "") for a in (HOY.year, HOY.year - 1)]:
+        try:
+            return pd.ExcelFile(io.BytesIO(_get(base + n, verify=False).content)), n
+        except Exception:  # noqa: BLE001
+            continue
+    raise RuntimeError(f"{clave}: no se encontró el Excel del INDEC")
+
+
+def _meses_indec(hoja):
+    """Recorre un cuadro del INDEC con año y mes en las primeras columnas: devuelve [(fecha, fila)]."""
+    anio, out = None, []
+    for _, f in hoja.iterrows():
+        mes = None
+        for x in f.iloc[:3]:
+            s = str(x).strip()
+            if re.match(r"^\d{4}\*?$", s):
+                anio = int(s[:4])
+            elif s in MESES:
+                mes = MESES[s]
+        if anio and mes:
+            out.append((dt.date(anio, mes, 1), f))
+    return out
+
+
+def indec_industria():
+    """IPI manufacturero (nivel general, divisiones y subclases metalmecánicas) e ISAC, del Excel del INDEC."""
+    filas, errores = [], []
+    x, n = _excel_indec("ipi")
+    fu = f"INDEC ({n})"
+    h5 = pd.read_excel(x, "Cuadro 5", header=None)
+    cod = h5.iloc[2].astype(str).str.strip().tolist()
+    for c, codigo in enumerate(cod):        # cada división ocupa dos columnas: índice y variación; se toma la primera
+        if codigo in IPI_DIVISIONES and cod.index(codigo) == c:
+            for f, r in _meses_indec(h5):
+                filas.append((f, IPI_DIVISIONES[codigo], r[c], "índice 2004=100", fu + " cuadro 5"))
+    h2 = pd.read_excel(x, "Cuadro 2", header=None)
+    nom = h2.iloc[3].astype(str).str.strip().tolist()
+    for c, nombre in enumerate(nom):
+        if nombre in IPI_SUBCLASES:
+            for f, r in _meses_indec(h2):
+                filas.append((f, IPI_SUBCLASES[nombre], r[c], "índice 2004=100", fu + " cuadro 2"))
+    faltan = set(IPI_DIVISIONES.values()) | set(IPI_SUBCLASES.values())
+    try:
+        x, n = _excel_indec("isac")
+        fu = f"INDEC ({n})"
+        h1 = pd.read_excel(x, "Cuadro 1", header=None)
+        for f, r in _meses_indec(h1):
+            filas += [(f, "isac_original", r[2], "índice 2004=100", fu), (f, "isac_desest", r[6], "índice 2004=100", fu)]
+        h21 = pd.read_excel(x, "Cuadro 2.1", header=None)
+        nom = h21.iloc[2].astype(str).str.strip().tolist()
+        for c, nombre in enumerate(nom):
+            if nombre in ISAC_INSUMOS:
+                for f, r in _meses_indec(h21):
+                    filas.append((f, ISAC_INSUMOS[nombre], r[c], "índice 2004=100", fu + " cuadro 2.1"))
+        faltan |= {"isac_original", "isac_desest"} | set(ISAC_INSUMOS.values())
+    except Exception as e:  # noqa: BLE001
+        errores.append(f"ISAC: {e}"[:150])
+    df = _df(filas)
+    sin = sorted(faltan - set(df["variable"]))
+    if sin:   # el INDEC renombró una columna: se avisa en estado.json
+        errores.append("sin datos: " + ", ".join(sin))
+    df.attrs["errores"] = errores
+    return df
+
+
+# ---------------------------------------------------------------- licitaciones del Tesoro (Secretaría de Finanzas)
+# Finanzas no publica una base de resultados: cada licitación es un comunicado en argentina.gob.ar con tablas
+# (totales y una por tipo de instrumento). Se recorre el listado de noticias de Finanzas hasta encontrar
+# comunicados ya leídos. El comunicado no informa los vencimientos, de modo que el rollover no sale de acá.
+GOB = "https://www.argentina.gob.ar"
+LIC_DESDE = dt.date(2024, 1, 1)
+
+
+def _num_ar(s):
+    """'$ 5.000.000 (***)' / 'USD 987,80' / '29,75%' -> float (None si no hay número)."""
+    m = re.search(r"-?\d[\d.]*(?:,\d+)?", str(s))
+    return float(m.group(0).replace(".", "").replace(",", ".")) if m else None
+
+
+def _licitacion(url):
+    t = _get(GOB + url).text
+    texto = re.sub(r"\s+", " ", re.sub("<[^>]+>", " ", re.sub(r"<script.*?</script>|<style.*?</style>", "", t, flags=re.S)))
+    # La fecha de publicación es la primera fecha del texto que no está en el futuro (el título puede nombrar un vencimiento)
+    fechas = [dt.date(int(a), CAL_MESES[m.capitalize()], int(d)) for d, m, a in
+              re.findall(r"(\d{1,2}) de (" + "|".join(CAL_MESES).lower() + r") de (\d{4})", texto.lower())]
+    fechas = [f for f in fechas if f <= HOY]
+    if not fechas:
+        raise ValueError("sin fecha")
+    fecha = fechas[0]
+    lic = {"f": fecha.isoformat(), "url": url, "titulo": re.sub(r"\s*\|.*", "", re.search(r"<title>(.*?)</title>", t, re.S).group(1)).strip(),
+           "ofertado": None, "adjudicado": None, "inst": []}
+    # Totales: la frase del primer párrafo (en billones o millones de pesos, valor efectivo)
+    m = re.search(r"ofertas por un total de valor efectivo de \$ ?([\d.,]+) (billones|millones).*?adjudic\w+ un total de valor efectivo (?:de )?\$ ?([\d.,]+) (billones|millones)", texto)
+    if m:
+        k = lambda u: 1e6 if u == "billones" else 1  # noqa: E731  (a millones de pesos)
+        lic["ofertado"], lic["adjudicado"] = _num_ar(m.group(1)) * k(m.group(2)), _num_ar(m.group(3)) * k(m.group(4))
+    for tabla in pd.read_html(io.StringIO(t)):
+        cab = [str(c) for c in tabla.columns]
+        if not re.match(r"instrumento", cab[0], re.I) or len(cab) < 6:
+            continue
+        i_ve = next((i for i, c in enumerate(cab) if c.lower().startswith("valor efectivo adjudicado")), None)
+        i_tir = next((i for i, c in enumerate(cab) if c.upper().startswith("TIREA")), None)
+        for _, r in tabla.iterrows():
+            d = str(r.iloc[0])
+            tk = re.search(r"\(([A-Z0-9]{4,6})\s*[-–]", d)
+            lic["inst"].append({"t": tk.group(1) if tk else None, "d": d[:200], "tipo": re.sub(r"(?i)^instrumentos?\s*", "", cab[0]).strip(),
+                                "ve": _num_ar(r.iloc[i_ve]) if i_ve is not None else None,
+                                "tirea": _num_ar(r.iloc[i_tir]) if i_tir is not None else None})
+    if lic["adjudicado"] is None and any(x["ve"] for x in lic["inst"]):   # comunicados viejos sin la frase de totales
+        lic["adjudicado"] = sum(x["ve"] or 0 for x in lic["inst"])
+        lic["suma_instrumentos"] = True
+    return lic
+
+
+def licitaciones(previas):
+    """Resultados de las licitaciones del Tesoro por efectivo. `previas`: lista ya guardada (data/licitaciones.json)."""
+    vistas = {x["url"] for x in previas}
+    nuevas, errores = [], []
+    for pagina in range(60):
+        t = _get(f"{GOB}/economia/finanzas/noticias?page={pagina}").text
+        urls = list(dict.fromkeys(re.findall(r'href="(/noticias/resultado[^"]*licitaci[^"]*)"', t)))
+        hay_noticias = "/noticias/" in t.split("Ver todo")[0] or re.search(r'href="/noticias/[^"]+"', t)
+        pendientes = [u for u in urls if u not in vistas and not re.search(r"conversi|canje|segunda-vuelta|tesoro-nacional-en-dolares", u)]
+        for u in pendientes:
+            try:
+                nuevas.append(_licitacion(u))
+            except Exception as e:  # noqa: BLE001
+                errores.append(f"{u[-50:]}: {e}"[:150])
+        ya_vistas = any(u in vistas for u in urls)   # se llegó a lo leído en corridas anteriores
+        if not hay_noticias or ya_vistas or any(x["f"] < str(LIC_DESDE) for x in nuevas):
+            break
+    todas = {x["url"]: x for x in previas + nuevas}
+    lista = sorted((x for x in todas.values() if x["f"] >= str(LIC_DESDE) and x["adjudicado"]), key=lambda x: x["f"])
+    return lista, errores
+
+
 # ---------------------------------------------------------------- calendario de publicaciones del INDEC
 CAL_INDEC = "https://www.indec.gob.ar/ftp/cuadros/publicaciones/calendario_{sem}sem{anio}.pdf"
 CAL_MESES = {"Enero": 1, "Febrero": 2, "Marzo": 3, "Abril": 4, "Mayo": 5, "Junio": 6, "Julio": 7, "Agosto": 8,
@@ -418,10 +628,10 @@ CAL_TEMAS = [("Índice de precios al consumidor (IPC)", "Inflación (IPC)", True
              ("Estimador mensual de actividad económica", "Actividad (EMAE)", True),
              ("Intercambio comercial argentino", "Comercio exterior (ICA)", True),
              ("Índice de salarios", "Salarios", False),
-             ("Índice de producción industrial manufacturero", "Industria (IPI manufacturero)", False),
+             ("Índice de producción industrial manufacturero", "Industria (IPI manufacturero)", True),
              ("Utilización de la capacidad instalada", "Capacidad instalada", False),
              ("Sistema de índices de precios mayoristas", "Precios mayoristas", False),
-             ("Indicadores de coyuntura de la actividad de la construcción", "Construcción (ISAC)", False),
+             ("Indicadores de coyuntura de la actividad de la construcción", "Construcción (ISAC)", True),
              ("Informe de avance del nivel de actividad", "PIB trimestral", False),
              ("Balanza de pagos", "Balanza de pagos", False),
              ("Mercado de trabajo. Tasas e indicadores", "Mercado de trabajo (EPH)", False),

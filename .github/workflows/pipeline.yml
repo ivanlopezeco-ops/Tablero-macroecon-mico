@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
   pages: write
   id-token: write
 
@@ -60,6 +61,31 @@ jobs:
           git config user.email "actions@github.com"
           git add -A && git commit -qm "Datos $(date -u +%Y-%m-%dT%H:%M)Z"
           git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" datos
+      # Aviso por mail: un issue con la etiqueta alerta-datos se abre si una fuente lleva horas caída o una serie
+      # se atrasa, recibe un comentario solo cuando cambia la lista de problemas y se cierra cuando todo vuelve a andar.
+      - name: Avisar fallas
+        id: alerta
+        if: always()
+        run: python pipeline/alerta.py
+      - name: Abrir, actualizar o cerrar el issue de alerta
+        if: always() && steps.alerta.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HAY: ${{ steps.alerta.outputs.hay }}
+          FIRMA: ${{ steps.alerta.outputs.firma }}
+        run: |
+          n=$(gh issue list --label alerta-datos --state open --json number -q '.[0].number')
+          if [ "$HAY" = "1" ]; then
+            if [ -z "$n" ]; then
+              gh label create alerta-datos --color D93F0B --description "Fuente caída o serie atrasada" 2>/dev/null || true
+              gh issue create --title "Tablero: fuentes caídas o series atrasadas" --label alerta-datos --body-file data/alerta.md
+            elif ! gh issue view "$n" --json body -q .body | grep -q "firma: $FIRMA"; then
+              gh issue edit "$n" --body-file data/alerta.md
+              gh issue comment "$n" --body-file data/alerta.md
+            fi
+          elif [ -n "$n" ]; then
+            gh issue close "$n" --comment "Todas las fuentes responden y ninguna serie está atrasada."
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

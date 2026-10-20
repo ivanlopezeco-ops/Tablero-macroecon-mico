@@ -4,7 +4,7 @@
 
 const MIDE = {
   // ---------------------------------------------------------------- calendario
-  calendario: "Próximas fechas de publicación del INDEC según su calendario anual de difusión, para las estadísticas de coyuntura. Las que dicen \"En el tablero\" alimentan series del tablero: la inflación, el EMAE y el comercio exterior. El tablero lee el calendario del semestre en curso y del siguiente y se actualiza solo.",
+  calendario: "Próximas fechas de publicación del INDEC según su calendario anual de difusión, para las estadísticas de coyuntura. Las que dicen \"En el tablero\" alimentan series del tablero: la inflación, el EMAE, el comercio exterior, el IPI manufacturero y el ISAC. El tablero lee el calendario del semestre en curso y del siguiente y se actualiza solo.",
 
   // ---------------------------------------------------------------- reservas
   reservas_netas: [
@@ -86,7 +86,34 @@ const MIDE = {
   emae: "Estimador Mensual de Actividad Económica (EMAE) del INDEC, serie desestacionalizada, con índice 2004 = 100. Se publica entre siete y ocho semanas después del cierre del mes y se lee directo del INDEC.",
   demanda_elec: "Energía demandada en el sistema eléctrico, en MWh por día, según CAMMESA. CAMMESA publica solo el día anterior, de modo que el tablero acumula la serie desde octubre de 2026.",
   comercio: "Exportaciones e importaciones de bienes del intercambio comercial argentino del INDEC, en millones de USD por mes.",
-  resultado_primario: "Resultado primario del sector público nacional en base caja, según el Ministerio de Economía, deflactado por el IPC del INDEC. Se expresa en miles de millones de pesos a precios del último mes con IPC. Las barras grises corresponden a déficit.",
+  resultado_primario: [
+    "Resultado primario y financiero del sector público nacional en base caja, según la Secretaría de Hacienda del Ministerio de Economía (vía datos.gob.ar), deflactados por el IPC del INDEC. Se expresan en miles de millones de pesos a precios del último mes con IPC publicado.",
+    "El resultado financiero se calcula como el primario menos los intereses netos de la deuda, que se muestran con signo negativo (datos.gob.ar no devuelve la serie de resultado financiero). Hacienda suele publicar cada mes en la segunda quincena del mes siguiente.",
+  ],
+  recaudacion: "Recaudación tributaria nacional de ARCA: total, impositiva (DGI) y aduanera (DGA). La de la seguridad social no se muestra porque datos.gob.ar no la devuelve. Cada mes se compara con el mismo mes del año anterior y se descuenta la inflación del IPC nacional del período. ARCA publica la recaudación el primer día hábil del mes siguiente; el tablero la toma de datos.gob.ar, que la replica con algunos días de demora.",
+  licitaciones: [
+    "Valor efectivo ofertado y adjudicado en cada licitación por efectivo del Tesoro, en billones de pesos corrientes, según el comunicado de resultados que publica la Secretaría de Finanzas en argentina.gob.ar. Los instrumentos en dólares se convierten a pesos al A3500 del día anterior, como hace el comunicado.",
+    "No incluye canjes, conversiones, segundas vueltas ni emisiones en dólares. En los comunicados de 2024 que no traen la frase de totales, el adjudicado es la suma de los instrumentos.",
+    "El rollover no se calcula: los comunicados no informan cuánto vencía y la cifra que circula en la prensa usa los vencimientos en manos privadas, que Finanzas no publica en un formato estable.",
+  ],
+  tabla_licitaciones: "Instrumentos adjudicados en las últimas seis licitaciones: valor efectivo en billones de pesos y TIREA de corte (tasa interna de retorno efectiva anual). En los bonos CER la TIREA es real y en los dólar linked, en dólares. Cuando la letra es nueva y el comunicado no trae el ticker, se muestra su vencimiento.",
+
+  // ---------------------------------------------------------------- acciones
+  merval_usd: [
+    "Merval dividido por el contado con liqui del mismo día: muestra cuánto vale la bolsa argentina en dólares. Antes del primer dato propio del CCL (calculado con el AL30) se usa el CCL de ArgentinaDatos.",
+    "Desde el 19/10/26 el índice lo calcula MSCI (MSCI MERVAL) en lugar de S&P. El MSCI MERVAL arranca en 100.000 puntos el 16/10/26, último día del S&P Merval; el tablero lo lleva a la escala del S&P Merval multiplicándolo por el cierre de ese día, de modo que la serie queda empalmada. Las composiciones de los dos índices difieren.",
+  ],
+  merval: "Índice Merval en pesos. Hasta el 16/10/26 es el S&P Merval (Yahoo Finance) y desde el 19/10/26 el MSCI MERVAL de BYMA, llevado a la escala del S&P Merval. BYMA no ofrece la historia del índice nuevo: el tablero la acumula día a día. Durante la rueda se muestra el último valor, como provisorio.",
+  adr_base100: "Cotización en Nueva York de los ADR de Galicia, YPF, Pampa, Macro y Vista, con valor 100 al inicio del período elegido. Precios de cierre en dólares por ADR, sin ajustar por dividendos, según Yahoo Finance.",
+  tabla_adrs: "Último cierre de los ADR argentinos en Nueva York y su variación en el día, en 30 días, en el año y en 12 meses, en dólares, según Yahoo Finance. Las variaciones no incluyen dividendos.",
+
+  // ---------------------------------------------------------------- industria
+  ipi: "Índice de producción industrial manufacturero (IPI) e Indicador sintético de la actividad de la construcción (ISAC) del INDEC, series desestacionalizadas, base 2004 = 100. El título compara el último mes contra el anterior. Se leen directo de los Excel del INDEC, que publica unas cinco o seis semanas después del cierre del mes.",
+  ipi_metalmecanica: "IPI manufacturero desestacionalizado de las divisiones metalmecánicas: industrias metálicas básicas (siderurgia, aluminio, fundición), productos de metal, maquinaria y equipo, vehículos automotores y autopartes, y otros equipos (aparatos eléctricos, electrónicos e instrumentos). Base 2004 = 100.",
+  ipi_subclases: "Variación interanual de subclases del IPI manufacturero en serie original: industria siderúrgica, vehículos automotores, autopartes y maquinaria agropecuaria. La serie original tiene estacionalidad, por eso se compara contra el mismo mes del año anterior.",
+  ipi_bienes_metal: "Variación interanual de subclases del IPI manufacturero en serie original: maquinaria de uso general, aparatos de uso doméstico (línea blanca) y productos metálicos para uso estructural.",
+  isac_insumos: "Variación interanual de dos insumos del ISAC en serie original, cemento portland y hierro redondo y aceros para la construcción, y del ISAC total. Son índices del INDEC, base 2004 = 100.",
+
   tcrm_bilat: "El ITCRM es el índice de tipo de cambio real multilateral del BCRA, con base 17-12-15 = 100. Las otras dos líneas son los índices bilaterales con Brasil y con EE.UU. Un valor más alto indica un tipo de cambio real más alto.",
 
   // ---------------------------------------------------------------- balance cambiario
@@ -134,6 +161,18 @@ const TIPOS = {
 };
 
 const TIPO = {
+  merval_usd: "Cálculo propio",
+  merval: "Mercado",
+  adr_base100: "Mercado",
+  tabla_adrs: "Mercado",
+  recaudacion: "Cálculo propio",
+  licitaciones: "Oficial",
+  tabla_licitaciones: "Oficial",
+  ipi: "Oficial",
+  ipi_metalmecanica: "Oficial",
+  ipi_subclases: "Cálculo propio",
+  ipi_bienes_metal: "Cálculo propio",
+  isac_insumos: "Cálculo propio",
   inflacion_implicita: "Cálculo propio",
   curva_inflacion: "Cálculo propio",
   servicio_deuda: "Cálculo propio",

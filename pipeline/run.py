@@ -123,6 +123,19 @@ def derivadas(df):
     rpl = largo(empalmar(df, "riesgo_pais_argentina", "riesgo_pais_argentina_ad"), "riesgo_pais_argentina_largo", "pb",
                 "BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)")
     out.append(provisorio(rpl, set(cola.index.date)))
+    # Merval: S&P Merval hasta el 16/10/26 y MSCI MERVAL empalmado desde ahí (los dos valen lo mismo ese día
+    # en la serie empalmada); en dólares, dividido por el CCL del mismo día.
+    sp, msci = serie(df, "merval_sp"), serie(df, "merval_msci")
+    if not sp.empty:
+        sp = sp[sp.index <= pd.Timestamp(F.MERVAL_FIN_SP)]
+        k = sp.get(pd.Timestamp(F.MERVAL_FIN_SP))
+        nuevo = msci[msci.index > pd.Timestamp(F.MERVAL_FIN_SP)] * k / F.MERVAL_MSCI_BASE if k else msci.iloc[0:0]
+        merval = pd.concat([sp, nuevo])
+        prov_m = set(df.loc[(df["variable"] == "merval_msci") & fu.str.contains("provisorio"), "fecha"]) | prov_byma
+        fu_m = "S&P Merval (Yahoo Finance) hasta el 16/10/26; desde el 19/10/26, MSCI MERVAL (BYMA) empalmado"
+        out.append(provisorio(largo(merval, "merval", "puntos", fu_m), prov_m))
+        usd = (merval / ccl_l.reindex(merval.index)).dropna()
+        out.append(provisorio(largo(usd, "merval_usd", "USD", "Cálculo: Merval / CCL. " + fu_m), prov_m))
     techo = serie(df, "banda_techo")
     out.append(largo((techo / a3500 - 1) * 100, "distancia_techo_banda", "%", "Cálculo: techo/A3500-1"))
 
@@ -386,8 +399,10 @@ def validar(df, notas, estado):
 REZAGO_ESPERADO = [
     (("ipc_", "cpi_eeuu"), "m", 50),
     (("emae_",), "m", 85),
+    (("ipi_", "isac_"), "m", 75),
     (("exportaciones", "importaciones"), "m", 55),
-    (("resultado_primario",), "m", 85),
+    (("resultado_primario", "intereses_netos"), "m", 85),
+    (("recaudacion_",), "m", 20),
     (("bc_", "bcs_", "mc_", "mcc_"), "m", 75),
     (("rem_",), "d", 45),
     (("reservas_", "res_", "base_monetaria", "m2_", "prestamos_", "depositos_", "encajes_", "lebac_", "compras_bcra"), "h", 4),
@@ -423,6 +438,8 @@ def evaluar_rezagos(df):
     ult = df.sort_values("fecha").groupby("variable").last()
     filas = []
     for var, r in ult.iterrows():
+        if var == "merval_sp":   # terminó el 16/10/26: lo reemplaza el MSCI MERVAL
+            continue
         if var.startswith("futuro_DLR") or var.startswith("lecap_tem_") or var.startswith(("cer_px_", "cer_tir_real_")):
             continue
         if var.startswith("inflacion_implicita_") and var[20:] not in ("2m", "4m", "6m"):
@@ -440,7 +457,7 @@ def evaluar_rezagos(df):
 
 
 # ---------------------------------------------------------------- main
-VERSION_HISTORIA = 4  # subir este número fuerza una descarga histórica completa en la próxima corrida
+VERSION_HISTORIA = 5  # 5: Merval, ADR, industria y fiscal necesitan su historia. subir este número fuerza una descarga histórica completa en la próxima corrida
 
 
 def modo_completo():
@@ -453,7 +470,7 @@ def modo_completo():
 
 # Cada cuántas horas se vuelve a pedir cada fuente (0 = en todas las corridas). Las mensuales o lentas
 # no hace falta bajarlas cada hora; si una falla, se reintenta en la corrida siguiente.
-FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "indec_emae": 3, "bls_cpi": 12,
+FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "indec_emae": 3, "indec_industria": 6, "bls_cpi": 12,
                 "rem": 12, "balance_cambiario": 12, "cammesa": 6, "argentinadatos": 2, "bonos_historicos": 2, "calendario_indec": 24}
 
 
@@ -477,8 +494,8 @@ def main():
                        ("argentinadatos", F.argentinadatos), ("byma_historicos", F.byma_historicos),
                        ("bonos_historicos", F.bonos_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
-                       ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob), ("indec_ipc", F.indec_ipc),
-                       ("indec_emae", F.indec_emae), ("bls_cpi", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
+                       ("treasury", F.treasury), ("yahoo", F.yahoo), ("byma_indices", F.byma_indices),("datos_gob", F.datos_gob), ("indec_ipc", F.indec_ipc),
+                       ("indec_emae", F.indec_emae), ("indec_industria", F.indec_industria), ("bls_cpi", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
                        ("balance_cambiario", F.balance_cambiario), ("a3_mae", F.a3_mae)]:
         if not toca(nombre, previo):
             estado[nombre] = {**previo[nombre], "omitida": True}
@@ -517,6 +534,19 @@ def main():
     elif "calendario_indec" in previo:
         estado["calendario_indec"] = {**previo["calendario_indec"], "omitida": True}
     print("calendario_indec", estado.get("calendario_indec", {}).get("estado"))
+
+    # Licitaciones del Tesoro: no es una serie; se acumula en data/licitaciones.json y exportar.py la suma a data.json
+    lpath = DATA / "licitaciones.json"
+    try:
+        previas = json.loads(lpath.read_text(encoding="utf-8")) if lpath.exists() else []
+        lic, errores = F.licitaciones(previas)
+        lpath.write_text(json.dumps(lic, ensure_ascii=False), encoding="utf-8")
+        estado["licitaciones"] = {"estado": "ok", "filas": len(lic), "ok_utc": dt.datetime.utcnow().isoformat()}
+        if errores:
+            estado["licitaciones"]["error"] = " | ".join(errores)[:500]
+    except Exception as e:  # noqa: BLE001
+        estado["licitaciones"] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}"[:300]}
+    print("licitaciones", estado["licitaciones"]["estado"])
 
     fpath = RAW / "lecap_fichas.json"
     fichas = json.loads(fpath.read_text(encoding="utf-8")) if fpath.exists() else {}
@@ -583,6 +613,13 @@ def main():
     if F.COMPLETO and not any(v["estado"] == "ERROR" for v in estado.values()):
         (RAW / "historia.json").write_text(json.dumps({"version": VERSION_HISTORIA, "fecha": str(F.HOY)}))
 
+    # Desde cuándo falla cada fuente: alerta.py avisa solo si la falla dura varias horas (las APIs públicas
+    # tienen caídas de una corrida que se arreglan solas).
+    ahora = dt.datetime.utcnow().isoformat()
+    for k, v in estado.items():
+        if v.get("estado") == "ERROR":
+            p = previo.get(k, {})
+            v["error_desde"] = p.get("error_desde", ahora) if p.get("estado") == "ERROR" else ahora
     (DATA / "estado.json").write_text(json.dumps({"corrida_utc": dt.datetime.utcnow().isoformat(), "modo": "completo" if F.COMPLETO else "diario",
                                                   "fuentes": estado, "notas": notas,
                                                   "atrasadas": [r["variable"] for r in evaluar_rezagos(base) if r["atrasada"]]},
@@ -591,6 +628,7 @@ def main():
         validar(base, notas, estado)
     except Exception:  # noqa: BLE001
         (DATA / "validacion.md").write_text("ERROR en validación\n\n" + traceback.format_exc(), encoding="utf-8")
+    (DATA / "error.txt").unlink(missing_ok=True)  # el corte de una corrida anterior ya no corre
     print("filas totales:", len(base), "variables:", base["variable"].nunique())
     import exportar
     exportar.exportar()
