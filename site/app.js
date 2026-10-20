@@ -590,6 +590,7 @@ function reservas(main) {
 
 function tasas(main) {
   const g = grilla(main);
+  const hayInfl = Object.keys(D.series).some((k) => k.startsWith("inflacion_implicita_"));
   tarjeta(g, { mide: "tasas_bancos", titulo: () => `La TAMAR se ubica en ${fmt(ult("tamar")[1], 1)}% anual`,
     bajada: "Tasas de bancos privados · En % TNA", fuente: F.bcra, dec: 1, recortePicos: true,
     series: [{ v: "tamar", nombre: "TAMAR" }, { v: "badlar", nombre: "BADLAR" }, { v: "tasa_plazo_fijo_30d", nombre: "Plazo fijo", color: "celeste" }, { v: "baibar", nombre: "BAIBAR", color: "naranja" }] });
@@ -614,6 +615,40 @@ function tasas(main) {
         series: [{ type: "bar", data: pts.map((p) => p[1][1]), itemStyle: { color: c.azul }, barMaxWidth: 28,
           label: { show: true, position: "top", color: c.azul, fontSize: 11, formatter: (p) => fmt(p.value, 2) } }] });
     } });
+  if (!hayInfl) return;
+  tarjeta(g, { mide: "inflacion_implicita", titulo: () => `El mercado descuenta ${fmt(ult("inflacion_implicita_6m")[1], 1)}% de inflación mensual a seis meses`,
+    bajada: "Bonos CER contra LECAP y BONCAP a igual plazo, a 2, 4 y 6 meses, y REM del mes siguiente · En % mensual", fuente: F.byma + " Tasas reales de los Boncer cero cupón (TZX) y letras CER; CER del BCRA.", dec: 2, decEje: 1, leyenda: true,
+    series: [{ v: "inflacion_implicita_2m", nombre: "A 2 meses" }, { v: "inflacion_implicita_4m", nombre: "A 4 meses", color: "celeste" }, { v: "inflacion_implicita_6m", nombre: "A 6 meses", color: "naranja" },
+      { v: "rem_inflacion_mes_siguiente", nombre: "REM mes siguiente", color: "gris" }] });
+  tarjeta(g, { mide: "curva_inflacion", titulo: "Inflación implícita por vencimiento", sinRango: true, alto: 320,
+    bajada: () => `Promedio mensual hasta el vencimiento de cada bono CER, al ${fechaCorta((puntosInflacion()[0] || { f: "2000-01-01" }).f)} · En % mensual`,
+    fuente: F.byma + " Solo hay inflación implícita donde la curva de tasa fija tiene plazo comparable.", render: curvaInflacion });
+}
+
+// ------------------------------------------------------------------ inflación implícita (bonos CER contra tasa fija)
+const INF_HORIZ = ["2m", "4m", "6m"];
+function puntosInflacion() {
+  const ks = Object.keys(D.series).filter((k) => k.startsWith("inflacion_implicita_") && !INF_HORIZ.includes(k.slice(20)));
+  const f = ks.map((k) => ult(k)[0]).filter(Boolean).sort().pop();
+  return ks.filter((k) => ult(k)[0] === f).map((k) => {
+    const sym = k.slice(20), venc = ((meta("cer_px_" + sym).f.match(/vence (\d{4}-\d{2}-\d{2})/) || [])[1]) || "";
+    return { sym, venc, f, infl: ult(k)[1], real: ult("cer_tir_real_" + sym)[1] };
+  }).sort((a, b) => (a.venc < b.venc ? -1 : 1));
+}
+
+function curvaInflacion(el) {
+  const c = COL(); const ch = echarts.init(el); charts.push(ch);
+  const pts = puntosInflacion();
+  const rem = (1 + (ult("rem_inflacion_12m")[1] || 0) / 100) ** (1 / 12) * 100 - 100;
+  ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" }, grid: { left: 8, right: 16, top: 24, bottom: 36, containLabel: true },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, backgroundColor: c.card, borderColor: c.eje, textStyle: { color: c.tinta, fontSize: 12 },
+      formatter: (ps) => { const x = pts[ps[0].dataIndex]; return `<b>${x.sym}</b> · vence ${fechaCorta(x.venc)}<br>Inflación implícita: <b>${fmt(x.infl, 2)}%</b> mensual<br>Tasa real: ${fmt(x.real, 1)}% anual`; } },
+    xAxis: { type: "category", data: pts.map((x) => `${x.sym}\n${mesCorto(x.venc)}`), axisLabel: { color: c.texto2, fontSize: 10, interval: 0 }, axisTick: { show: false }, axisLine: { lineStyle: { color: c.eje } } },
+    yAxis: { type: "value", scale: true, min: (v) => Math.floor((Math.min(v.min, rem) - 0.1) * 10) / 10, splitLine: { lineStyle: { color: c.grilla } }, axisLabel: { color: c.texto2, fontSize: 11, formatter: (v) => fmt(v, 1) + "%" } },
+    series: [{ type: "bar", data: pts.map((x) => x.infl), barMaxWidth: 28, itemStyle: { color: c.azul },
+      label: { show: true, position: "top", color: c.azul, fontSize: 11, formatter: (p) => fmt(p.value, 2) },
+      markLine: { symbol: "none", silent: true, label: { formatter: `REM 12 meses: ${fmt(rem, 2)}% mensual`, color: c.nota, fontSize: 10, position: "insideEndTop" },
+        lineStyle: { color: c.naranja, type: [4, 3] }, data: [{ yAxis: rem }] } }] });
 }
 
 // ------------------------------------------------------------------ bonos soberanos
@@ -622,6 +657,7 @@ const BONOS_GRUPOS = [["Bonares", ["AO27", "AO28", "AO29", "AN29", "AL29", "AL30
   ["Bopreales", ["BPOA7", "BPOB7", "BPOC7", "BPOD7", "BPOA8", "BPOB8"]]];
 const BONOS_MON = [["ars", "Pesos"], ["mep", "USD MEP"], ["ccl", "USD CCL"]];
 const BONOS_SEL = { mon: "mep" };
+const BONOS_RESCATE = { BPOA7: "30/4/25", BPOB7: "30/4/26", BPOC7: "30/4/27" };
 const bonoV = (t, mon) => `bono_${t.toLowerCase()}_${mon}`;
 // TIR y duration se calculan con el precio en dólares; en la vista en pesos se usa el dólar MEP.
 const bonoMonUsd = () => (BONOS_SEL.mon === "ccl" ? "ccl" : "mep");
@@ -641,14 +677,16 @@ function tablaBonos(el, card) {
       const cel = (d) => (d == null ? "<td></td>" : `<td class="${Math.abs(d) < 0.005 ? "" : d > 0 ? "dif-pos" : "dif-neg"}">${fmtS(d, 2)}%</td>`);
       const prov = esProv(v); if (prov) hayProv = true;
       const tir = ult(bonoM("bono_tir", t))[1], md = ult(bonoM("bono_md", t))[1];
-      filas.push(`<tr><td>${t}</td><td>${fmt(x, mon === "ars" ? 0 : 2)}</td>${cel(xp ? (x / xp - 1) * 100 : null)}${cel(desde(7))}${cel(desde(30))}` +
+      const rescate = BONOS_RESCATE[t] ? ` <span class="est" title="Opción de rescate del tenedor desde el ${BONOS_RESCATE[t]}, en pesos al A3500. La TIR no la incluye.">†</span>` : "";
+      filas.push(`<tr><td>${t}${rescate}</td><td>${fmt(x, mon === "ars" ? 0 : 2)}</td>${cel(xp ? (x / xp - 1) * 100 : null)}${cel(desde(7))}${cel(desde(30))}` +
         `<td>${tir == null ? "" : fmt(tir, 2) + "%"}</td><td>${md == null ? "" : fmt(md, 2)}</td>` +
         `<td class="${prov ? "est" : ""}">${fechaCorta(f)}${prov ? " *" : ""}</td></tr>`);
     });
   });
   const tw = document.createElement("div"); tw.className = "tw";
   tw.innerHTML = `<table class="tabla"><tr><th>Bono</th><th>Precio</th><th>Día</th><th>7 días</th><th>30 días</th><th>TIR</th><th>Duration</th><th>Dato</th></tr>${filas.join("")}</table>` +
-    (hayProv ? '<p class="fuente">*Dato del día, provisorio: último precio operado con 20 minutos de demora, hasta que sale el cierre.</p>' : "");
+    (hayProv ? '<p class="fuente">*Dato del día, provisorio: último precio operado con 20 minutos de demora, hasta que sale el cierre.</p>' : "") +
+    '<p class="fuente">† Bopreal Serie 1 con opción de rescate del tenedor, en pesos al tipo de cambio A3500: la TIR no la incluye.</p>';
   el.appendChild(tw);
 }
 

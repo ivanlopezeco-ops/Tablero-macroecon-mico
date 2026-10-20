@@ -243,6 +243,16 @@ def derivadas(df):
     except Exception:  # noqa: BLE001
         notas["bonos_tir"] = "ERROR: " + traceback.format_exc()[-300:]
 
+    # Inflación implícita: bonos CER contra la curva de LECAP y BONCAP
+    try:
+        import inflacion
+        partes_inf, tabla_inf = inflacion.calcular(df)
+        out += partes_inf
+        if len(tabla_inf):
+            notas["inflacion_implicita_puntos"] = int(len(tabla_inf))
+    except Exception:  # noqa: BLE001
+        notas["inflacion_implicita"] = "ERROR: " + traceback.format_exc()[-300:]
+
     return pd.concat(out, ignore_index=True), notas
 
 
@@ -413,8 +423,10 @@ def evaluar_rezagos(df):
     ult = df.sort_values("fecha").groupby("variable").last()
     filas = []
     for var, r in ult.iterrows():
-        if var.startswith("futuro_DLR") or var.startswith("lecap_tem_"):
+        if var.startswith("futuro_DLR") or var.startswith("lecap_tem_") or var.startswith(("cer_px_", "cer_tir_real_")):
             continue
+        if var.startswith("inflacion_implicita_") and var[20:] not in ("2m", "4m", "6m"):
+            continue          # por bono: terminan solas al acercarse el vencimiento
         f = pd.Timestamp(r["fecha"]).date()
         rez, u, lim, atr = rezago_de(var, f, F.HOY)
         if u == "m":
@@ -428,7 +440,7 @@ def evaluar_rezagos(df):
 
 
 # ---------------------------------------------------------------- main
-VERSION_HISTORIA = 3  # subir este número fuerza una descarga histórica completa en la próxima corrida
+VERSION_HISTORIA = 4  # subir este número fuerza una descarga histórica completa en la próxima corrida
 
 
 def modo_completo():
@@ -515,6 +527,18 @@ def main():
         fpath.write_text(json.dumps(fichas, ensure_ascii=False, indent=1), encoding="utf-8")
     except Exception as e:  # noqa: BLE001
         estado["lecaps"] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}"}
+
+    fpath2 = RAW / "cer_fichas.json"
+    fichas_cer = json.loads(fpath2.read_text(encoding="utf-8")) if fpath2.exists() else {}
+    try:
+        d = F.cer_bonos(fichas_cer)
+        partes.append(d)
+        estado["cer_bonos"] = {"estado": "ok", "filas": len(d), "ok_utc": dt.datetime.utcnow().isoformat()}
+        if d.attrs.get("errores"):
+            estado["cer_bonos"]["error"] = " | ".join(d.attrs["errores"])
+        fpath2.write_text(json.dumps(fichas_cer, ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception as e:  # noqa: BLE001
+        estado["cer_bonos"] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}"[:300]}
 
     try:
         d, crudos = F.byma_snapshots()

@@ -72,6 +72,7 @@ BCRA_VARS = {
     12: ("tasa_plazo_fijo_30d", "% TNA"),
     11: ("baibar", "% TNA"),
     150: ("tasa_pases_terceros_1d", "% TNA"),
+    30: ("cer", "índice 2.2.02=1"),
     15: ("base_monetaria", "ARS M"),
     197: ("m2_transaccional_privado", "ARS M"),
     117: ("prestamos_privados_pesos", "ARS M"),
@@ -734,6 +735,14 @@ def lecaps(fichas):
     syms = {x["symbol"] for x in r.json().get("data", [])
             if re.fullmatch(r"[ST]\d{2}[A-Z]\d", x["symbol"]) and x.get("denominationCcy") == "ARS"
             and x.get("maturityDate") and x["maturityDate"] > str(HOY)}
+    # El panel de BYMA no lista los BONCAP largos (T15E7, T30A7, T30J7, T31Y7): se suman los que lista A3
+    try:
+        for x in _get(MAE + "mercado/datos/RF", headers=MAE_H).json():
+            t = str(x.get("ticker", "")).split("/")[0]
+            if re.fullmatch(r"[ST]\d{2}[A-Z]\d", t):
+                syms.add(t)
+    except Exception:  # noqa: BLE001
+        pass
     # De noche el panel lista pocas letras: se suman las ya conocidas que no vencieron
     syms = sorted(syms | {k for k, v in fichas.items() if v.get("vencimiento", "") > str(HOY)})
     filas = []
@@ -763,6 +772,41 @@ def lecaps(fichas):
         except Exception:  # noqa: BLE001
             continue
     return _df(filas)
+
+
+# ---------------------------------------------------------------- Bonos y letras ajustados por CER
+def cer_bonos(fichas):
+    """Precio diario (BYMA, 24 hs) de los Boncer cero cupón (TZX...) y las letras CER (X...) que lista A3.
+    La ficha da la fecha de emisión y de vencimiento; el pipeline calcula después la tasa real implícita."""
+    syms = set()
+    for x in _get(MAE + "mercado/datos/RF", headers=MAE_H).json():
+        t = str(x.get("ticker", "")).split("/")[0]
+        if re.fullmatch(r"TZX[A-Z0-9]{2}|X\d{2}[A-Z]\d", t):
+            syms.add(t)
+    syms |= {k for k, v in fichas.items() if v.get("vencimiento", "") > str(HOY)}
+    t0 = int(dt.datetime.combine(desde(HOY - dt.timedelta(days=800)), dt.time()).timestamp())
+    filas, errores = [], []
+    for sym in sorted(syms):
+        try:
+            if sym not in fichas:
+                fi = _ficha(sym)
+                fichas[sym] = {"emision": fi["emision"], "vencimiento": fi["vencimiento"], "denominacion": fi["denominacion"]}
+            fi = fichas[sym]
+            if fi["vencimiento"] <= str(HOY):
+                continue
+            j = _get(f"{BYMA}/chart/historical-series/history", verify=False,
+                     params={"symbol": f"{sym} 24HS", "resolution": "D", "from": t0, "to": int(dt.datetime.now().timestamp())}).json()
+            for t, c in zip(j.get("t", []), j.get("c", [])):
+                f = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
+                if c:
+                    filas.append((f, f"cer_px_{sym}", c, "ARS por 100 VN", f"BYMA ({sym} 24HS) (emisión {fi['emision']}, vence {fi['vencimiento']})"))
+        except Exception as e:  # noqa: BLE001
+            errores.append(f"{sym}: {e}"[:100])
+    if not filas:
+        raise RuntimeError("; ".join(errores[:3]) or "sin bonos CER")
+    df = _df(filas)
+    df.attrs["errores"] = errores
+    return df
 
 
 # ---------------------------------------------------------------- A3 / MAE (API de la web pública)

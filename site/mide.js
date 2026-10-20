@@ -41,10 +41,16 @@ const MIDE = {
   tasa_real: "Tasa real ex ante. La TAMAR y la BADLAR se pasan a tasa efectiva mensual (TNA x 30 / 365) y se comparan con la inflación esperada del mes siguiente que releva el REM del BCRA: (1 + tasa mensual) / (1 + inflación esperada) - 1. La serie usa expectativas de inflación.",
   curva_lecap: "Tasa efectiva mensual (TEM) implícita en el precio de cada LECAP y BONCAP, ordenadas por vencimiento. Se calcula con el precio de BYMA y el pago final, que surge de capitalizar 100 a la TEM de emisión de la ficha técnica. La liquidación es al día hábil siguiente. Las letras con menos de 10 días al vencimiento se excluyen porque el redondeo distorsiona la tasa.",
 
+  inflacion_implicita: [
+    "Compara los bonos que ajustan por CER con las LECAP y BONCAP de tasa fija a igual plazo. De cada bono CER cero cupón se obtiene la tasa real que paga su precio: precio = 100 x CER hoy / CER de emisión x (1 + tasa real) a la menos plazo. La inflación implícita es la que iguala la tasa fija con la tasa real: (1 + tasa fija) / (1 + tasa real) - 1, expresada como promedio mensual.",
+    "La tasa fija se interpola entre las letras del día y no se extrapola, de modo que solo hay dato donde la curva de tasa fija tiene plazo comparable. Cada línea es el promedio mensual esperado hasta 2, 4 o 6 meses. El CER se ajusta con diez días hábiles de rezago, según la ficha de los bonos. Los dos instrumentos tienen prima de plazo y de liquidez, de modo que el resultado se parece a una expectativa sin ser una expectativa pura.",
+  ],
+  curva_inflacion: "Última inflación implícita de cada bono CER, ordenada por vencimiento: el promedio mensual que iguala su tasa real con la tasa fija a igual plazo. La línea punteada es la inflación a 12 meses que espera el REM, llevada a promedio mensual. Los bonos con vencimiento fuera del tramo que cubre la curva de tasa fija quedan sin dato.",
+
   // ---------------------------------------------------------------- bonos
   tabla_bonos: [
     "Precio de BYMA de cada bono a 24 horas, por cada 100 nominales, con la variación del día, de 7 y de 30 días. El precio de BYMA incluye los intereses corridos. La TIR es efectiva anual, con días reales sobre 365, y la duration es modificada y se expresa en años.",
-    "Los flujos salen de las fichas técnicas de BYMA y quedan explícitos en el repositorio. La TIR y la duration usan el dólar MEP, o el CCL si lo elegís. Se contrastaron con El Dashboard, Bonistas.com y Portfolio Personal, con diferencias de hasta 0,07 puntos de TIR. La serie histórica de BYMA viene ajustada por cada pago de cupón o cuota, de modo que las variaciones de precio no registran la caída del día de pago. En los Bopreales Serie 1 la TIR no incluye la opción de rescate del tenedor.",
+    "Los flujos salen de las fichas técnicas de BYMA y quedan explícitos en el repositorio. La TIR y la duration usan el dólar MEP, o el CCL si lo elegís. Se contrastaron con El Dashboard, Bonistas.com y Portfolio Personal, con diferencias de hasta 0,07 puntos de TIR. La serie histórica de BYMA viene ajustada por cada pago de cupón o cuota, de modo que las variaciones de precio no registran la caída del día de pago. Los Bopreales Serie 1 A, B y C (marcados con †) tienen una opción de rescate anticipado del tenedor, que se paga en pesos al tipo de cambio A3500 del día en que se ejerce y rige desde el 30/4/25, el 30/4/26 y el 30/4/27 respectivamente; también pueden usarse para pagar impuestos en ciertos períodos. La Serie 1 D no la tiene. La TIR no modela la opción porque el valor de rescate no figura en las fuentes consultadas.",
   ],
   curva_bonos: "Cada punto es un bono con su duration modificada (distancia horizontal, sensibilidad al precio ante un cambio de tasa) y su TIR (altura). Los Bopreales se muestran aparte por color porque tienen vencimientos cortos y condiciones distintas de la curva de Bonares y Globales.",
   tir_2030: "TIR del AL30 (ley argentina) y del GD30 (ley Nueva York). Ambos tienen el mismo cronograma de pagos, así que la distancia entre las dos líneas refleja la diferencia de precio entre las dos legislaciones. Para calcular la serie histórica se deshace el ajuste que BYMA aplica a los precios por cada pago de cupón o cuota.",
@@ -128,6 +134,8 @@ const TIPOS = {
 };
 
 const TIPO = {
+  inflacion_implicita: "Cálculo propio",
+  curva_inflacion: "Cálculo propio",
   servicio_deuda: "Cálculo propio",
   calendario: "Oficial",
   reservas_netas: "Cálculo propio",
