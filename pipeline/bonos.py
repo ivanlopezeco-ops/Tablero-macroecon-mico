@@ -3,10 +3,14 @@
 Los cronogramas salen de las fichas técnicas de BYMA (texto de los prospectos) y quedan explícitos en
 config/bonos_flujos.json: una fila por fecha de pago, con el período de devengamiento, la tasa, el saldo
 sobre el que se calcula y la amortización. La TIR se calcula en base efectiva anual, con días reales / 365
-para descontar, precio sucio (limpio más intereses corridos) y liquidación a 24 horas.
+para descontar y liquidación a 24 horas (día hábil siguiente).
+
+El precio de BYMA es el precio con intereses corridos (precio sucio): cae el día que se paga un cupón o una
+cuota. Así lo toman Bonistas.com, Portfolio Personal y El Dashboard, y así se reproduce su TIR. La serie
+histórica de BYMA viene ajustada por cada pago desde febrero de 2025; precio_crudo() deshace ese ajuste.
 
 Valores por cada 100 de valor nominal original. Los intereses corridos usan la base de cada prospecto
-(30/360 en los bonos de 2020 y los Bopreales).
+(30/360 en los bonos de 2020 y los Bopreales) y solo sirven para informar el precio limpio.
 """
 import datetime as dt
 import json
@@ -129,10 +133,11 @@ def generar():
         out[t] = _step_up(E20, vto, tr, am, ini, n)
     # Los Globales comparten condiciones con sus pares de ley argentina.
     out["GD29"], out["GD30"], out["GD35"], out["GD38"], out["GD41"] = out["AL29"], out["AL30"], out["AL35"], out["AE38"], out["AL41"]
-    # Bonares del Tesoro 2027-2029 (base 30/360 supuesta; se contrasta contra el mercado).
-    out["AO27"] = _bonar_mensual(d(2026, 2, 27), d(2027, 10, 29), 6.0)
-    out["AO28"] = _bonar_mensual(d(2026, 3, 31), d(2028, 10, 31), 6.0)
-    out["AO29"] = _bonar_mensual(d(2026, 7, 16), d(2029, 10, 31), 6.0)
+    # Bonares del Tesoro 2027-2029: la ficha no indica la base de días; con días reales / 365 la TIR queda más cerca de
+    # la de El Dashboard (0,02 puntos de error medio contra 0,045 con 30/360).
+    out["AO27"] = _bonar_mensual(d(2026, 2, 27), d(2027, 10, 29), 6.0, "act/365")
+    out["AO28"] = _bonar_mensual(d(2026, 3, 31), d(2028, 10, 31), 6.0, "act/365")
+    out["AO29"] = _bonar_mensual(d(2026, 7, 16), d(2029, 10, 31), 6.0, "act/365")
     # AN29: semestral 30/5 y 30/11, con período irregular al 30/5/26.
     an = []
     d0 = d(2025, 12, 12)
@@ -160,7 +165,7 @@ FECHA_SALDO_BYMA = "2026-10-20"
 def guardar():
     CONFIG.parent.mkdir(exist_ok=True)
     doc = {"origen": "Fichas técnicas de BYMA (texto de los prospectos), consultadas el 20/10/2026. Valores por 100 de nominal original.",
-           "base_tir": "efectiva anual, días reales / 365, precio limpio más intereses corridos, liquidación 24 hs (T+1 hábil)",
+           "base_tir": "efectiva anual, días reales / 365, precio de BYMA tomado como precio sucio (con intereses corridos), liquidación 24 hs (T+1 hábil)",
            "saldo_byma": {"fecha": FECHA_SALDO_BYMA, "ratio": SALDO_BYMA, "nota": "los demás bonos, 1,0: sin amortizaciones pagadas"},
            "bonos": generar()}
     CONFIG.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -193,9 +198,8 @@ def _pv(flujos, liq, y):
     return total
 
 
-def tir(flujos, precio_limpio, liq, base="30/360"):
-    """TIR efectiva anual (en %) o None si no converge."""
-    sucio = precio_limpio + intereses_corridos(flujos, liq, base)
+def tir(flujos, sucio, liq):
+    """TIR efectiva anual (en %) para un precio con intereses corridos, o None si no converge."""
     if not any(_fecha(x["f"]) > liq for x in flujos) or sucio <= 0:
         return None
     lo, hi = -0.9, 20.0
@@ -210,13 +214,12 @@ def tir(flujos, precio_limpio, liq, base="30/360"):
     return (lo + hi) / 2 * 100
 
 
-def duracion_convexidad(flujos, precio_limpio, liq, base="30/360"):
+def duracion_convexidad(flujos, sucio, liq):
     """Duration modificada (años) y convexidad. Ambas a la TIR del precio."""
-    y = tir(flujos, precio_limpio, liq, base)
+    y = tir(flujos, sucio, liq)
     if y is None:
         return None, None
     y /= 100
-    sucio = precio_limpio + intereses_corridos(flujos, liq, base)
     mac = cx = 0.0
     for x in flujos:
         f = _fecha(x["f"])
@@ -254,7 +257,7 @@ def _dias360_v(a, b):
 
 
 def calcular(flujos, fechas, precios):
-    """TIR (%), duration modificada (años) y convexidad para cada fecha y precio limpio.
+    """TIR (%), duration modificada (años) y convexidad para cada fecha y precio con intereses corridos.
     fechas: array de fechas de operación; la liquidación es el siguiente día hábil (24 hs)."""
     fechas = np.asarray(fechas, dtype="datetime64[D]")
     precios = np.asarray(precios, dtype=float)
@@ -262,12 +265,8 @@ def calcular(flujos, fechas, precios):
     F = np.array([x["f"] for x in flujos], dtype="datetime64[D]")
     D0 = np.array([x["d0"] for x in flujos], dtype="datetime64[D]")
     C = np.array([x["int"] + x["am"] for x in flujos], dtype=float)
-    RT = np.array([x["res"] * x["tasa"] / 100 for x in flujos], dtype=float)
     L = liq[:, None]
-    periodo = (D0[None, :] <= L) & (L < F[None, :])
-    dias = _dias360_v(np.broadcast_to(D0[None, :], periodo.shape), np.broadcast_to(L, periodo.shape))
-    corrido = (periodo * RT[None, :] * dias / 360).sum(axis=1)
-    sucio = precios + corrido
+    sucio = precios
     futuro = F[None, :] > L
     t = np.where(futuro, (F[None, :] - L).astype(float) / 365, 0.0)
     Cm = C[None, :] * futuro
@@ -290,25 +289,48 @@ def calcular(flujos, fechas, precios):
     return out
 
 
-# La serie histórica de BYMA viene ajustada por las amortizaciones posteriores: cada precio está expresado por
-# unidad de capital vigente hoy, de modo que no cae el día que se paga una cuota (verificado en AL30, AL29 con
-# la hipótesis serie x saldo(t) / saldo(hoy): TIR coherente con el riesgo país y continua entre fechas de pago).
-# Antes de esta fecha el ajuste de BYMA no es uniforme (el 8/1/2025 el AL30 muestra la caída de la cuota), por lo
-# que la TIR histórica de los bonos amortizables arranca después.
-AJUSTE_DESDE = np.datetime64("2025-01-09")
+# La serie histórica de BYMA viene ajustada por cada pago posterior (cupones y amortizaciones): en el día ex-pago
+# el precio crudo cae el monto del pago y la serie no, porque BYMA multiplica los precios anteriores por
+# (precio ex + pago) / precio ex. Se deshace ese ajuste recorriendo los pagos de atrás para adelante.
+# Verificado contra los precios publicados por Portfolio Personal el 2/2/2026: AN29D 94,69 contra 94,7, AL30D
+# 60,51 contra 60,5 y AL29D 60,96 contra 60,9. El ajuste rige desde febrero de 2025: el pago del 9/1/2025 se ve
+# como caída en la serie y no se corrige. Con este corte la TIR queda continua en todas las fechas de pago.
+AJUSTE_DESDE = np.datetime64("2025-02-01")
 
 
-def precio_real(flujos, fechas, precios):
-    """Deshace el ajuste de BYMA: precio por unidad de capital vigente en cada fecha (liquidación T+1)."""
+def precio_crudo(flujos, fechas, precios):
+    """Precio de mercado (con intereses corridos) a partir de la serie ajustada de BYMA.
+    fechas ordenadas y sin repetir. El día ex-pago es el primero cuya liquidación (T+1) llega a la fecha de pago."""
     fechas = np.asarray(fechas, dtype="datetime64[D]")
+    ajustado = np.asarray(precios, dtype=float)
     liq = np.busday_offset(fechas, 1, roll="forward")
-    saldos = np.array([saldo(flujos, x.astype(dt.date)) for x in liq])
-    ultimo = saldos[np.argmax(fechas)] or 1.0
-    esc = saldos / ultimo
-    if np.allclose(esc, 1.0):
-        return np.asarray(precios, dtype=float), np.ones(len(fechas), dtype=bool)
-    ok = fechas >= AJUSTE_DESDE
-    return np.asarray(precios, dtype=float) * esc, ok
+    factor = np.ones(len(fechas))          # crudo = ajustado x factor
+    for x in sorted(flujos, key=lambda x: x["f"], reverse=True):
+        pago = x["int"] + x["am"]
+        f = np.datetime64(x["f"])
+        if pago <= 0 or f < AJUSTE_DESDE:
+            continue
+        ex = np.flatnonzero(liq >= f)
+        if len(ex) == 0 or ex[0] == 0:
+            continue
+        e = ex[0]
+        despues = ajustado[e] * factor[e]
+        if despues > 0:
+            factor[:e] *= (despues + pago) / despues
+    return ajustado * factor
+
+
+# Contraste con El Dashboard (eldashboard.com.ar), 20/10/2026 12:17 hs: precio VWAP en USD MEP, TIR y duration
+# modificada publicadas. Liquidación 21/10/2026. Sirve para detectar cambios en los flujos o en el cálculo.
+FECHA_DASHBOARD = "2026-10-21"
+DASHBOARD = {
+    "AO27": (103.43, 2.96, 0.96), "AO28": (92.69, 10.63, 1.72), "AO29": (85.25, 12.65, 2.43), "AN29": (87.43, 12.89, 2.45),
+    "AL29": (54.36, 8.44, 1.29), "AL30": (55.30, 9.68, 1.68), "AL35": (69.77, 12.38, 4.65), "AE38": (73.12, 12.73, 3.83),
+    "AL41": (64.76, 12.35, 4.91), "GD29": (55.83, 6.41, 1.33), "GD30": (56.83, 8.08, 1.72), "GD35": (73.77, 11.19, 4.75),
+    "GD38": (78.92, 10.79, 4.04), "GD41": (68.35, 11.27, 5.08), "GD46": (61.91, 11.29, 5.35), "BPOA7": (104.98, 1.61, 0.74),
+    "BPOB7": (105.03, 1.54, 0.74), "BPOC7": (105.12, 1.42, 0.74), "BPOD7": (104.81, 1.82, 0.74), "BPOA8": (93.24, 7.54, 1.82),
+    "BPOB8": (91.84, 8.38, 1.80),
+}
 
 
 if __name__ == "__main__":

@@ -234,9 +234,7 @@ def derivadas(df):
                 if s.empty:
                     continue
                 fe = s.index.values.astype("datetime64[D]")
-                px, ok = B.precio_real(flujos[t], fe, s.values)
-                r = B.calcular(flujos[t], fe, px)
-                r[~ok] = float("nan")
+                r = B.calcular(flujos[t], fe, B.precio_crudo(flujos[t], fe, s.values))
                 prov = set(df.loc[(df["variable"] == v) & df["fuente"].astype(str).str.contains("provisorio"), "fecha"])
                 for k, (pref, uni) in enumerate([("bono_tir", "% TEA"), ("bono_md", "años"), ("bono_cx", "años²")]):
                     ser = pd.Series(r[:, k], index=s.index).dropna()
@@ -326,18 +324,29 @@ def validar(df, notas, estado):
     try:
         cfg = json.loads(B.CONFIG.read_text(encoding="utf-8"))
         flujos, ref = cfg["bonos"], cfg["saldo_byma"]
-        L.append(f"## 5e. Bonos: saldo de capital contra BYMA ({ref['fecha']}) y TIR al último dato\n\n"
-                 "| bono | saldo flujos | saldo BYMA | TIR MEP % | TIR CCL % | MD MEP |\n|---|---:|---:|---:|---:|---:|")
+        L.append(f"## 5e. Bonos: flujos y TIR contra fuentes externas\n\n"
+                 f"Saldo de capital de los flujos contra BYMA ({ref['fecha']}) y TIR propia contra la que publica El Dashboard "
+                 f"(precios del 20/10/26 12:17 hs, liquidación {B.FECHA_DASHBOARD}). ⚠ marca desvíos de más de 0,001 en el saldo "
+                 "o de más de 0,15 puntos en la TIR.\n\n"
+                 "| bono | saldo flujos | saldo BYMA | TIR propia | TIR Dashboard | dif | TIR MEP hoy | TIR CCL hoy | duration MEP |\n"
+                 "|---|---:|---:|---:|---:|---:|---:|---:|---:|")
         liq = dt.date.fromisoformat(ref["fecha"])
+        liq_d = dt.date.fromisoformat(B.FECHA_DASHBOARD)
+        u = lambda var: (serie(df, var).iloc[-1] if len(serie(df, var)) else float("nan"))  # noqa: E731
         for _g, t, *_ in F.BONOS:
             sa = B.saldo(flujos[t], liq) / 100
             sb = ref["ratio"].get(t, 1.0)
-            u = lambda var: (serie(df, var).iloc[-1] if len(serie(df, var)) else float("nan"))  # noqa: E731
-            L.append(f"| {t} | {sa:.4f} | {sb:.4f}{' ⚠' if abs(sa - sb) > 0.001 else ''} | {u('bono_tir_' + t.lower() + '_mep'):.2f} | "
-                     f"{u('bono_tir_' + t.lower() + '_ccl'):.2f} | {u('bono_md_' + t.lower() + '_mep'):.2f} |")
-        L.append("\nPrecio limpio de BYMA más intereses corridos; base efectiva anual, liquidación a 24 hs. "
-                 "Contraste del 20/10/26 contra El Dashboard (eldashboard.com.ar): duration y convexidad coinciden dentro de 2%; "
-                 "su TIR resulta de usar el precio sin intereses corridos, y la diferencia es igual a intereses corridos / (precio x duration).\n")
+            px, ty, _md = B.DASHBOARD[t]
+            mia = B.tir(flujos[t], px, liq_d)
+            marca = "" if mia is not None and abs(mia - ty) <= 0.15 else " ⚠"
+            L.append(f"| {t} | {sa:.4f} | {sb:.4f}{' ⚠' if abs(sa - sb) > 0.001 else ''} | {mia:.2f} | {ty:.2f} | "
+                     f"{mia - ty:+.2f}{marca} | {u('bono_tir_' + t.lower() + '_mep'):.2f} | {u('bono_tir_' + t.lower() + '_ccl'):.2f} | "
+                     f"{u('bono_md_' + t.lower() + '_mep'):.2f} |")
+        L.append("\nEl precio de BYMA incluye los intereses corridos. Base efectiva anual con días reales sobre 365 y liquidación a 24 hs. "
+                 "La serie histórica de BYMA viene ajustada por cada pago desde febrero de 2025 y precio_crudo() deshace el ajuste: "
+                 "el 2/2/2026 reproduce los precios de Portfolio Personal (AN29D 94,69 contra 94,7). "
+                 "También coinciden Bonistas.com (GD29, GD30 y GD38) y Portfolio Personal (TIR del AN29). "
+                 "En los Bopreales Serie 1 la TIR no incluye la opción de rescate del tenedor.\n")
     except Exception:  # noqa: BLE001
         L.append("## 5e. Bonos\n\nERROR: " + traceback.format_exc()[-300:] + "\n")
 

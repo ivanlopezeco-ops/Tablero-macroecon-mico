@@ -40,14 +40,14 @@ const MIDE = {
 
   // ---------------------------------------------------------------- bonos
   tabla_bonos: [
-    "Precio de BYMA de cada bono a 24 horas, por cada 100 nominales, con la variación del día, de 7 y de 30 días. La TIR es efectiva anual, con días reales sobre 365, y se calcula con el precio limpio más los intereses corridos. La duration es modificada y se expresa en años.",
-    "Los flujos salen de las fichas técnicas de BYMA y quedan explícitos en el repositorio. La TIR y la duration usan el dólar MEP, o el CCL si lo elegís. La serie histórica de BYMA viene ajustada por amortizaciones, de modo que las variaciones no registran la caída de precio del día de pago de una cuota. En los Bopreales Serie 1 la TIR no incluye la opción de rescate del tenedor.",
+    "Precio de BYMA de cada bono a 24 horas, por cada 100 nominales, con la variación del día, de 7 y de 30 días. El precio de BYMA incluye los intereses corridos. La TIR es efectiva anual, con días reales sobre 365, y la duration es modificada y se expresa en años.",
+    "Los flujos salen de las fichas técnicas de BYMA y quedan explícitos en el repositorio. La TIR y la duration usan el dólar MEP, o el CCL si lo elegís. Se contrastaron con El Dashboard, Bonistas.com y Portfolio Personal, con diferencias de hasta 0,07 puntos de TIR. La serie histórica de BYMA viene ajustada por cada pago de cupón o cuota, de modo que las variaciones de precio no registran la caída del día de pago. En los Bopreales Serie 1 la TIR no incluye la opción de rescate del tenedor.",
   ],
   curva_bonos: "Cada punto es un bono con su duration modificada (distancia horizontal, sensibilidad al precio ante un cambio de tasa) y su TIR (altura). Los Bopreales se muestran aparte por color porque tienen vencimientos cortos y condiciones distintas de la curva de Bonares y Globales.",
-  tir_2030: "TIR del AL30 (ley argentina) y del GD30 (ley Nueva York). Ambos tienen el mismo cronograma de pagos, así que la distancia entre las dos líneas refleja la diferencia de precio entre las dos legislaciones. La serie arranca en enero de 2025, cuando se corrige el ajuste por amortización de la fuente. En los días de pago de cuotas quedan saltos de 1 a 2 puntos.",
-  tir_largos: "TIR de los Globales 2035, 2038, 2041 y 2046 con el precio en dólar MEP o CCL. La serie arranca en enero de 2025 y los que amortizan (GD46) muestran saltos pequeños en las fechas de pago de cuotas.",
-  precio_2030: "Precio del AL30 y del GD30 en dólar MEP, por cada 100 nominales. La serie de BYMA viene ajustada por amortizaciones: no cae el día que se paga una cuota, de modo que sirve para ver el rendimiento total.",
-  precio_largos: "Precio de los Globales largos en dólar MEP, por cada 100 nominales, con la serie ajustada por amortizaciones que publica BYMA.",
+  tir_2030: "TIR del AL30 (ley argentina) y del GD30 (ley Nueva York). Ambos tienen el mismo cronograma de pagos, así que la distancia entre las dos líneas refleja la diferencia de precio entre las dos legislaciones. Para calcular la serie histórica se deshace el ajuste que BYMA aplica a los precios por cada pago de cupón o cuota.",
+  tir_largos: "TIR de los Globales 2035, 2038, 2041 y 2046 con el precio en dólar MEP o CCL. Para calcular la serie histórica se deshace el ajuste que BYMA aplica a los precios por cada pago de cupón o cuota.",
+  precio_2030: "Precio del AL30 y del GD30 en dólar MEP, por cada 100 nominales. La serie de BYMA viene ajustada por cada pago de cupón o cuota: no cae el día de pago, de modo que sirve para seguir el rendimiento total.",
+  precio_largos: "Precio de los Globales largos en dólar MEP, por cada 100 nominales, con la serie ajustada por cada pago que publica BYMA.",
   precio_bopreales: "Precio de los Bopreales en dólar MEP, por cada 100 nominales. Los Bopreales Serie 1 (A, B, C y D) vencen en octubre de 2027 y los de la Serie 4 (A y B), en octubre de 2028.",
 
   // ---------------------------------------------------------------- riesgo país

@@ -591,7 +591,7 @@ function curvaBonos(el) {
 function bonos(main) {
   const g = grilla(main);
   const F_B = F.byma + " Los Globales en pesos del día salen de A3 Mercados. Precios por cada 100 nominales, plazo de liquidación 24 hs.";
-  const F_T = F_B + " TIR efectiva anual con precio limpio más intereses corridos; flujos de las fichas técnicas de BYMA, sin ajuste por feriados ni opciones de rescate. La serie histórica de BYMA viene ajustada por amortizaciones: se corrige desde enero de 2025 y en los bonos que amortizan quedan saltos de 1 a 2 puntos en las fechas de pago.";
+  const F_T = F_B + " TIR efectiva anual con el precio de BYMA, que incluye los intereses corridos; flujos de las fichas técnicas de BYMA, sin ajuste por feriados ni opciones de rescate. La serie histórica de BYMA viene ajustada por cada pago y el cálculo deshace ese ajuste.";
   const monTxt = () => (bonoMonUsd() === "ccl" ? "dólar CCL" : "dólar MEP");
   tarjeta(g, { mide: "tabla_bonos", ancha: true, titulo: "Bonares, Globales y Bopreales", bajada: () => `Precio, variación, TIR y duration · Por cada 100 nominales · TIR y duration con el ${monTxt()}`,
     fuente: F_T, chips: true, render: tablaBonos });
