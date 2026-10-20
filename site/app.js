@@ -332,6 +332,7 @@ const SECCIONES = [
   { id: "cambiario", nombre: "Cambiario", armar: cambiario },
   { id: "reservas", nombre: "Reservas", armar: reservas },
   { id: "tasas", nombre: "Tasas", armar: tasas },
+  { id: "bonos", nombre: "Bonos", armar: bonos },
   { id: "riesgo", nombre: "Riesgo país", armar: riesgo },
   { id: "dinero", nombre: "Dinero y crédito", armar: dinero },
   { id: "actividad", nombre: "Precios y actividad", armar: actividad },
@@ -525,8 +526,58 @@ function tasas(main) {
     } });
 }
 
+// ------------------------------------------------------------------ bonos soberanos
+const BONOS_GRUPOS = [["Bonares", ["AO27", "AO28", "AO29", "AN29", "AL29", "AL30", "AL35", "AE38", "AL41"]],
+  ["Globales", ["GD29", "GD30", "GD35", "GD38", "GD41", "GD46"]],
+  ["Bopreales", ["BPOA7", "BPOB7", "BPOC7", "BPOD7", "BPOA8", "BPOB8"]]];
+const BONOS_MON = [["ars", "Pesos"], ["mep", "USD MEP"], ["ccl", "USD CCL"]];
+const BONOS_SEL = { mon: "mep" };
+const bonoV = (t, mon) => `bono_${t.toLowerCase()}_${mon}`;
+
+function tablaBonos(el, card) {
+  el.style.height = "auto";
+  const mon = BONOS_SEL.mon;
+  botonera(card.querySelector(".chips"), BONOS_MON, mon, (k) => { BONOS_SEL.mon = k; card._redibujar(); });
+  const filas = []; let hayProv = false;
+  BONOS_GRUPOS.forEach(([g, ts]) => {
+    filas.push(`<tr class="grupo"><td colspan="6">${g}</td></tr>`);
+    ts.forEach((t) => {
+      const v = bonoV(t, mon), s = S(v);
+      if (!s.length) { filas.push(`<tr><td>${t}</td><td colspan="5">s/d</td></tr>`); return; }
+      const [f, x] = s.at(-1), xp = s.length > 1 ? s.at(-2)[1] : null;
+      const desde = (dias) => { const b = valEn(v, iso(Date.parse(f) - dias * 864e5)); return b ? (x / b - 1) * 100 : null; };
+      const cel = (d) => (d == null ? "<td></td>" : `<td class="${Math.abs(d) < 0.005 ? "" : d > 0 ? "dif-pos" : "dif-neg"}">${fmtS(d, 2)}%</td>`);
+      const prov = esProv(v); if (prov) hayProv = true;
+      filas.push(`<tr><td>${t}</td><td>${fmt(x, mon === "ars" ? 0 : 2)}</td>${cel(xp ? (x / xp - 1) * 100 : null)}${cel(desde(7))}${cel(desde(30))}` +
+        `<td class="${prov ? "est" : ""}">${fechaCorta(f)}${prov ? " *" : ""}</td></tr>`);
+    });
+  });
+  const tw = document.createElement("div");
+  tw.innerHTML = `<table class="tabla"><tr><th>Bono</th><th>Precio</th><th>Día</th><th>7 días</th><th>30 días</th><th>Dato</th></tr>${filas.join("")}</table>` +
+    (hayProv ? '<p class="fuente">*Dato del día, provisorio: último precio operado con 20 minutos de demora, hasta que sale el cierre.</p>' : "");
+  el.appendChild(tw);
+}
+
+function bonos(main) {
+  const g = grilla(main);
+  const F_B = F.byma + " Los Globales en pesos del día salen de A3 Mercados. Precios por cada 100 nominales, plazo de liquidación 24 hs.";
+  tarjeta(g, { ancha: true, titulo: "Bonares, Globales y Bopreales", bajada: "Precio, variación y fecha del último dato · Por cada 100 nominales",
+    fuente: F_B, chips: true, render: tablaBonos });
+  tarjeta(g, { titulo: () => `El AL30 cotiza a USD ${fmt(ult("bono_al30_mep")[1], 2)} y el GD30 a USD ${fmt(ult("bono_gd30_mep")[1], 2)}`,
+    bajada: "Bonar y Global 2030 en dólar MEP · En USD por cada 100 nominales", fuente: F_B, dec: 1,
+    series: [{ v: "bono_al30_mep", nombre: "AL30" }, { v: "bono_gd30_mep", nombre: "GD30", color: "celeste" }] });
+  tarjeta(g, { titulo: () => `El GD35 cotiza a USD ${fmt(ult("bono_gd35_mep")[1], 2)}`,
+    bajada: "Globales largos en dólar MEP · En USD por cada 100 nominales", fuente: F_B, dec: 1, leyenda: true,
+    series: [{ v: "bono_gd35_mep", nombre: "GD35" }, { v: "bono_gd38_mep", nombre: "GD38", color: "celeste" },
+      { v: "bono_gd41_mep", nombre: "GD41", color: "naranja" }, { v: "bono_gd46_mep", nombre: "GD46", color: "gris" }] });
+  tarjeta(g, { titulo: () => `El BPOD7 cotiza a USD ${fmt(ult("bono_bpod7_mep")[1], 2)}`,
+    bajada: "Bopreales en dólar MEP · En USD por cada 100 nominales", fuente: F_B, dec: 1, leyenda: true,
+    series: [{ v: "bono_bpoa7_mep", nombre: "BPOA7" }, { v: "bono_bpob7_mep", nombre: "BPOB7", color: "celeste" }, { v: "bono_bpoc7_mep", nombre: "BPOC7", color: "naranja" },
+      { v: "bono_bpod7_mep", nombre: "BPOD7", color: "gris" }, { v: "bono_bpoa8_mep", nombre: "BPOA8", color: "verde" }, { v: "bono_bpob8_mep", nombre: "BPOB8", color: "violeta" }] });
+}
+
 // ------------------------------------------------------------------ riesgo país
-const PAISES = { brasil: "Brasil", chile: "Chile", colombia: "Colombia", ecuador: "Ecuador", mexico: "México", peru: "Perú",
+const PAISES ={ brasil: "Brasil", chile: "Chile", colombia: "Colombia", ecuador: "Ecuador", mexico: "México", peru: "Perú",
   uruguay: "Uruguay", paraguay: "Paraguay", bolivia: "Bolivia", el_salvador: "El Salvador", panama: "Panamá",
   costa_rica: "Costa Rica", guatemala: "Guatemala", honduras: "Honduras", rep_dominicana: "Rep. Dominicana", venezuela: "Venezuela" };
 // Grupos de comparación: promedios simples calculados acá con los spreads por país (no tienen el quiebre

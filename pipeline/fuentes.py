@@ -182,6 +182,53 @@ BYMA_SIMBOLOS = {"AL30 24HS": ("al30_ars", "ARS"), "AL30D 24HS": ("al30_usd_mep"
                  "GD30C 24HS": ("gd30_usd_ccl", "USD"), "GD35C 24HS": ("gd35_usd_ccl", "USD")}
 
 
+# Bonos soberanos en dólares: (grupo, ticker, símbolo en pesos, en dólares MEP, en dólares CCL).
+# Los Bopreales pesos se listan como BPOA7 y su versión en dólares como BPA7D / BPA7C.
+BONOS = [
+    ("Bonares", "AO27", "AO27", "AO27D", "AO27C"), ("Bonares", "AO28", "AO28", "AO28D", "AO28C"),
+    ("Bonares", "AO29", "AO29", "AO29D", "AO29C"), ("Bonares", "AN29", "AN29", "AN29D", "AN29C"),
+    ("Bonares", "AL29", "AL29", "AL29D", "AL29C"), ("Bonares", "AL30", "AL30", "AL30D", "AL30C"),
+    ("Bonares", "AL35", "AL35", "AL35D", "AL35C"), ("Bonares", "AE38", "AE38", "AE38D", "AE38C"),
+    ("Bonares", "AL41", "AL41", "AL41D", "AL41C"),
+    ("Globales", "GD29", "GD29", "GD29D", "GD29C"), ("Globales", "GD30", "GD30", "GD30D", "GD30C"),
+    ("Globales", "GD35", "GD35", "GD35D", "GD35C"), ("Globales", "GD38", "GD38", "GD38D", "GD38C"),
+    ("Globales", "GD41", "GD41", "GD41D", "GD41C"), ("Globales", "GD46", "GD46", "GD46D", "GD46C"),
+    ("Bopreales", "BPOA7", "BPOA7", "BPA7D", "BPA7C"), ("Bopreales", "BPOB7", "BPOB7", "BPB7D", "BPB7C"),
+    ("Bopreales", "BPOC7", "BPOC7", "BPC7D", "BPC7C"), ("Bopreales", "BPOD7", "BPOD7", "BPD7D", "BPD7C"),
+    ("Bopreales", "BPOA8", "BPOA8", "BPA8D", "BPA8C"), ("Bopreales", "BPOB8", "BPOB8", "BPB8D", "BPB8C"),
+]
+BYMA_BONOS = {}
+for _g, _t, _ars, _mep, _ccl in BONOS:
+    for _sym, _mon, _uni in ((_ars, "ars", "ARS"), (_mep, "mep", "USD"), (_ccl, "ccl", "USD")):
+        BYMA_BONOS[f"{_sym} 24HS"] = (f"bono_{_t.lower()}_{_mon}", _uni)
+
+
+def _byma_historia(simbolos, dias=800):
+    """Cierre diario de cada símbolo (BYMA, 24HS). Un símbolo que falla no frena al resto."""
+    t0 = int(dt.datetime.combine(desde(HOY - dt.timedelta(days=dias)), dt.time()).timestamp())
+    hasta = int(dt.datetime.now().timestamp())
+    filas, errores = [], []
+    for sym, (var, uni) in simbolos.items():
+        try:
+            j = _get(f"{BYMA}/chart/historical-series/history", verify=False,
+                     params={"symbol": sym, "resolution": "D", "from": t0, "to": hasta}).json()
+            for t, c in zip(j.get("t", []), j.get("c", [])):
+                fecha = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
+                filas.append((fecha, var, c, uni, f"BYMA ({sym})"))
+        except Exception as e:  # noqa: BLE001
+            errores.append(f"{sym}: {e}"[:100])
+    if not filas:
+        raise RuntimeError("; ".join(errores[:3]))
+    df = _df(filas)
+    df.attrs["errores"] = errores
+    return df
+
+
+def bonos_historicos():
+    """Cierre diario de Bonares, Globales y Bopreales en pesos, dólar MEP y dólar CCL."""
+    return _byma_historia(BYMA_BONOS)
+
+
 def byma_historicos():
     """BYMA ofrece unos dos años de historia diaria; lo anterior queda en la base acumulada."""
     t0 = int(dt.datetime.combine(desde(HOY - dt.timedelta(days=800)), dt.time()).timestamp())
@@ -410,20 +457,40 @@ def ambito_riesgo():
 
 
 def byma_intradia():
-    """Último precio operado de los bonos (BYMA, con 20 minutos de demora), fechado hoy. Solo durante la rueda."""
+    """Último precio operado de los bonos (BYMA, con 20 minutos de demora), fechado hoy. Solo durante la rueda.
+    BYMA no lista los Globales en este endpoint; esos precios en pesos salen de A3/MAE."""
     if not en_rueda():
         return _df([])
+    # Un símbolo puede alimentar dos variables (la serie propia del MEP/CCL y la del panel de bonos).
+    simbolos = {}
+    for tabla in (BYMA_SIMBOLOS, BYMA_BONOS):
+        for sym, destino in tabla.items():
+            simbolos.setdefault(sym, []).append(destino)
     r = requests.post(f"{BYMA}/public-bonds", json={"excludeZeroPxAndQty": True, "T2": False, "T1": True, "T0": False,
                       "Content-Type": "application/json"}, headers=BYMA_H, verify=False, timeout=60)
     data = r.json()
     data = data.get("data", data) if isinstance(data, dict) else data
-    filas = []
+    filas, vistos = [], set()
     for d in data:
         sym = f"{d.get('symbol')} 24HS"
-        if sym in BYMA_SIMBOLOS and (d.get("trade") or 0) > 0 and (d.get("volume") or 0) > 0:
-            var, uni = BYMA_SIMBOLOS[sym]
-            filas.append((HOY, var, d["trade"], uni, f"BYMA intradiario ({sym}) (provisorio)"))
-    return _df(filas)
+        if sym in simbolos and (d.get("trade") or 0) > 0 and (d.get("volume") or 0) > 0:
+            for var, uni in simbolos[sym]:
+                filas.append((HOY, var, d["trade"], uni, f"BYMA intradiario ({sym}) (provisorio)"))
+                vistos.add(var)
+    errores = []
+    try:
+        for d in _get(MAE + "mercado/datos/RF", headers=MAE_H).json():
+            sym = str(d.get("ticker", "")).replace("/24hs", " 24HS")
+            if sym in simbolos and d.get("moneda") == "$" and (d.get("ultimo") or 0) > 0 and (d.get("volumen") or 0) > 0:
+                for var, uni in simbolos[sym]:
+                    if var not in vistos:
+                        filas.append((HOY, var, d["ultimo"], uni, f"A3/MAE intradiario ({sym}) (provisorio)"))
+                        vistos.add(var)
+    except Exception as e:  # noqa: BLE001
+        errores.append(f"A3/MAE renta fija: {e}"[:120])
+    df = _df(filas)
+    df.attrs["errores"] = errores
+    return df
 
 
 # ---------------------------------------------------------------- Archivos para inspeccionar

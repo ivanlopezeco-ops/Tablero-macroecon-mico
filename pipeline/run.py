@@ -387,7 +387,7 @@ def modo_completo():
 # Cada cuántas horas se vuelve a pedir cada fuente (0 = en todas las corridas). Las mensuales o lentas
 # no hace falta bajarlas cada hora; si una falla, se reintenta en la corrida siguiente.
 FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "indec_emae": 3, "bls_cpi": 12,
-                "rem": 12, "balance_cambiario": 12, "cammesa": 6, "argentinadatos": 2}
+                "rem": 12, "balance_cambiario": 12, "cammesa": 6, "argentinadatos": 2, "bonos_historicos": 2}
 
 
 def toca(nombre, previo):
@@ -408,6 +408,7 @@ def main():
     for nombre, fn in [("byma_intradia", F.byma_intradia), ("ambito_riesgo", F.ambito_riesgo),
                        ("bcra", F.bcra), ("bcra_cny", F.bcra_cny), ("bcrd_embi", F.bcrd_embi),
                        ("argentinadatos", F.argentinadatos), ("byma_historicos", F.byma_historicos),
+                       ("bonos_historicos", F.bonos_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
                        ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob), ("indec_ipc", F.indec_ipc),
                        ("indec_emae", F.indec_emae), ("bls_cpi", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
