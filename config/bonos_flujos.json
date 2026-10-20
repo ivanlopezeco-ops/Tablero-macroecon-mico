@@ -12,6 +12,33 @@
   },
   "nota": "los demás bonos, 1,0: sin amortizaciones pagadas"
  },
+ "monto_nominal_usd": {
+  "fecha": "2026-10-20",
+  "montos": {
+   "AO27": 2000370497,
+   "AO28": 2000369685,
+   "AO29": 1225915864,
+   "AN29": 1000000000,
+   "AL29": 1394901484,
+   "AL30": 13102738119,
+   "AL35": 20243999549,
+   "AE38": 12324977546,
+   "AL41": 1542233749,
+   "GD29": 2635028710,
+   "GD30": 13587430959,
+   "GD35": 20501717797,
+   "GD38": 11405065267,
+   "GD41": 10482111279,
+   "GD46": 2091997124,
+   "BPOA7": 115439794,
+   "BPOB7": 941046006,
+   "BPOC7": 1494011529,
+   "BPOD7": 1494011529,
+   "BPOA8": 281725850,
+   "BPOB8": 563451700
+  },
+  "nota": "montoNominal de la ficha de BYMA; incluye tenencias del sector público"
+ },
  "bonos": {
   "AL29": [
    {

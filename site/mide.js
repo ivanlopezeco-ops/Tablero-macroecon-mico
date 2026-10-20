@@ -53,6 +53,11 @@ const MIDE = {
   precio_largos: "Precio de los Globales largos en dólar MEP, por cada 100 nominales, con la serie ajustada por cada pago que publica BYMA.",
   precio_bopreales: "Precio de los Bopreales en dólar MEP, por cada 100 nominales. Los Bopreales Serie 1 (A, B, C y D) vencen en octubre de 2027 y los de la Serie 4 (A y B), en octubre de 2028.",
 
+  servicio_deuda: [
+    "Pagos de capital e intereses que surgen de los cronogramas de las fichas técnicas de BYMA, multiplicados por el monto nominal en circulación de cada bono, por mes y en millones de USD. Cubre 21 bonos en dólares: 9 Bonares, 6 Globales y 6 Bopreales. Los Bonares y Globales pagan en enero y julio, y los Bopreales en abril y octubre; los Bonares 2027, 2028 y 2029 pagan intereses todos los meses.",
+    "Los montos incluyen los bonos en poder del sector público y no incluyen los pagos al FMI y a otros organismos ni los bonos en pesos. Los montos en circulación son los de la ficha de BYMA al 20/10/26 y cambian con canjes y recompras. La comparación con las reservas netas pone un flujo anual frente a un stock.",
+  ],
+
   // ---------------------------------------------------------------- riesgo país
   riesgo_ppal: [
     "El riesgo país es el spread de los bonos soberanos sobre los bonos del Tesoro de EE.UU., en puntos básicos. Se usa el EMBI Global Diversified de JP Morgan que publica el Banco Central de la República Dominicana. El dato del día de Argentina sale de Ámbito y es provisorio hasta que publica el BCRD.",
@@ -123,6 +128,7 @@ const TIPOS = {
 };
 
 const TIPO = {
+  servicio_deuda: "Cálculo propio",
   calendario: "Oficial",
   reservas_netas: "Cálculo propio",
   tabla_reservas: "Cálculo propio",

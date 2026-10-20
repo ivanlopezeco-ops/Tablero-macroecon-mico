@@ -483,6 +483,15 @@ def main():
                               "traza": traceback.format_exc()[-800:]}
         print(nombre, estado[nombre]["estado"], estado[nombre].get("filas", ""))
 
+    # Servicio de deuda en dólares de los bonos soberanos: no es una serie; exportar.py lo suma a data.json
+    try:
+        grupos = {x[1]: x[0] for x in F.BONOS}
+        sd = B.servicio_deuda(B.cargar(), grupos, F.HOY)
+        (DATA / "servicio_deuda.json").write_text(json.dumps(sd, ensure_ascii=False), encoding="utf-8")
+        estado["servicio_deuda"] = {"estado": "ok", "filas": len(sd), "ok_utc": dt.datetime.utcnow().isoformat()}
+    except Exception as e:  # noqa: BLE001
+        estado["servicio_deuda"] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}"[:300]}
+
     # Calendario de publicaciones del INDEC: no es una serie; se guarda aparte y exportar.py lo suma a data.json
     if toca("calendario_indec", previo):
         try:

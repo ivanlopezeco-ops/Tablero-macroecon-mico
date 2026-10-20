@@ -671,6 +671,23 @@ function curvaBonos(el) {
     series });
 }
 
+function servicioDeudaGrafico(el) {
+  const c = COL(); const ch = echarts.init(el); charts.push(ch);
+  const sd = (D.servicio_deuda || []);
+  const meses = sd.map((x) => mesCorto(x.m + "-01"));
+  const color = { Bonares: c.azul, Globales: c.celeste, Bopreales: c.naranja };
+  ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" },
+    legend: { top: 0, left: 0, itemWidth: 12, itemHeight: 8, textStyle: { color: c.texto2, fontSize: 11 } },
+    grid: { left: 8, right: 16, top: 34, bottom: 28, containLabel: true },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, backgroundColor: c.card, borderColor: c.eje, textStyle: { color: c.tinta, fontSize: 12 }, confine: true,
+      formatter: (ps) => { const x = sd[ps[0].dataIndex]; const tot = x.Bonares + x.Globales + x.Bopreales;
+        return `<div style="font-size:11px;color:${c.texto2}">${ps[0].axisValue}</div>` + ps.filter((p) => p.value).map((p) => `<span style="color:${p.color}">●</span> ${p.seriesName}: <b>${fmt(p.value)}</b>`).join("<br>") +
+          `<br><b>Total ${fmt(tot)}</b> · capital ${fmt(x.capital)} · intereses ${fmt(x.intereses)}`; } },
+    xAxis: { type: "category", data: meses, axisLabel: { color: c.texto2, fontSize: 11, hideOverlap: true }, axisLine: { lineStyle: { color: c.eje } }, axisTick: { show: false } },
+    yAxis: { type: "value", splitLine: { lineStyle: { color: c.grilla } }, axisLabel: { color: c.texto2, fontSize: 11, formatter: (v) => fmt(v) } },
+    series: ["Bonares", "Globales", "Bopreales"].map((g) => ({ name: g, type: "bar", stack: "s", barMaxWidth: 22, itemStyle: { color: color[g] }, data: sd.map((x) => x[g]) })) });
+}
+
 function bonos(main) {
   const barra = document.createElement("div"); barra.className = "barra";
   barra.innerHTML = '<span>Moneda de referencia</span>';
@@ -702,6 +719,11 @@ function bonos(main) {
     bajada: "Bopreales en dólar MEP · En USD por cada 100 nominales", fuente: F_B, dec: 1, leyenda: true,
     series: [{ v: "bono_bpoa7_mep", nombre: "BPOA7" }, { v: "bono_bpob7_mep", nombre: "BPOB7", color: "celeste" }, { v: "bono_bpoc7_mep", nombre: "BPOC7", color: "naranja" },
       { v: "bono_bpod7_mep", nombre: "BPOD7", color: "gris" }, { v: "bono_bpoa8_mep", nombre: "BPOA8", color: "verde" }, { v: "bono_bpob8_mep", nombre: "BPOB8", color: "violeta" }] });
+  const sdTotal = () => (D.servicio_deuda || []).slice(0, 12).reduce((t, x) => t + x.Bonares + x.Globales + x.Bopreales, 0);
+  tarjeta(g, { mide: "servicio_deuda", ancha: true, alto: 340, sinRango: true,
+    titulo: () => `En los próximos 12 meses se pagan USD ${fmt(sdTotal())} millones de bonos en dólares`,
+    bajada: () => `Capital e intereses de Bonares, Globales y Bopreales por mes · En millones de USD · Los próximos 12 meses equivalen a ${fmt(sdTotal() / ult("reservas_netas")[1] * 100)}% de las reservas netas`,
+    fuente: F.byma + " Montos nominales en circulación según las fichas técnicas de BYMA al 20/10/26, incluidos los que tiene el sector público. No incluye FMI, otros organismos ni bonos en pesos.", render: servicioDeudaGrafico });
   tarjeta(g, { mide: "tabla_bonos", ancha: true, titulo: "Detalle por bono", bajada: () => `Precio, variación, TIR y duration de cada bono · Por cada 100 nominales · Moneda elegida arriba · TIR y duration con el ${monTxt()}`,
     fuente: F_T, render: tablaBonos });
 }

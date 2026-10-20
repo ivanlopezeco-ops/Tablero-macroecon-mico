@@ -162,11 +162,24 @@ SALDO_BYMA = {"AL29": 0.6, "GD29": 0.6, "AL30": 0.64, "GD30": 0.64, "GD46": 0.90
 FECHA_SALDO_BYMA = "2026-10-20"
 
 
+# Monto nominal original en circulación (montoNominal de la ficha técnica de BYMA), en USD, consultado el 20/10/2026.
+# Incluye los bonos en poder del sector público. Sirve para pasar los flujos por 100 nominales a montos totales.
+FECHA_MONTOS = "2026-10-20"
+MONTO_NOMINAL = {
+    "AO27": 2000370497, "AO28": 2000369685, "AO29": 1225915864, "AN29": 1000000000, "AL29": 1394901484, "AL30": 13102738119,
+    "AL35": 20243999549, "AE38": 12324977546, "AL41": 1542233749, "GD29": 2635028710, "GD30": 13587430959, "GD35": 20501717797,
+    "GD38": 11405065267, "GD41": 10482111279, "GD46": 2091997124, "BPOA7": 115439794, "BPOB7": 941046006, "BPOC7": 1494011529,
+    "BPOD7": 1494011529, "BPOA8": 281725850, "BPOB8": 563451700,
+}
+
+
 def guardar():
     CONFIG.parent.mkdir(exist_ok=True)
     doc = {"origen": "Fichas técnicas de BYMA (texto de los prospectos), consultadas el 20/10/2026. Valores por 100 de nominal original.",
            "base_tir": "efectiva anual, días reales / 365, precio de BYMA tomado como precio sucio (con intereses corridos), liquidación 24 hs (T+1 hábil)",
            "saldo_byma": {"fecha": FECHA_SALDO_BYMA, "ratio": SALDO_BYMA, "nota": "los demás bonos, 1,0: sin amortizaciones pagadas"},
+           "monto_nominal_usd": {"fecha": FECHA_MONTOS, "montos": MONTO_NOMINAL,
+                                 "nota": "montoNominal de la ficha de BYMA; incluye tenencias del sector público"},
            "bonos": generar()}
     CONFIG.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
 
@@ -331,6 +344,30 @@ DASHBOARD = {
     "BPOB7": (105.03, 1.54, 0.74), "BPOC7": (105.12, 1.42, 0.74), "BPOD7": (104.81, 1.82, 0.74), "BPOA8": (93.24, 7.54, 1.82),
     "BPOB8": (91.84, 8.38, 1.80),
 }
+
+
+def servicio_deuda(flujos, grupos, hoy, meses=24):
+    """Pagos de capital e intereses de los bonos en USD millones, por mes y por grupo, desde mañana.
+    grupos: {ticker: grupo}. Usa MONTO_NOMINAL: pago por 100 nominales x monto / 100."""
+    ini = hoy + dt.timedelta(days=1)
+    desde = (ini.year, ini.month)
+    out = {}
+    a, m = desde
+    for _ in range(meses):
+        out[(a, m)] = {"m": f"{a}-{m:02d}", "Bonares": 0.0, "Globales": 0.0, "Bopreales": 0.0, "capital": 0.0, "intereses": 0.0}
+        a, m = (a + 1, 1) if m == 12 else (a, m + 1)
+    for t, fl in flujos.items():
+        monto = MONTO_NOMINAL.get(t, 0) / 100 / 1e6
+        for x in fl:
+            f = _fecha(x["f"])
+            clave = (f.year, f.month)
+            if f < ini or clave not in out:
+                continue
+            fila = out[clave]
+            fila[grupos[t]] += (x["int"] + x["am"]) * monto
+            fila["capital"] += x["am"] * monto
+            fila["intereses"] += x["int"] * monto
+    return [{k: (round(v, 1) if isinstance(v, float) else v) for k, v in fila.items()} for fila in out.values()]
 
 
 if __name__ == "__main__":
