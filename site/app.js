@@ -75,6 +75,7 @@ const tmp = (nombre, d) => { D.series[nombre] = { u: "", f: "", d }; return nomb
 // cfg.base100: cada serie = 100 al inicio del período visible. cfg.leyenda: leyenda arriba en vez de etiquetas.
 // El período sale de la tarjeta (card._r). Debajo del gráfico va un selector con asas propio.
 function grafico(el, cfg) {
+  el._cfg = cfg;
   const c = COL();
   const card = el.closest(".card");
   const r = cfg.r || (card && card._r) || R;
@@ -84,6 +85,7 @@ function grafico(el, cfg) {
   const ancho = el.clientWidth || 600;
   const chica = ancho < 420;
   const [ra, rb] = ventana(r, cfg.mensual);
+  el._ventana = [ra, rb];
   const agregado = cfg.agregar && !cfg.mensual && (Date.parse(rb) - Date.parse(ra)) / 864e5 > 730;
   const mensual = cfg.mensual || agregado;
   const dosEjes = cfg.series.some((s) => s.eje2);
@@ -207,6 +209,69 @@ function grafico(el, cfg) {
 const RANGOS_D = [["1M", 30], ["3M", 90], ["6M", 180], ["1A", 365], ["2A", 730], ["5A", 1826], ["Todo", 0]];
 const RANGOS_M = [["2A", 730], ["5A", 1826], ["10A", 3652], ["Todo", 0]];
 
+// ------------------------------------------------------------------ descargas (CSV de las series visibles y PNG de la tarjeta)
+function descargar(nombre, blob) {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nombre;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+const slug = (t) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
+
+function csvDe(el, card) {
+  const cfg = el._cfg; const [a, b] = el._ventana;
+  const series = cfg.series.map((x) => ({ n: x.nombre, d: new Map((x.datos || S(x.v)).filter((p) => p[0] >= a && p[0] <= b).map(([f, v]) => [f, v == null ? null : (x.escala ? v * x.escala : v)])) }));
+  const fechas = [...new Set(series.flatMap((x) => [...x.d.keys()]))].sort();
+  const num = (v) => (v == null ? "" : String(Math.round(v * 1e6) / 1e6).replace(".", ","));
+  const filas = [["fecha", ...series.map((x) => x.n)].join(";"), ...fechas.map((f) => [f, ...series.map((x) => num(x.d.get(f)))].join(";"))];
+  const titulo = card.querySelector("h3 .tit").textContent;
+  filas.push("", `Fuente;${card.querySelector(".fuente").textContent.replace(/;/g, ",")}`, `Tablero;${titulo.replace(/;/g, ",")}`);
+  descargar(`${slug(titulo)}.csv`, new Blob(["\ufeff" + filas.join("\r\n")], { type: "text/csv;charset=utf-8" }));
+}
+
+function envolver(ctx, texto, ancho) {
+  const out = []; let linea = "";
+  texto.split(" ").forEach((w) => { const t = linea ? linea + " " + w : w; if (ctx.measureText(t).width > ancho && linea) { out.push(linea); linea = w; } else linea = t; });
+  if (linea) out.push(linea); return out;
+}
+
+function pngDe(el, card) {
+  const ch = echarts.getInstanceByDom(el); if (!ch) return;
+  const c = COL(); const k = 2;
+  const img = new Image();
+  img.onload = () => {
+    const W = img.width, M = 28 * k;
+    const cv = document.createElement("canvas"); const ctx = cv.getContext("2d");
+    const titulo = card.querySelector("h3 .tit").textContent, baj = card.querySelector(".bajada").textContent, fu = card.querySelector(".fuente").textContent;
+    cv.width = W;
+    const medir = (fuente, texto, ancho) => { ctx.font = fuente; return envolver(ctx, texto, ancho); };
+    const lt = medir(`600 ${20 * k}px Poppins, sans-serif`, titulo, W - 2 * M), lb = medir(`400 ${12 * k}px Poppins, sans-serif`, baj, W - 2 * M), lf = medir(`400 ${10 * k}px Poppins, sans-serif`, fu, W - 2 * M);
+    const alto = M + lt.length * 26 * k + lb.length * 17 * k + 10 * k + img.height + lf.length * 14 * k + M;
+    cv.height = alto; ctx.fillStyle = c.card; ctx.fillRect(0, 0, W, alto); ctx.textBaseline = "top";
+    let y = M;
+    ctx.font = `600 ${20 * k}px Poppins, sans-serif`; ctx.fillStyle = c.tinta; lt.forEach((l) => { ctx.fillText(l, M, y); y += 26 * k; });
+    ctx.font = `400 ${12 * k}px Poppins, sans-serif`; ctx.fillStyle = c.texto2; lb.forEach((l) => { ctx.fillText(l, M, y); y += 17 * k; });
+    y += 10 * k; ctx.drawImage(img, 0, y); y += img.height;
+    ctx.font = `400 ${10 * k}px Poppins, sans-serif`; ctx.fillStyle = c.nota; lf.forEach((l) => { ctx.fillText(l, M, y); y += 14 * k; });
+    cv.toBlob((b) => descargar(`${slug(titulo)}.png`, b), "image/png");
+  };
+  const hayZoom = !!(ch.getOption().dataZoom || []).length;
+  if (hayZoom) ch.setOption({ dataZoom: [{ show: false }] });     // el selector de período no va en la imagen
+  img.src = ch.getDataURL({ type: "png", pixelRatio: 2, backgroundColor: c.card });
+  if (hayZoom) ch.setOption({ dataZoom: [{ show: true }] });
+}
+
+function botonesDescarga(card, el) {
+  const cont = card.querySelector(".descargas"); if (!cont) return;
+  cont.innerHTML = "";
+  const conCsv = !!(el._cfg && el._cfg.series && el._cfg.series.length), conPng = !!echarts.getInstanceByDom(el);
+  if (conCsv) { const b = document.createElement("button"); b.textContent = "CSV"; b.title = "Descargar las series del período visible"; b.onclick = () => csvDe(el, card); cont.appendChild(b); }
+  if (conPng) { const b = document.createElement("button"); b.textContent = "PNG"; b.title = "Descargar el gráfico con título y fuente"; b.onclick = () => pngDe(el, card); cont.appendChild(b); }
+}
+
+function etiquetaTipo(clave) {
+  const t = clave && TIPO[clave];
+  return t ? `<span class="tipo" title="${TIPOS[t]}">${t}</span>` : "";
+}
+
 function desplegableMide(clave) {
   const t = clave && MIDE[clave];
   if (!t) return "";
@@ -218,8 +283,8 @@ function tarjeta(cont, cfg) {
   card.className = "card" + (cfg.ancha ? " ancha" : "");
   card._r = { ...R };
   const conRango = !cfg.sinRango && (cfg.series || cfg.conRango);
-  card.innerHTML = `<div class="card-top"><h3><span class="tit"></span>${cfg.badge ? `<span class="badge">${cfg.badge}</span>` : ""}</h3>${conRango ? '<div class="mini-rangos" role="group" aria-label="Período de este gráfico"></div>' : ""}</div>
-    <p class="bajada"></p><div class="chips"></div><div class="chart"></div>${desplegableMide(cfg.mide)}<p class="fuente">${cfg.fuente}</p>`;
+  card.innerHTML = `<div class="card-top"><h3><span class="tit"></span>${cfg.badge ? `<span class="badge">${cfg.badge}</span>` : ""}${etiquetaTipo(cfg.mide)}</h3>${conRango ? '<div class="mini-rangos" role="group" aria-label="Período de este gráfico"></div>' : ""}</div>
+    <p class="bajada"></p><div class="chips"></div><div class="chart"></div><div class="extras">${desplegableMide(cfg.mide)}<span class="descargas"></span></div><p class="fuente">${cfg.fuente}</p>`;
   cont.appendChild(card);
   if (!cfg.chips) card.querySelector(".chips").remove();
   const el = card.querySelector(".chart");
@@ -239,6 +304,7 @@ function tarjeta(cont, cfg) {
     const chips = card.querySelector(".chips"); if (chips) chips.innerHTML = "";
     if (cfg.render) cfg.render(el, card); else grafico(el, cfg);
     if (botones) botones.querySelectorAll("button").forEach((b) => b.classList.toggle("on", !card._r.desde && +b.dataset.r === card._r.dias));
+    botonesDescarga(card, el);
     card.querySelector("h3 .tit").innerHTML = typeof cfg.titulo === "function" ? cfg.titulo(card._r) : cfg.titulo;
     baj.innerHTML = typeof cfg.bajada === "function" ? cfg.bajada() : (cfg.bajada || "");
     if (el.dataset.log) baj.innerHTML += " · Escala logarítmica";
