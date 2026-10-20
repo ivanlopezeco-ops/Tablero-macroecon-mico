@@ -485,6 +485,22 @@ function novedades() {
   return L;
 }
 
+const DIAS_SEM = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+function tablaCalendario(el) {
+  el.style.height = "auto";
+  const prox = (D.calendario || []).filter((x) => x.f >= hoy()).slice(0, 10);
+  if (!prox.length) { el.innerHTML = '<p class="seccion-intro" style="margin:24px 0">Sin fechas cargadas.</p>'; return; }
+  const periodo = (d) => { const m = d.match(/\. ([^.]+ de \d{4})$/); return m ? m[1] : ""; };
+  const filas = prox.map((x) => {
+    const dia = DIAS_SEM[new Date(x.f + "T12:00:00Z").getUTCDay()];
+    const cuando = x.f === hoy() ? "hoy" : "";
+    return `<tr><td>${fechaCorta(x.f)} <span class="est">${dia}${cuando ? " · " + cuando : ""}</span></td><td class="izq">${x.t}</td><td class="izq">${periodo(x.d)}</td><td class="izq">${x.tab ? '<span class="marca">En el tablero</span>' : ""}</td></tr>`;
+  }).join("");
+  const tw = document.createElement("div"); tw.className = "tw";
+  tw.innerHTML = `<table class="tabla"><tr><th>Fecha</th><th class="izq">Publicación</th><th class="izq">Período</th><th></th></tr>${filas}</table>`;
+  el.appendChild(tw);
+}
+
 function resumen(main) {
   const n = document.createElement("section"); n.className = "card ancha novedades"; main.appendChild(n);
   n.innerHTML = `<h3>Novedades</h3><ul>${novedades().map((x) => `<li>${x}</li>`).join("")}</ul>
@@ -517,6 +533,8 @@ function resumen(main) {
   tarjeta(g, { mide: "riesgo_ppal", titulo: () => `El riesgo país está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
     bajada: "Argentina (eje izquierdo) y promedio simple de América Latina sin Venezuela ni Argentina (eje derecho) · En puntos básicos", fuente: F.bcrd,
     dec: 0, leyenda: true, series: [{ v: "riesgo_pais_argentina", nombre: "Argentina", color: "azul" }, { v: promedioGrupo("latam"), nombre: "LATAM sin VZ y ARG", color: "ocre", eje2: true }] });
+  tarjeta(g, { mide: "calendario", ancha: true, titulo: "Próximas publicaciones del INDEC", bajada: "Fechas del calendario oficial de difusión · Las marcadas alimentan series del tablero",
+    fuente: "Fuente: elaboración propia en base al calendario de difusión del INDEC.", render: tablaCalendario });
 }
 
 function estimadoDesdeFuente(v) { return ((meta(v).f || "").match(/desde (\d{4}-\d{2}-\d{2})/) || [])[1]; }

@@ -442,7 +442,7 @@ def modo_completo():
 # Cada cuántas horas se vuelve a pedir cada fuente (0 = en todas las corridas). Las mensuales o lentas
 # no hace falta bajarlas cada hora; si una falla, se reintenta en la corrida siguiente.
 FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "indec_emae": 3, "bls_cpi": 12,
-                "rem": 12, "balance_cambiario": 12, "cammesa": 6, "argentinadatos": 2, "bonos_historicos": 2}
+                "rem": 12, "balance_cambiario": 12, "cammesa": 6, "argentinadatos": 2, "bonos_historicos": 2, "calendario_indec": 24}
 
 
 def toca(nombre, previo):
@@ -482,6 +482,20 @@ def main():
             estado[nombre] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}",
                               "traza": traceback.format_exc()[-800:]}
         print(nombre, estado[nombre]["estado"], estado[nombre].get("filas", ""))
+
+    # Calendario de publicaciones del INDEC: no es una serie; se guarda aparte y exportar.py lo suma a data.json
+    if toca("calendario_indec", previo):
+        try:
+            cal, errores = F.calendario_indec()
+            (DATA / "calendario.json").write_text(json.dumps(cal, ensure_ascii=False), encoding="utf-8")
+            estado["calendario_indec"] = {"estado": "ok", "filas": len(cal), "ok_utc": dt.datetime.utcnow().isoformat()}
+            if errores:
+                estado["calendario_indec"]["error"] = " | ".join(errores)
+        except Exception as e:  # noqa: BLE001
+            estado["calendario_indec"] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}"[:300]}
+    elif "calendario_indec" in previo:
+        estado["calendario_indec"] = {**previo["calendario_indec"], "omitida": True}
+    print("calendario_indec", estado.get("calendario_indec", {}).get("estado"))
 
     fpath = RAW / "lecap_fichas.json"
     fichas = json.loads(fpath.read_text(encoding="utf-8")) if fpath.exists() else {}

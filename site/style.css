@@ -157,3 +157,6 @@ table.tabla { width: 100%; border-collapse: collapse; font-size: 13px; margin-to
 .card .descargas { display: inline-flex; gap: 6px; margin: 8px 0 2px; }
 .card .descargas button { border: 1px solid var(--borde); background: transparent; border-radius: 6px; padding: 1px 8px; font-size: 11px; color: var(--texto2); cursor: pointer; }
 .card .descargas button:hover { color: var(--azul); border-color: var(--azul); }
+
+.tabla th.izq, .tabla td.izq { text-align: left; }
+.tabla .marca { font-size: 11px; color: var(--azul); }

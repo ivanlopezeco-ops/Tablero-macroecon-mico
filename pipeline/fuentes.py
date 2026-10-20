@@ -408,6 +408,68 @@ def indec_emae():
     return _df(filas)
 
 
+# ---------------------------------------------------------------- calendario de publicaciones del INDEC
+CAL_INDEC = "https://www.indec.gob.ar/ftp/cuadros/publicaciones/calendario_{sem}sem{anio}.pdf"
+CAL_MESES = {"Enero": 1, "Febrero": 2, "Marzo": 3, "Abril": 4, "Mayo": 5, "Junio": 6, "Julio": 7, "Agosto": 8,
+             "Septiembre": 9, "Octubre": 10, "Noviembre": 11, "Diciembre": 12}
+# (texto que identifica la publicación, etiqueta corta, ¿hay una serie en el tablero?)
+CAL_TEMAS = [("Índice de precios al consumidor (IPC)", "Inflación (IPC)", True),
+             ("Estimador mensual de actividad económica", "Actividad (EMAE)", True),
+             ("Intercambio comercial argentino", "Comercio exterior (ICA)", True),
+             ("Índice de salarios", "Salarios", False),
+             ("Índice de producción industrial manufacturero", "Industria (IPI manufacturero)", False),
+             ("Utilización de la capacidad instalada", "Capacidad instalada", False),
+             ("Sistema de índices de precios mayoristas", "Precios mayoristas", False),
+             ("Indicadores de coyuntura de la actividad de la construcción", "Construcción (ISAC)", False),
+             ("Informe de avance del nivel de actividad", "PIB trimestral", False),
+             ("Balanza de pagos", "Balanza de pagos", False),
+             ("Mercado de trabajo. Tasas e indicadores", "Mercado de trabajo (EPH)", False),
+             ("Incidencia de la pobreza", "Pobreza", False),
+             ("Valorización mensual de la canasta básica alimentaria", "Canastas básicas", False)]
+
+
+def _parsear_calendario(texto, anio, meses_validos):
+    mes, dia, items = None, None, []
+    for ln in texto.split("\n"):
+        ln = ln.strip()
+        if ln in CAL_MESES and CAL_MESES[ln] in meses_validos:
+            mes, dia = CAL_MESES[ln], None
+            continue
+        m = re.match(r"^(\d{1,2}) (LU|MA|MI|JU|VI|SA|DO) (.+)$", ln)
+        if m and mes:
+            dia = int(m.group(1))
+            items.append((dt.date(anio, mes, dia), m.group(3).strip()))
+        elif mes and dia and ln:
+            items.append((dt.date(anio, mes, dia), ln))
+    return items
+
+
+def calendario_indec():
+    """Fechas de publicación del INDEC (calendario anual en PDF) de las estadísticas que sigue el tablero.
+    Se leen el semestre en curso y el siguiente."""
+    import pypdf
+    sems = [(HOY.year, 1 if HOY.month <= 6 else 2)]
+    sems.append((HOY.year + 1, 1) if sems[0][1] == 2 else (HOY.year, 2))
+    filas, errores = [], []
+    for anio, sem in sems:
+        meses = set(range(1, 7)) if sem == 1 else set(range(7, 13))
+        try:
+            pdf = _get(CAL_INDEC.format(sem=sem, anio=anio), verify=False).content
+            texto = "\n".join((pg.extract_text() or "") for pg in pypdf.PdfReader(io.BytesIO(pdf)).pages)
+            for f, item in _parsear_calendario(texto, anio, meses):
+                for clave, etiqueta, en_tablero in CAL_TEMAS:
+                    if item.startswith(clave):
+                        filas.append({"f": f.isoformat(), "t": etiqueta, "d": item, "tab": en_tablero})
+                        break
+        except Exception as e:  # noqa: BLE001
+            if (anio, sem) == sems[0]:      # el semestre siguiente puede no estar publicado todavía
+                errores.append(f"{anio} S{sem}: {e}"[:120])
+    if not filas:
+        raise RuntimeError("; ".join(errores) or "calendario vacío")
+    filas.sort(key=lambda x: (x["f"], x["t"]))
+    return filas, errores
+
+
 def cpi_eeuu():
     """CPI de EE.UU. (todos los ítems, desestacionalizado) del BLS; FRED como respaldo."""
     filas, err = [], []

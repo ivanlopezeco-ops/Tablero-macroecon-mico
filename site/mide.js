@@ -3,6 +3,9 @@
 "use strict";
 
 const MIDE = {
+  // ---------------------------------------------------------------- calendario
+  calendario: "Próximas fechas de publicación del INDEC según su calendario anual de difusión, para las estadísticas de coyuntura. Las que dicen \"En el tablero\" alimentan series del tablero: la inflación, el EMAE y el comercio exterior. El tablero lee el calendario del semestre en curso y del siguiente y se actualiza solo.",
+
   // ---------------------------------------------------------------- reservas
   reservas_netas: [
     "Reservas netas y súper netas con el método de Federico Machado. Las netas son las reservas brutas menos los encajes en dólares, el swap con China, los pasivos con el BIS y los repos. Las súper netas restan además el Bopreal a un año y los depósitos del Tesoro en dólares en el BCRA.",
@@ -120,6 +123,7 @@ const TIPOS = {
 };
 
 const TIPO = {
+  calendario: "Oficial",
   reservas_netas: "Cálculo propio",
   tabla_reservas: "Cálculo propio",
   reservas_brutas: "Oficial",
