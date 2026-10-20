@@ -546,7 +546,6 @@ const bonoM = (pref, t) => `${pref}_${t.toLowerCase()}_${bonoMonUsd()}`;
 function tablaBonos(el, card) {
   el.style.height = "auto";
   const mon = BONOS_SEL.mon;
-  botonera(card.querySelector(".chips"), BONOS_MON, mon, (k) => { BONOS_SEL.mon = k; render(); });
   const filas = []; let hayProv = false;
   BONOS_GRUPOS.forEach(([g, ts]) => {
     filas.push(`<tr class="grupo"><td colspan="8">${g}</td></tr>`);
@@ -589,12 +588,14 @@ function curvaBonos(el) {
 }
 
 function bonos(main) {
+  const barra = document.createElement("div"); barra.className = "barra";
+  barra.innerHTML = '<span>Moneda de referencia</span>';
+  botonera(barra, BONOS_MON, BONOS_SEL.mon, (k) => { BONOS_SEL.mon = k; render(); });
+  main.appendChild(barra);
   const g = grilla(main);
   const F_B = F.byma + " Los Globales en pesos del día salen de A3 Mercados. Precios por cada 100 nominales, plazo de liquidación 24 hs.";
   const F_T = F_B + " TIR efectiva anual con el precio de BYMA, que incluye los intereses corridos; flujos de las fichas técnicas de BYMA, sin ajuste por feriados ni opciones de rescate. La serie histórica de BYMA viene ajustada por cada pago y el cálculo deshace ese ajuste.";
   const monTxt = () => (bonoMonUsd() === "ccl" ? "dólar CCL" : "dólar MEP");
-  tarjeta(g, { mide: "tabla_bonos", ancha: true, titulo: "Bonares, Globales y Bopreales", bajada: () => `Precio, variación, TIR y duration · Por cada 100 nominales · TIR y duration con el ${monTxt()}`,
-    fuente: F_T, chips: true, render: tablaBonos });
   tarjeta(g, { mide: "curva_bonos", titulo: () => {
       const t = BONOS_GRUPOS.slice(0, 2).flatMap(([, ts]) => ts).map((x) => ult(bonoM("bono_tir", x))[1]).filter((x) => x != null);
       return `La curva de Bonares y Globales rinde entre ${fmt(Math.min(...t), 1)}% y ${fmt(Math.max(...t), 1)}%`; },
@@ -617,6 +618,8 @@ function bonos(main) {
     bajada: "Bopreales en dólar MEP · En USD por cada 100 nominales", fuente: F_B, dec: 1, leyenda: true,
     series: [{ v: "bono_bpoa7_mep", nombre: "BPOA7" }, { v: "bono_bpob7_mep", nombre: "BPOB7", color: "celeste" }, { v: "bono_bpoc7_mep", nombre: "BPOC7", color: "naranja" },
       { v: "bono_bpod7_mep", nombre: "BPOD7", color: "gris" }, { v: "bono_bpoa8_mep", nombre: "BPOA8", color: "verde" }, { v: "bono_bpob8_mep", nombre: "BPOB8", color: "violeta" }] });
+  tarjeta(g, { mide: "tabla_bonos", ancha: true, titulo: "Detalle por bono", bajada: () => `Precio, variación, TIR y duration de cada bono · Por cada 100 nominales · Moneda elegida arriba · TIR y duration con el ${monTxt()}`,
+    fuente: F_T, render: tablaBonos });
 }
 
 // ------------------------------------------------------------------ riesgo país

@@ -144,3 +144,8 @@ table.tabla { width: 100%; border-collapse: collapse; font-size: 13px; margin-to
 .nota-metodo b { color: var(--tinta); font-weight: 600; }
 .tabla tr.grupo td { color: var(--texto2); font-style: italic; }
 .tw { overflow-x: auto; }
+
+.barra { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 12px; color: var(--texto2); }
+.barra .segmento { margin-right: 0; }
+.barra .segmento button { border: 0; border-radius: 6px; background: transparent; padding: 2px 10px; font-size: 12px; cursor: pointer; color: var(--texto2); }
+.barra .segmento button.on { background: var(--card); color: var(--tinta); font-weight: 600; }
