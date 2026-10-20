@@ -12,6 +12,7 @@ import os
 import pathlib
 import traceback
 
+import numpy as np
 import pandas as pd
 
 import fuentes as F
@@ -299,18 +300,76 @@ def validar(df, notas, estado):
             L.append(f"| {r['variable'][10:]} | {r['valor']:.2f} | {r['fuente']} |")
         L.append("")
 
-    L.append("## 6. Último dato por variable\n\n| variable | último dato | valor | días de rezago |\n|---|---|---:|---:|")
-    ult = df.sort_values("fecha").groupby("variable").last()
-    hoy = F.HOY
-    for var, r in ult.iterrows():
-        if var.startswith("futuro_DLR") or var.startswith("lecap_tem_"):
-            continue
-        L.append(f"| {var} | {r['fecha']} | {r['valor']:,.2f} | {(hoy - r['fecha']).days} |")
+    L.append("## 6. Último dato por variable"+"\n"+"\n"+"Rezago en días hábiles (h) para series diarias y en días corridos desde el inicio del período (d) para las mensuales. "
+             "El límite es el rezago normal de publicación de cada fuente; solo se marca lo que lo supera."+"\n"+"\n"+
+             "| variable | último dato | valor | rezago | límite | estado |"+"\n"+"|---|---|---:|---:|---:|---|")
+    for r in evaluar_rezagos(df):
+        L.append(f"| {r['variable']} | {r['fecha']} | {r['valor']:,.2f} | {r['rezago']}{r['unidad']} | {r['limite']}{r['unidad']} | "
+                 f"{'**ATRASADA**' if r['atrasada'] else 'al día'} |")
 
     L.append("\n## 7. Estado de fuentes\n\n| fuente | estado | filas | detalle |\n|---|---|---:|---|")
     for k, v in estado.items():
         L.append(f"| {k} | {v['estado']} | {v.get('filas', 0)} | {v.get('error', '')[:150]} |")
+    atr = [r for r in evaluar_rezagos(df) if r["atrasada"]]
+    cab = [f"## 0. Alertas de rezago ({len(atr)})\n"]
+    cab += [f"- {r['variable']}: último dato {r['fecha']}, rezago {r['rezago']}{r['unidad']} (demora normal: {r['limite']}{r['unidad']})" for r in atr] or ["- Sin series atrasadas."]
+    cab.append("")
+    L[1:1] = cab
     (DATA / "validacion.md").write_text("\n".join(L), encoding="utf-8")
+
+
+# ---------------------------------------------------------------- rezagos esperados
+# (prefijos, unidad, límite). "h" = días hábiles desde la fecha del dato hasta hoy (sin feriados: un feriado
+# suma un día de más). "d" = días corridos desde la fecha del dato. "m" = serie mensual: el límite es la
+# demora normal de publicación, en días desde el inicio del período; está atrasada solo si el período
+# siguiente ya debería haber salido. Los límites de las mensuales son aproximados: se ajustan con lo observado.
+REZAGO_ESPERADO = [
+    (("ipc_", "cpi_eeuu"), "m", 50),
+    (("emae_",), "m", 85),
+    (("exportaciones", "importaciones"), "m", 55),
+    (("resultado_primario",), "m", 85),
+    (("bc_", "bcs_", "mc_", "mcc_"), "m", 75),
+    (("rem_",), "d", 45),
+    (("reservas_", "res_", "base_monetaria", "m2_", "prestamos_", "depositos_", "encajes_", "lebac_", "compras_bcra"), "h", 4),
+    (("tcrm", "tcr_brasil", "tcr_eeuu"), "h", 5),
+    (("demanda_electrica",), "h", 3),
+    (("gd30_",), "h", 2),  # solo histórico de BYMA; el intradiario trae AL30 pero no GD30
+    (("badlar", "baibar", "tamar", "tasa_"), "h", 2),
+    (("riesgo_pais_argentina",), "h", 1),
+    (("riesgo_pais_",), "h", 2),
+]
+REZAGO_DEFECTO = ("h", 1)
+
+
+def rezago_de(var, fecha, hoy):
+    """Devuelve (rezago, unidad, límite, atrasada) para una variable."""
+    unidad, limite = REZAGO_DEFECTO
+    for pref, u, lim in REZAGO_ESPERADO:
+        if var.startswith(pref):
+            unidad, limite = u, lim
+            break
+    if unidad == "h":
+        rez = int(np.busday_count(fecha, hoy)) if fecha <= hoy else 0
+        return rez, unidad, limite, rez > limite
+    rez = (hoy - fecha).days
+    if unidad == "m":
+        siguiente = (pd.Timestamp(fecha) + pd.offsets.MonthBegin(1)).date()
+        return rez, unidad, limite, hoy > siguiente + dt.timedelta(days=limite)
+    return rez, unidad, limite, rez > limite
+
+
+def evaluar_rezagos(df):
+    """Una fila por variable: último dato, rezago, límite esperado y si está atrasada."""
+    ult = df.sort_values("fecha").groupby("variable").last()
+    filas = []
+    for var, r in ult.iterrows():
+        if var.startswith("futuro_DLR") or var.startswith("lecap_tem_"):
+            continue
+        f = pd.Timestamp(r["fecha"]).date()
+        rez, u, lim, atr = rezago_de(var, f, F.HOY)
+        filas.append({"variable": var, "fecha": f, "valor": r["valor"], "rezago": rez, "unidad": u,
+                      "limite": lim, "atrasada": atr})
+    return filas
 
 
 # ---------------------------------------------------------------- main
@@ -422,7 +481,8 @@ def main():
         (RAW / "historia.json").write_text(json.dumps({"version": VERSION_HISTORIA, "fecha": str(F.HOY)}))
 
     (DATA / "estado.json").write_text(json.dumps({"corrida_utc": dt.datetime.utcnow().isoformat(), "modo": "completo" if F.COMPLETO else "diario",
-                                                  "fuentes": estado, "notas": notas},
+                                                  "fuentes": estado, "notas": notas,
+                                                  "atrasadas": [r["variable"] for r in evaluar_rezagos(base) if r["atrasada"]]},
                                                  ensure_ascii=False, indent=1), encoding="utf-8")
     try:
         validar(base, notas, estado)
