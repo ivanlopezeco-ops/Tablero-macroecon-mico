@@ -327,7 +327,7 @@ def modo_completo():
 
 # Cada cuántas horas se vuelve a pedir cada fuente (0 = en todas las corridas). Las mensuales o lentas
 # no hace falta bajarlas cada hora; si una falla, se reintenta en la corrida siguiente.
-FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "bls_cpi": 12,
+FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "indec_emae": 3, "bls_cpi": 12,
                 "rem": 12, "balance_cambiario": 12, "cammesa": 6, "argentinadatos": 2}
 
 
@@ -351,7 +351,7 @@ def main():
                        ("argentinadatos", F.argentinadatos), ("byma_historicos", F.byma_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
                        ("treasury", F.treasury), ("yahoo", F.yahoo), ("datos_gob", F.datos_gob), ("indec_ipc", F.indec_ipc),
-                       ("bls_cpi", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
+                       ("indec_emae", F.indec_emae), ("bls_cpi", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
                        ("balance_cambiario", F.balance_cambiario), ("a3_mae", F.a3_mae)]:
         if not toca(nombre, previo):
             estado[nombre] = {**previo[nombre], "omitida": True}

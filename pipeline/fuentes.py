@@ -98,6 +98,9 @@ def bcra():
                 total = j.get("metadata", {}).get("resultset", {}).get("count", 0)
                 for r in j["results"]:
                     for d in r["detalle"]:
+                        # La API devuelve 0 en las tasas del día todavía sin cerrar (visto en TAMAR 16/10/26).
+                        if uni == "% TNA" and not d["valor"]:
+                            continue
                         filas.append((d["fecha"], var, d["valor"], uni, f"BCRA API v4 (id {idv})"))
                 offset += 3000
         except Exception as e:  # noqa: BLE001
@@ -333,6 +336,28 @@ def indec_ipc():
         for _, r in df[cond].iterrows():
             f = dt.date(int(r["Periodo"][:4]), int(r["Periodo"][4:6]), 1)
             filas.append((f, var, float(r["Indice_IPC"].replace(",", ".")), "índice dic-16=100", "INDEC (serie_ipc_divisiones.csv)"))
+    return _df(filas)
+
+
+MESES = {m: i for i, m in enumerate(["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
+                                      "Septiembre", "Octubre", "Noviembre", "Diciembre"], 1)}
+
+
+def indec_emae():
+    """EMAE desestacionalizado desde el Excel del INDEC (se actualiza el día de publicación;
+    datos.gob.ar llega después). Respaldo: la serie de datos.gob.ar."""
+    r = _get("https://www.indec.gob.ar/ftp/cuadros/economia/sh_emae_mensual_base2004.xls", verify=False)
+    d = pd.read_excel(io.BytesIO(r.content), header=None)
+    filas, anio = [], None
+    for _, f in d.iterrows():
+        if pd.notna(f[0]) and str(f[0]).strip().isdigit():
+            anio = int(str(f[0]).strip())
+        mes = MESES.get(str(f[1]).strip())
+        if anio and mes and pd.notna(f[4]):
+            filas.append((dt.date(anio, mes, 1), "emae_desest", float(f[4]), "índice 2004=100",
+                          "INDEC (sh_emae_mensual_base2004.xls)"))
+    if not filas:
+        raise RuntimeError("EMAE: no se encontraron filas en el Excel del INDEC")
     return _df(filas)
 
 
