@@ -207,13 +207,19 @@ function grafico(el, cfg) {
 const RANGOS_D = [["1M", 30], ["3M", 90], ["6M", 180], ["1A", 365], ["2A", 730], ["5A", 1826], ["Todo", 0]];
 const RANGOS_M = [["2A", 730], ["5A", 1826], ["10A", 3652], ["Todo", 0]];
 
+function desplegableMide(clave) {
+  const t = clave && MIDE[clave];
+  if (!t) return "";
+  return `<details class="mide"><summary>Qué estamos midiendo</summary>${(Array.isArray(t) ? t : [t]).map((x) => `<p>${x}</p>`).join("")}</details>`;
+}
+
 function tarjeta(cont, cfg) {
   const card = document.createElement("section");
   card.className = "card" + (cfg.ancha ? " ancha" : "");
   card._r = { ...R };
   const conRango = !cfg.sinRango && (cfg.series || cfg.conRango);
   card.innerHTML = `<div class="card-top"><h3><span class="tit"></span>${cfg.badge ? `<span class="badge">${cfg.badge}</span>` : ""}</h3>${conRango ? '<div class="mini-rangos" role="group" aria-label="Período de este gráfico"></div>' : ""}</div>
-    <p class="bajada"></p><div class="chips"></div><div class="chart"></div><p class="fuente">${cfg.fuente}</p>`;
+    <p class="bajada"></p><div class="chips"></div><div class="chart"></div>${desplegableMide(cfg.mide)}<p class="fuente">${cfg.fuente}</p>`;
   cont.appendChild(card);
   if (!cfg.chips) card.querySelector(".chips").remove();
   const el = card.querySelector(".chart");
@@ -324,7 +330,7 @@ const F = {
   bc: "Fuente: elaboración propia en base a BCRA (balance cambiario).",
 };
 
-const CARD_TABLA_RES = { titulo: "De reservas brutas a súper netas", bajada: "Composición por fecha, método Machado · En millones de USD",
+const CARD_TABLA_RES = { mide: "tabla_reservas", titulo: "De reservas brutas a súper netas", bajada: "Composición por fecha, método Machado · En millones de USD",
   fuente: F.bcra + " Swap, encajes y depósitos del Tesoro valuados al día.", render: tablaReservas };
 
 const SECCIONES = [
@@ -434,15 +440,15 @@ function resumen(main) {
     { lbl: "Inflación mensual (IPC)", v: "_ipc_m", dec: 1, u: " %", n: 24, mensual: true },
   ].forEach((x) => kpi(k, x));
   const g = grilla(main);
-  tarjeta(g, { titulo: () => `Las reservas netas suman USD ${fmt(ult("reservas_netas")[1])} millones`,
+  tarjeta(g, { mide: "reservas_netas", titulo: () => `Las reservas netas suman USD ${fmt(ult("reservas_netas")[1])} millones`,
     bajada: "Netas y súper netas, método Machado · En millones de USD", fuente: F.bcra + " *Tramo estimado por calibración.",
     cero: true, series: [{ v: "reservas_netas", nombre: "Netas", estimadoAntes: "2026-07-01" },
       { v: "reservas_super_netas", nombre: "Súper netas", estimadoAntes: "2026-09-30", color: "celeste" }] });
   tarjeta(g, CARD_TABLA_RES);
-  tarjeta(g, { titulo: () => `La brecha con el contado con liqui es de ${fmt(ult("brecha_ccl")[1], 1)}%`,
+  tarjeta(g, { mide: "ccl_mep", titulo: () => `La brecha con el contado con liqui es de ${fmt(ult("brecha_ccl")[1], 1)}%`,
     bajada: "Tipo de cambio mayorista, MEP y CCL · En pesos por dólar", fuente: F.byma + " A3500 del BCRA. " + NOTA_AD, logAuto: true,
     series: [{ v: "ccl_largo", nombre: "CCL", estimadoAntes: inicio("ccl") }, { v: "tc_mayorista_a3500", nombre: "A3500" }, { v: "mep_largo", nombre: "MEP", color: "celeste", estimadoAntes: inicio("mep") }] });
-  tarjeta(g, { titulo: () => `El riesgo país está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
+  tarjeta(g, { mide: "riesgo_ppal", titulo: () => `El riesgo país está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
     bajada: "Argentina (eje izquierdo) y promedio simple de América Latina sin Venezuela ni Argentina (eje derecho) · En puntos básicos", fuente: F.bcrd,
     dec: 0, leyenda: true, series: [{ v: "riesgo_pais_argentina", nombre: "Argentina", color: "azul" }, { v: promedioGrupo("latam"), nombre: "LATAM sin VZ y ARG", color: "ocre", eje2: true }] });
 }
@@ -451,65 +457,65 @@ function estimadoDesdeFuente(v) { return ((meta(v).f || "").match(/desde (\d{4}-
 
 function cambiario(main) {
   const g = grilla(main);
-  tarjeta(g, { titulo: () => `El mayorista está ${fmt(ult("distancia_techo_banda")[1], 1)}% por debajo del techo de la banda`,
+  tarjeta(g, { mide: "banda", titulo: () => `El mayorista está ${fmt(ult("distancia_techo_banda")[1], 1)}% por debajo del techo de la banda`,
     bajada: "A3500 y límites de la banda cambiaria · En pesos por dólar corrientes", fuente: F.bcra, logAuto: true,
     series: [{ v: "tc_mayorista_a3500", nombre: "A3500" }, { v: "banda_techo", nombre: "Techo" }, { v: "banda_piso", nombre: "Piso", color: "gris" }] });
   const base = (meta("tcr_bilateral").u.match(/de (\d{4}-\d{2})/) || [])[1];
   const est = estimadoDesdeFuente("tcr_bilateral");
-  tarjeta(g, { titulo: () => `En términos reales, el mayorista vale $${fmt(ult("tcr_bilateral")[1], 0)} a precios de ${base ? mesCorto(base + "-01") : ""}`,
+  tarjeta(g, { mide: "tcr_bilateral", titulo: () => `En términos reales, el mayorista vale $${fmt(ult("tcr_bilateral")[1], 0)} a precios de ${base ? mesCorto(base + "-01") : ""}`,
     bajada: `Tipo de cambio real bilateral con EE.UU. y bandas en términos reales · En pesos por dólar de ${base ? mesCorto(base + "-01") : ""}`,
     fuente: F.bcra + " Deflactado por IPC (INDEC) y CPI de EE.UU. (BLS), interpolados por día. *Tramo punteado: inflación del mes en curso estimada con el REM.",
     logAuto: true, series: [{ v: "tcr_bilateral", nombre: "A3500 real", estimadoDesde: est }, { v: "tcr_bilateral_techo", nombre: "Techo", estimadoDesde: est },
       { v: "tcr_bilateral_piso", nombre: "Piso", color: "gris", estimadoDesde: est }] });
-  tarjeta(g, { titulo: () => `El tipo de cambio real multilateral está en ${fmt(ult("tcrm")[1], 1)} puntos`,
+  tarjeta(g, { mide: "tcrm", titulo: () => `El tipo de cambio real multilateral está en ${fmt(ult("tcrm")[1], 1)} puntos`,
     bajada: "ITCRM y bandas cambiarias llevadas a la misma escala · Índice 17-12-15 = 100", fuente: F.bcra + " Las bandas se expresan como ITCRM x banda / A3500 del día.", dec: 1,
     series: [{ v: "tcrm", nombre: "ITCRM" }, { v: "tcrm_techo", nombre: "Techo" }, { v: "tcrm_piso", nombre: "Piso", color: "gris" }] });
-  tarjeta(g, { titulo: () => `El CCL cotiza a $${fmt(ult("ccl")[1], 0)} y el MEP a $${fmt(ult("mep")[1], 0)}`,
+  tarjeta(g, { mide: "ccl_mep", titulo: () => `El CCL cotiza a $${fmt(ult("ccl")[1], 0)} y el MEP a $${fmt(ult("mep")[1], 0)}`,
     bajada: "Dólares financieros calculados con el AL30 · En pesos por dólar", fuente: F.byma + " En la rueda, último precio operado con 20 minutos de demora. " + NOTA_AD, logAuto: true,
     series: [{ v: "ccl_largo", nombre: "CCL", estimadoAntes: inicio("ccl") }, { v: "mep_largo", nombre: "MEP", color: "celeste", estimadoAntes: inicio("mep") }, { v: "tc_mayorista_a3500", nombre: "A3500", color: "gris" }] });
-  tarjeta(g, { titulo: () => `La brecha es de ${fmt(ult("brecha_ccl")[1], 1)}% y el canje de ${fmt(ult("canje_ccl_mep")[1], 1)}%`,
+  tarjeta(g, { mide: "brecha_canje", titulo: () => `La brecha es de ${fmt(ult("brecha_ccl")[1], 1)}% y el canje de ${fmt(ult("canje_ccl_mep")[1], 1)}%`,
     bajada: "Brecha CCL / A3500 y canje CCL / MEP · En %", fuente: F.byma + ` Antes de ${mesCorto(inicio("ccl") || "2024-10")}, CCL y MEP de ArgentinaDatos.`, cero: true,
     series: [{ v: "brecha_ccl", nombre: "Brecha" }, { v: "canje_ccl_mep", nombre: "Canje", color: "celeste" }] });
-  tarjeta(g, { titulo: () => `El mercado paga $${fmt(ult("futuro_diciembre")[1], 0)} por el dólar de diciembre`,
+  tarjeta(g, { mide: "futuro", titulo: () => `El mercado paga $${fmt(ult("futuro_diciembre")[1], 0)} por el dólar de diciembre`,
     bajada: "Dólar futuro: contrato más corto y diciembre, contra el A3500 · En pesos por dólar", fuente: F.a3, logAuto: true,
     series: [{ v: "futuro_diciembre", nombre: "Diciembre" }, { v: "futuro_fin_mes", nombre: "Fin de mes", color: "celeste" }, { v: "tc_mayorista_a3500", nombre: "A3500", color: "gris" }] });
-  tarjeta(g, { ancha: true, titulo: () => `En el MLC se operaron USD ${fmt(ult("volumen_mlc")[1])} millones en la última rueda`,
+  tarjeta(g, { mide: "volumen_mlc", ancha: true, titulo: () => `En el MLC se operaron USD ${fmt(ult("volumen_mlc")[1])} millones en la última rueda`,
     bajada: "Volumen diario operado en el mercado de cambios · En millones de USD", fuente: F.a3, tipo: "bar", sinEtiquetas: true, desdeCero: true, agregar: "prom",
     series: [{ v: "volumen_mlc", nombre: "Volumen" }] });
 }
 
 function reservas(main) {
   const g = grilla(main);
-  tarjeta(g, { ancha: true, titulo: () => `Las reservas netas suman USD ${fmt(ult("reservas_netas")[1])} millones y las súper netas USD ${fmt(ult("reservas_super_netas")[1])} millones`,
+  tarjeta(g, { mide: "reservas_netas", ancha: true, titulo: () => `Las reservas netas suman USD ${fmt(ult("reservas_netas")[1])} millones y las súper netas USD ${fmt(ult("reservas_super_netas")[1])} millones`,
     bajada: "Método Machado · En millones de USD", fuente: F.bcra + " *Tramo discontinuo: BIS, repos y Bopreal estimados por calibración contra el gráfico de F. Machado. El BCRA publica las reservas con dos o tres días hábiles de rezago.",
     cero: true, series: [{ v: "reservas_netas", nombre: "Netas", estimadoAntes: "2026-07-01" },
       { v: "reservas_super_netas", nombre: "Súper netas", estimadoAntes: "2026-09-30", color: "celeste" }] });
   tarjeta(g, CARD_TABLA_RES);
-  tarjeta(g, { titulo: () => `Las reservas brutas suman USD ${fmt(ult("reservas_brutas")[1])} millones`,
+  tarjeta(g, { mide: "reservas_brutas", titulo: () => `Las reservas brutas suman USD ${fmt(ult("reservas_brutas")[1])} millones`,
     bajada: "Stock diario · En millones de USD", fuente: F.bcra, series: [{ v: "reservas_brutas", nombre: "Brutas" }] });
-  tarjeta(g, { titulo: () => `El BCRA compró USD ${fmt(ult("compras_bcra_acum_anio")[1])} millones en el año`,
+  tarjeta(g, { mide: "compras", titulo: () => `El BCRA compró USD ${fmt(ult("compras_bcra_acum_anio")[1])} millones en el año`,
     bajada: "Compras diarias en el mercado de cambios · En millones de USD", fuente: F.bcra + " El BCRA publica este dato con unos cuatro días hábiles de rezago.", tipo: "bar", sinEtiquetas: true, cero: true, agregar: "suma", negGris: true,
     series: [{ v: "compras_bcra_mlc", nombre: "Compras" }] });
-  tarjeta(g, { titulo: () => `Las compras equivalen al ${fmt(ult("compras_bcra_pct_volumen")[1], 1)}% del volumen del MLC`,
+  tarjeta(g, { mide: "compras_pct", titulo: () => `Las compras equivalen al ${fmt(ult("compras_bcra_pct_volumen")[1], 1)}% del volumen del MLC`,
     bajada: "Compras del BCRA sobre volumen operado · En %", fuente: F.bcra + " Volumen de A3 Mercados.", tipo: "bar", sinEtiquetas: true, cero: true, agregar: "prom",
     series: [{ v: "compras_bcra_pct_volumen", nombre: "Compras / volumen" }] });
-  tarjeta(g, { titulo: () => `El Tesoro tiene USD ${fmt(ult("res_dep_tesoro")[1])} millones depositados en el BCRA`,
+  tarjeta(g, { mide: "dep_tesoro", titulo: () => `El Tesoro tiene USD ${fmt(ult("res_dep_tesoro")[1])} millones depositados en el BCRA`,
     bajada: "Depósitos del gobierno en moneda extranjera · En millones de USD", fuente: F.bcra,
     series: [{ v: "res_dep_tesoro", nombre: "Depósitos" }] });
 }
 
 function tasas(main) {
   const g = grilla(main);
-  tarjeta(g, { titulo: () => `La TAMAR se ubica en ${fmt(ult("tamar")[1], 1)}% anual`,
+  tarjeta(g, { mide: "tasas_bancos", titulo: () => `La TAMAR se ubica en ${fmt(ult("tamar")[1], 1)}% anual`,
     bajada: "Tasas de bancos privados · En % TNA", fuente: F.bcra, dec: 1, recortePicos: true,
     series: [{ v: "tamar", nombre: "TAMAR" }, { v: "badlar", nombre: "BADLAR" }, { v: "tasa_plazo_fijo_30d", nombre: "Plazo fijo", color: "celeste" }, { v: "baibar", nombre: "BAIBAR", color: "naranja" }] });
-  tarjeta(g, { titulo: () => `La caución a un día rinde ${fmt(ult("caucion_a3_pesos_1d")[1], 1)}% anual`,
+  tarjeta(g, { mide: "caucion", titulo: () => `La caución a un día rinde ${fmt(ult("caucion_a3_pesos_1d")[1], 1)}% anual`,
     bajada: "Tasas de corto plazo en pesos · En % TNA", fuente: F.a3 + " Pases entre terceros del BCRA.", dec: 1, recortePicos: true,
     series: [{ v: "caucion_a3_pesos_1d", nombre: "Caución" }, { v: "tasa_pases_terceros_1d", nombre: "Pases" }, { v: "repo_a3_pesos_1d", nombre: "Repo", color: "celeste" }] });
-  tarjeta(g, { titulo: () => `La tasa real esperada es de ${fmt(ult("tasa_real_ex_ante_tamar")[1], 2)}% mensual`,
+  tarjeta(g, { mide: "tasa_real", titulo: () => `La tasa real esperada es de ${fmt(ult("tasa_real_ex_ante_tamar")[1], 2)}% mensual`,
     bajada: "TAMAR y BADLAR efectivas mensuales contra inflación esperada del mes siguiente (REM) · En %", fuente: F.bcra, dec: 2, decEje: 1, cero: true,
     series: [{ v: "tasa_real_ex_ante_tamar", nombre: "TAMAR" }, { v: "tasa_real_ex_ante_badlar", nombre: "BADLAR" }] });
-  tarjeta(g, { titulo: "Curva de tasa fija", badge: "en validación",
+  tarjeta(g, { mide: "curva_lecap", titulo: "Curva de tasa fija", badge: "en validación",
     bajada: () => `TEM de mercado de LECAP y BONCAP al ${fechaCorta(Object.keys(D.series).filter((k) => k.startsWith("lecap_tem_")).map((k) => ult(k)[0]).sort().pop() || "2000-01-01")}, ordenadas por vencimiento · En % mensual`, fuente: F.byma + " Pago final según TEM de emisión de la ficha técnica.",
     render: (el) => {
       const ls = Object.keys(D.series).filter((k) => k.startsWith("lecap_tem_"));
@@ -557,7 +563,7 @@ function tablaBonos(el, card) {
         `<td class="${prov ? "est" : ""}">${fechaCorta(f)}${prov ? " *" : ""}</td></tr>`);
     });
   });
-  const tw = document.createElement("div");
+  const tw = document.createElement("div"); tw.className = "tw";
   tw.innerHTML = `<table class="tabla"><tr><th>Bono</th><th>Precio</th><th>Día</th><th>7 días</th><th>30 días</th><th>TIR</th><th>Duration</th><th>Dato</th></tr>${filas.join("")}</table>` +
     (hayProv ? '<p class="fuente">*Dato del día, provisorio: último precio operado con 20 minutos de demora, hasta que sale el cierre.</p>' : "");
   el.appendChild(tw);
@@ -587,27 +593,27 @@ function bonos(main) {
   const F_B = F.byma + " Los Globales en pesos del día salen de A3 Mercados. Precios por cada 100 nominales, plazo de liquidación 24 hs.";
   const F_T = F_B + " TIR efectiva anual con precio limpio más intereses corridos; flujos de las fichas técnicas de BYMA, sin ajuste por feriados ni opciones de rescate. La serie histórica de BYMA viene ajustada por amortizaciones: se corrige desde enero de 2025 y en los bonos que amortizan quedan saltos de 1 a 2 puntos en las fechas de pago.";
   const monTxt = () => (bonoMonUsd() === "ccl" ? "dólar CCL" : "dólar MEP");
-  tarjeta(g, { ancha: true, titulo: "Bonares, Globales y Bopreales", bajada: () => `Precio, variación, TIR y duration · Por cada 100 nominales · TIR y duration con el ${monTxt()}`,
+  tarjeta(g, { mide: "tabla_bonos", ancha: true, titulo: "Bonares, Globales y Bopreales", bajada: () => `Precio, variación, TIR y duration · Por cada 100 nominales · TIR y duration con el ${monTxt()}`,
     fuente: F_T, chips: true, render: tablaBonos });
-  tarjeta(g, { titulo: () => {
+  tarjeta(g, { mide: "curva_bonos", titulo: () => {
       const t = BONOS_GRUPOS.slice(0, 2).flatMap(([, ts]) => ts).map((x) => ult(bonoM("bono_tir", x))[1]).filter((x) => x != null);
       return `La curva de Bonares y Globales rinde entre ${fmt(Math.min(...t), 1)}% y ${fmt(Math.max(...t), 1)}%`; },
     bajada: () => `TIR contra duration modificada, con el ${monTxt()} · En % efectivo anual y en años`, fuente: F_T, sinRango: true, alto: 340, render: curvaBonos });
-  tarjeta(g, { titulo: () => `El AL30 rinde ${fmt(ult(bonoM("bono_tir", "AL30"))[1], 1)}% y el GD30 ${fmt(ult(bonoM("bono_tir", "GD30"))[1], 1)}%`,
+  tarjeta(g, { mide: "tir_2030", titulo: () => `El AL30 rinde ${fmt(ult(bonoM("bono_tir", "AL30"))[1], 1)}% y el GD30 ${fmt(ult(bonoM("bono_tir", "GD30"))[1], 1)}%`,
     bajada: () => `TIR de los bonos 2030 con el ${monTxt()} · En % efectivo anual`, fuente: F_T, dec: 1,
     series: [{ v: bonoM("bono_tir", "AL30"), nombre: "AL30" }, { v: bonoM("bono_tir", "GD30"), nombre: "GD30", color: "celeste" }] });
-  tarjeta(g, { titulo: () => `El GD35 rinde ${fmt(ult(bonoM("bono_tir", "GD35"))[1], 1)}% y el GD41 ${fmt(ult(bonoM("bono_tir", "GD41"))[1], 1)}%`,
+  tarjeta(g, { mide: "tir_largos", titulo: () => `El GD35 rinde ${fmt(ult(bonoM("bono_tir", "GD35"))[1], 1)}% y el GD41 ${fmt(ult(bonoM("bono_tir", "GD41"))[1], 1)}%`,
     bajada: () => `TIR de los Globales largos con el ${monTxt()} · En % efectivo anual`, fuente: F_T, dec: 1, leyenda: true,
     series: [{ v: bonoM("bono_tir", "GD35"), nombre: "GD35" }, { v: bonoM("bono_tir", "GD38"), nombre: "GD38", color: "celeste" },
       { v: bonoM("bono_tir", "GD41"), nombre: "GD41", color: "naranja" }, { v: bonoM("bono_tir", "GD46"), nombre: "GD46", color: "gris" }] });
-  tarjeta(g, { titulo: () => `El AL30 cotiza a USD ${fmt(ult("bono_al30_mep")[1], 2)} y el GD30 a USD ${fmt(ult("bono_gd30_mep")[1], 2)}`,
+  tarjeta(g, { mide: "precio_2030", titulo: () => `El AL30 cotiza a USD ${fmt(ult("bono_al30_mep")[1], 2)} y el GD30 a USD ${fmt(ult("bono_gd30_mep")[1], 2)}`,
     bajada: "Bonar y Global 2030 en dólar MEP · En USD por cada 100 nominales", fuente: F_B, dec: 1,
     series: [{ v: "bono_al30_mep", nombre: "AL30" }, { v: "bono_gd30_mep", nombre: "GD30", color: "celeste" }] });
-  tarjeta(g, { titulo: () => `El GD35 cotiza a USD ${fmt(ult("bono_gd35_mep")[1], 2)}`,
+  tarjeta(g, { mide: "precio_largos", titulo: () => `El GD35 cotiza a USD ${fmt(ult("bono_gd35_mep")[1], 2)}`,
     bajada: "Globales largos en dólar MEP · En USD por cada 100 nominales", fuente: F_B, dec: 1, leyenda: true,
     series: [{ v: "bono_gd35_mep", nombre: "GD35" }, { v: "bono_gd38_mep", nombre: "GD38", color: "celeste" },
       { v: "bono_gd41_mep", nombre: "GD41", color: "naranja" }, { v: "bono_gd46_mep", nombre: "GD46", color: "gris" }] });
-  tarjeta(g, { titulo: () => `El BPOD7 cotiza a USD ${fmt(ult("bono_bpod7_mep")[1], 2)}`,
+  tarjeta(g, { mide: "precio_bopreales", titulo: () => `El BPOD7 cotiza a USD ${fmt(ult("bono_bpod7_mep")[1], 2)}`,
     bajada: "Bopreales en dólar MEP · En USD por cada 100 nominales", fuente: F_B, dec: 1, leyenda: true,
     series: [{ v: "bono_bpoa7_mep", nombre: "BPOA7" }, { v: "bono_bpob7_mep", nombre: "BPOB7", color: "celeste" }, { v: "bono_bpoc7_mep", nombre: "BPOC7", color: "naranja" },
       { v: "bono_bpod7_mep", nombre: "BPOD7", color: "gris" }, { v: "bono_bpoa8_mep", nombre: "BPOA8", color: "verde" }, { v: "bono_bpob8_mep", nombre: "BPOB8", color: "violeta" }] });
@@ -714,7 +720,7 @@ function descomponer(r) {
 function riesgo(main) {
   const g = grilla(main);
   // 1. Argentina frente a un grupo de comparación, en dos ejes (al estilo del gráfico de 1816)
-  tarjeta(g, { ancha: true, chips: true, conRango: true, alto: 380,
+  tarjeta(g, { mide: "riesgo_ppal", ancha: true, chips: true, conRango: true, alto: 380,
     titulo: () => `El riesgo país de Argentina está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
     bajada: () => ({ dosejes: `Argentina${RIESGO.sel.length ? " y países elegidos" : ""} en el eje izquierdo; ${GRUPOS[RIESGO.grupo].nombre} en el derecho · En puntos básicos`,
       niveles: "Todos en el mismo eje · En puntos básicos", base100: "Cada serie = 100 al inicio del período elegido",
@@ -738,7 +744,7 @@ function riesgo(main) {
     } });
 
   // 2. Descomposición: región, contexto global y propio de Argentina
-  tarjeta(g, { ancha: true, chips: true, conRango: true,
+  tarjeta(g, { mide: "riesgo_desc", ancha: true, chips: true, conRango: true,
     titulo: (r) => { const x = descomponer(r); return x ? `De los ${fmtS(x.ac[0])} pb del período, ${fmtS(x.ac[1] + x.ac[2])} se explican por la región y el contexto global` : "Qué explica las variaciones del riesgo país"; },
     bajada: () => "Variación acumulada del riesgo país de Argentina en el período, separada por factores · En puntos básicos",
     fuente: F.bcrd + " VIX: Yahoo Finance; Tesoro a 10 años: US Treasury. Regresión de las variaciones diarias de Argentina contra el grupo elegido, el VIX y la tasa a 10 años; lo propio de Argentina es el residuo.",
@@ -760,7 +766,7 @@ function riesgo(main) {
 
   // 3. Argentina y el contexto global
   const GLOB = [["vix", "VIX"], ["ust_10y", "Tesoro 10 años"], ["dxy", "DXY"]];
-  tarjeta(g, { chips: true, conRango: true,
+  tarjeta(g, { mide: "riesgo_global", chips: true, conRango: true,
     titulo: "Argentina y el contexto global",
     bajada: () => `Riesgo país de Argentina (eje izquierdo) y ${GLOB.find((x) => x[0] === RIESGO.glob)[1]} (eje derecho)`,
     fuente: F.bcrd + " VIX y DXY: Yahoo Finance; Tesoro: US Treasury.",
@@ -772,12 +778,12 @@ function riesgo(main) {
     } });
 
   // Argentina y América Latina en la serie larga
-  tarjeta(g, { titulo: "Argentina y la región en la serie larga",
+  tarjeta(g, { mide: "riesgo_largo", titulo: "Argentina y la región en la serie larga",
     bajada: "EMBI Global Diversified · En puntos básicos", fuente: F.bcrd + " *Tramo punteado (antes de oct-07): ArgentinaDatos (Ámbito).",
     dec: 0, series: [{ v: "riesgo_pais_argentina_largo", nombre: "Argentina", estimadoAntes: inicio("riesgo_pais_argentina") }, { v: promedioGrupo("latam"), nombre: "LATAM sin VZ y ARG", color: "ocre" }] });
 
   // 4. Tabla de variaciones (secundaria)
-  tarjeta(g, { ancha: true, conRango: true, titulo: "Variación del riesgo país por país",
+  tarjeta(g, { mide: "riesgo_tabla", ancha: true, conRango: true, titulo: "Variación del riesgo país por país",
     bajada: () => "En puntos básicos · Ordenado por la variación en el período elegido", fuente: F.bcrd,
     render: (el, card) => {
       el.style.height = "auto";
@@ -795,7 +801,7 @@ function riesgo(main) {
         datos.map((r) => `<tr class="${r.n === "Argentina" ? "total" : r.grp ? "grupo" : ""}"><td>${r.n}</td><td>${fmt(r.x)}</td>${c(r.d7)}${c(r.d30)}${c(r.dp)}${c(r.pp, 1, true)}</tr>`).join("") + "</table></div>";
     } });
 
-  tarjeta(g, { ancha: true, titulo: "Ranking regional de riesgo país", alto: 380,
+  tarjeta(g, { mide: "riesgo_ranking", ancha: true, titulo: "Ranking regional de riesgo país", alto: 380,
     bajada: () => "Último dato de cada país · En puntos básicos", fuente: F.bcrd + " Venezuela fuera de escala, excluida del gráfico.",
     render: (el) => {
       const ks = Object.keys(D.series).filter((k) => k.startsWith("riesgo_pais_") && !["riesgo_pais_venezuela", "riesgo_pais_global"].includes(k) && !/_(ad|bcrp|largo|ambito)$/.test(k));
@@ -815,13 +821,13 @@ function dinero(main) {
   tmp("_m2r", deflactar("m2_transaccional_privado").map(([f, x]) => [f, x / 1e6]));
   tmp("_bmr", deflactar("base_monetaria").map(([f, x]) => [f, x / 1e6]));
   tmp("_prr", deflactar("prestamos_privados_pesos").map(([f, x]) => [f, x / 1e6]));
-  tarjeta(g, { titulo: "Demanda de dinero: M2 privado transaccional en términos reales",
+  tarjeta(g, { mide: "m2", titulo: "Demanda de dinero: M2 privado transaccional en términos reales",
     bajada: `En billones de pesos ${aPrecios}`, fuente: F.bcra + " Deflactado por IPC del INDEC.", dec: 1, decEje: 0,
     series: [{ v: "_m2r", nombre: "M2 transaccional" }, { v: "_bmr", nombre: "Base monetaria" }] });
-  tarjeta(g, { titulo: "Préstamos en pesos al sector privado en términos reales",
+  tarjeta(g, { mide: "prestamos", titulo: "Préstamos en pesos al sector privado en términos reales",
     bajada: `En billones de pesos ${aPrecios}`, fuente: F.bcra + " Deflactado por IPC del INDEC.", dec: 1,
     series: [{ v: "_prr", nombre: "Préstamos" }] });
-  tarjeta(g, { titulo: () => `Los depósitos privados en dólares suman USD ${fmt(ult("depositos_privados_usd")[1])} millones`,
+  tarjeta(g, { mide: "depositos_usd", titulo: () => `Los depósitos privados en dólares suman USD ${fmt(ult("depositos_privados_usd")[1])} millones`,
     bajada: "Depósitos y préstamos en dólares del sector privado · En millones de USD", fuente: F.bcra,
     series: [{ v: "depositos_privados_usd", nombre: "Depósitos" }, { v: "prestamos_privados_usd", nombre: "Préstamos", color: "celeste" }] });
 }
@@ -830,29 +836,29 @@ function actividad(main) {
   const g = grilla(main);
   tmp("_ipc_m", varMensual("ipc_nivel_general"));
   tmp("_nuc_m", varMensual("ipc_nucleo"));
-  tarjeta(g, { titulo: () => `La inflación de ${mesCorto(ult("_ipc_m")[0])} fue de ${fmt(ult("_ipc_m")[1], 1)}%`,
+  tarjeta(g, { mide: "ipc", titulo: () => `La inflación de ${mesCorto(ult("_ipc_m")[0])} fue de ${fmt(ult("_ipc_m")[1], 1)}%`,
     bajada: "IPC nivel general y núcleo · Variación % mensual", fuente: F.indec, mensual: true, dec: 1, decEje: 1,
     series: [{ v: "_ipc_m", nombre: "General" }, { v: "_nuc_m", nombre: "Núcleo", color: "celeste" }] });
-  tarjeta(g, { titulo: () => `El mercado espera ${fmt(ult("rem_inflacion_12m")[1], 1)}% de inflación a 12 meses`,
+  tarjeta(g, { mide: "rem", titulo: () => `El mercado espera ${fmt(ult("rem_inflacion_12m")[1], 1)}% de inflación a 12 meses`,
     bajada: "Relevamiento de Expectativas de Mercado (REM), mediana · En % interanual", fuente: F.bcra, mensual: true, dec: 1,
     series: [{ v: "rem_inflacion_12m", nombre: "Próximos 12 meses" }] });
-  tarjeta(g, { titulo: "Actividad económica (EMAE)", bajada: "Serie desestacionalizada · Índice 2004 = 100", fuente: F.indec, mensual: true, dec: 1,
+  tarjeta(g, { mide: "emae", titulo: "Actividad económica (EMAE)", bajada: "Serie desestacionalizada · Índice 2004 = 100", fuente: F.indec, mensual: true, dec: 1,
     series: [{ v: "emae_desest", nombre: "EMAE" }] });
   const nDem = S("demanda_electrica_diaria").length;
-  tarjeta(g, { titulo: "Demanda eléctrica diaria", badge: nDem < 30 ? "acumulando historia" : "",
+  tarjeta(g, { mide: "demanda_elec", titulo: "Demanda eléctrica diaria", badge: nDem < 30 ? "acumulando historia" : "",
     bajada: "Energía demandada en el sistema · En MWh por día", fuente: "Fuente: elaboración propia en base a CAMMESA. CAMMESA publica solo el día anterior: la serie se acumula desde oct-26.",
     series: [{ v: "demanda_electrica_diaria", nombre: "Demanda" }],
     render: nDem < 10 ? (el) => { el.style.height = "auto"; el.innerHTML = `<p class="seccion-intro" style="margin:24px 0">${nDem === 1 ? "Hay un día registrado" : `Hay ${nDem} días registrados`} (último: ${fmt(ult("demanda_electrica_diaria")[1])} MWh). El gráfico aparece con diez días de historia.</p>`; } : undefined });
-  tarjeta(g, { titulo: () => `En ${mesCorto(ult("exportaciones")[0])} se exportaron USD ${fmt(ult("exportaciones")[1])} millones`,
+  tarjeta(g, { mide: "comercio", titulo: () => `En ${mesCorto(ult("exportaciones")[0])} se exportaron USD ${fmt(ult("exportaciones")[1])} millones`,
     bajada: "Intercambio comercial de bienes · En millones de USD", fuente: F.indec, mensual: true,
     series: [{ v: "exportaciones", nombre: "Expo" }, { v: "importaciones", nombre: "Impo" }] });
   const ultIpc = ult("ipc_nivel_general")[0];
   tmp("_rpr", deflactar("resultado_primario_spn").map(([f, x]) => [f, x / 1e3]));
-  tarjeta(g, { titulo: () => { const v = ult("_rpr")[1]; return `En ${mesCorto(ult("_rpr")[0])} hubo un ${v >= 0 ? "superávit" : "déficit"} primario de $${fmt(Math.abs(v))} miles de millones`; },
+  tarjeta(g, { mide: "resultado_primario", titulo: () => { const v = ult("_rpr")[1]; return `En ${mesCorto(ult("_rpr")[0])} hubo un ${v >= 0 ? "superávit" : "déficit"} primario de $${fmt(Math.abs(v))} miles de millones`; },
     bajada: `Sector público nacional, base caja · En miles de millones de pesos a precios de ${ultIpc ? mesCorto(ultIpc) : ""}`,
     fuente: "Fuente: elaboración propia en base a Ministerio de Economía. Deflactado por IPC del INDEC.", mensual: true, tipo: "bar", sinEtiquetas: true, cero: true, negGris: true,
     series: [{ v: "_rpr", nombre: "Resultado primario" }] });
-  tarjeta(g, { ancha: true, titulo: () => `El tipo de cambio real multilateral está en ${fmt(ult("tcrm")[1], 1)}`,
+  tarjeta(g, { mide: "tcrm_bilat", ancha: true, titulo: () => `El tipo de cambio real multilateral está en ${fmt(ult("tcrm")[1], 1)}`,
     bajada: "Índice de tipo de cambio real multilateral y bilaterales · Base 17-12-15 = 100", fuente: F.bcra, dec: 1,
     series: [{ v: "tcrm", nombre: "Multilateral" }, { v: "tcr_brasil", nombre: "Brasil" }, { v: "tcr_eeuu", nombre: "EE.UU.", color: "celeste" }] });
 }
@@ -867,87 +873,87 @@ function balance(main) {
   const barras = (lista) => lista.map(([v, nombre, color]) => ({ v, nombre, color, tipo: "bar", stack: "s" }));
 
   let g = h("Resultado global");
-  tarjeta(g, { ...m, ancha: true, titulo: () => `En ${mesCorto(fu)} las reservas variaron ${fmtS(ult("bc_var_reservas_transacciones")[1])} millones de USD por transacciones`,
+  tarjeta(g, { mide: "bc_global", ...m, ancha: true, titulo: () => `En ${mesCorto(fu)} las reservas variaron ${fmtS(ult("bc_var_reservas_transacciones")[1])} millones de USD por transacciones`,
     bajada: "Cuentas del balance cambiario y variación de reservas por transacciones · En millones de USD", fuente: F.bc, leyenda: true, cero: true,
     series: [...barras([["bc_cuenta_corriente", "Cuenta corriente", "azul"], ["bc_cuenta_capital", "Cuenta capital", "ocre"], ["bc_cuenta_financiera", "Cuenta financiera", "celeste"]]),
       { v: "bc_var_reservas_transacciones", nombre: "Variación de reservas", color: "naranja" }] });
 
   g = h("Cuenta corriente");
-  tarjeta(g, { ...m, titulo: () => `La cuenta corriente cambiaria dio ${fmtS(ult("bc_cuenta_corriente")[1])} millones en ${mesCorto(fu)}`,
+  tarjeta(g, { mide: "bc_cc", ...m, titulo: () => `La cuenta corriente cambiaria dio ${fmtS(ult("bc_cuenta_corriente")[1])} millones en ${mesCorto(fu)}`,
     bajada: "Componentes · En millones de USD", fuente: F.bc, leyenda: true, cero: true,
     series: barras([["bc_bienes", "Bienes", "azul"], ["bc_servicios", "Servicios", "celeste"], ["bc_ingreso_primario", "Ingreso primario", "naranja"], ["bc_ingreso_secundario", "Ingreso secundario", "gris"]]) });
-  tarjeta(g, { ...m, titulo: () => `El saldo de bienes fue de ${fmtS(ult("bc_bienes")[1])} millones`,
+  tarjeta(g, { mide: "bc_bienes", ...m, titulo: () => `El saldo de bienes fue de ${fmtS(ult("bc_bienes")[1])} millones`,
     bajada: "Cobros de exportaciones y pagos de importaciones (con signo negativo) · En millones de USD", fuente: F.bc, cero: true,
     series: [{ v: "bc_cobros_exportaciones", nombre: "Cobros expo" }, { v: "bc_pagos_importaciones", nombre: "Pagos impo", color: "naranja" }, { v: "bc_bienes", nombre: "Saldo", color: "gris", tipo: "bar" }] });
-  tarjeta(g, { ...m, titulo: "Cómo se cobran las exportaciones", bajada: "Cobros por modalidad · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true,
+  tarjeta(g, { mide: "bc_expo_mod", ...m, titulo: "Cómo se cobran las exportaciones", bajada: "Cobros por modalidad · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true,
     series: barras([["mcc_cobros_expo", "Cobros", "azul"], ["mcc_cobros_anticipados", "Anticipados", "celeste"], ["mcc_prefinanciaciones", "Prefinanciaciones del exterior", "verde"], ["mcc_financ_locales_expo", "Financiaciones locales", "ocre"]]) });
-  tarjeta(g, { ...m, titulo: "Cómo se pagan las importaciones", bajada: "Pagos por modalidad, con signo negativo · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true,
+  tarjeta(g, { mide: "bc_impo_mod", ...m, titulo: "Cómo se pagan las importaciones", bajada: "Pagos por modalidad, con signo negativo · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true,
     series: barras([["mcc_impo_diferidos", "Diferidos y otros", "azul"], ["mcc_impo_vista", "A la vista", "celeste"], ["mcc_impo_anticipados", "Anticipados", "naranja"]]) });
-  tarjeta(g, { ...m, titulo: () => `Viajes y pasajes restaron ${fmt(-ult("bc_viajes_pasajes_neto")[1])} millones en ${mesCorto(ult("bc_viajes_pasajes_neto")[0])}`,
+  tarjeta(g, { mide: "bc_viajes", ...m, titulo: () => `Viajes y pasajes restaron ${fmt(-ult("bc_viajes_pasajes_neto")[1])} millones en ${mesCorto(ult("bc_viajes_pasajes_neto")[0])}`,
     bajada: "Turismo: viajes y pasajes (estimación del BCRA) y consumos con tarjeta en el exterior · Netos en millones de USD", fuente: F.bc + " Anexo tarjetas y viajes.", cero: true,
     series: [{ v: "bc_viajes_pasajes_neto", nombre: "Viajes y pasajes" }, { v: "bc_tarjetas_neto", nombre: "Tarjetas", color: "celeste" }, { v: "bc_servicios", nombre: "Servicios totales", color: "gris" }] });
-  tarjeta(g, { ...m, titulo: "Intereses y utilidades", bajada: "Pagos de intereses por acreedor y giro de utilidades y dividendos · En millones de USD", fuente: F.bc, leyenda: true, cero: true,
+  tarjeta(g, { mide: "bc_intereses", ...m, titulo: "Intereses y utilidades", bajada: "Pagos de intereses por acreedor y giro de utilidades y dividendos · En millones de USD", fuente: F.bc, leyenda: true, cero: true,
     series: barras([["bc_intereses_fmi", "Intereses FMI", "naranja"], ["bc_intereses_otros_org", "Intereses otros organismos", "ocre"], ["bc_intereses_otros", "Otros intereses", "gris"],
       ["bc_utilidades_egresos", "Utilidades y dividendos", "celeste"]]) });
 
   g = h("Cuenta financiera");
-  tarjeta(g, { ...m, ancha: true, titulo: () => `La cuenta financiera cambiaria dio ${fmtS(ult("bc_cuenta_financiera")[1])} millones en ${mesCorto(fu)}`,
+  tarjeta(g, { mide: "bc_cf", ...m, ancha: true, titulo: () => `La cuenta financiera cambiaria dio ${fmtS(ult("bc_cuenta_financiera")[1])} millones en ${mesCorto(fu)}`,
     bajada: "Componentes por concepto · En millones de USD", fuente: F.bc, leyenda: true, cero: true, alto: 380,
     series: [...barras([["bc_billetes_divisas_spnf", "Billetes y divisas (SPNF)", "naranja"], ["bc_prestamos_titulos_deuda", "Préstamos y títulos de deuda", "azul"], ["bc_ied", "Inversión directa", "verde"],
       ["bc_portafolio", "Portafolio", "turquesa"], ["bc_fmi", "FMI", "rojo"], ["bc_otros_organismos", "Otros organismos", "ocre"], ["bc_fae_sector_financiero", "FAE sector financiero", "violeta"],
       ["bc_fae_sector_publico", "FAE sector público", "marron"], ["bc_canje", "Canje", "celeste"], ["bc_otros_movimientos", "Otros movimientos", "gris"]]),
     { v: "bc_cuenta_financiera", nombre: "Total", color: "tinta" }] });
-  tarjeta(g, { ...m, titulo: "Cuenta financiera por sector", bajada: "Sector privado no financiero, financiero y gobierno general y BCRA · En millones de USD", fuente: F.bc + " Hoja Cta. Financiera por sector.", leyenda: true, cero: true,
+  tarjeta(g, { mide: "bc_cf_sector", ...m, titulo: "Cuenta financiera por sector", bajada: "Sector privado no financiero, financiero y gobierno general y BCRA · En millones de USD", fuente: F.bc + " Hoja Cta. Financiera por sector.", leyenda: true, cero: true,
     series: barras([["bcs_spnf", "Privado no financiero", "azul"], ["bcs_financiero", "Financiero", "celeste"], ["bcs_gobierno_bcra", "Gobierno y BCRA", "naranja"], ["bcs_otros", "Otros", "gris"]]) });
-  tarjeta(g, { ...m, titulo: () => `Las personas humanas demandaron USD ${fmt(-ult("mc_personas_humanas")[1])} millones netos en ${mesCorto(ult("mc_personas_humanas")[0])}`,
+  tarjeta(g, { mide: "bc_personas", ...m, titulo: () => `Las personas humanas demandaron USD ${fmt(-ult("mc_personas_humanas")[1])} millones netos en ${mesCorto(ult("mc_personas_humanas")[0])}`,
     bajada: "Operaciones de personas humanas en el mercado de cambios · En millones de USD", fuente: F.bc, cero: true,
     series: [{ v: "mc_personas_humanas", nombre: "Neto", tipo: "bar", color: "naranja" }] });
-  tarjeta(g, { ...m, titulo: "Formación de activos externos: compras y ventas", bajada: "Billetes y divisas sin fines específicos del sector privado no financiero · En millones de USD", fuente: F.bc + " Detalle de compras: hoja MC por concepto.", leyenda: true, cero: true,
+  tarjeta(g, { mide: "bc_fae", ...m, titulo: "Formación de activos externos: compras y ventas", bajada: "Billetes y divisas sin fines específicos del sector privado no financiero · En millones de USD", fuente: F.bc + " Detalle de compras: hoja MC por concepto.", leyenda: true, cero: true,
     series: [...barras([["mcc_billetes_compras", "Compras de billetes", "naranja"], ["mcc_otras_inversiones", "Otras inversiones en el exterior", "ocre"], ["mcc_ide_residentes", "Inversión directa en el exterior", "marron"],
       ["mcc_billetes_ventas", "Ventas de billetes", "celeste"], ["mcc_divisas_ventas", "Ventas de divisas", "azul"]]), { v: "bc_billetes_divisas_spnf", nombre: "Neto", color: "tinta" }] });
-  tarjeta(g, { ...m, titulo: () => `La deuda financiera privada y pública dejó ${fmtS(ult("bc_prestamos_titulos_deuda")[1])} millones netos`,
+  tarjeta(g, { mide: "bc_deuda", ...m, titulo: () => `La deuda financiera privada y pública dejó ${fmtS(ult("bc_prestamos_titulos_deuda")[1])} millones netos`,
     bajada: "Préstamos financieros, títulos de deuda y líneas de crédito: ingresos y cancelaciones · En millones de USD", fuente: F.bc, cero: true,
     series: [{ v: "bc_prestamos_ingresos", nombre: "Ingresos" }, { v: "bc_prestamos_egresos", nombre: "Cancelaciones", color: "naranja" }, { v: "bc_prestamos_titulos_deuda", nombre: "Neto", color: "gris", tipo: "bar" }] });
-  tarjeta(g, { ...m, titulo: "Deuda por instrumento", bajada: "Financiaciones locales y deuda con el exterior, netas · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true, cero: true,
+  tarjeta(g, { mide: "bc_deuda_instr", ...m, titulo: "Deuda por instrumento", bajada: "Financiaciones locales y deuda con el exterior, netas · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true, cero: true,
     series: [{ datos: sumar(["mcc_financ_locales_ing", "mcc_financ_locales_egr"]), nombre: "Financiaciones locales", tipo: "bar", stack: "s", color: "celeste" },
       { datos: sumar(["mcc_deuda_ext_ing", "mcc_deuda_ext_egr"]), nombre: "Préstamos del exterior y títulos", tipo: "bar", stack: "s", color: "azul" }] });
-  tarjeta(g, { ...m, titulo: "Inversión de no residentes", bajada: "Inversión directa y de portafolio, netas · En millones de USD", fuente: F.bc, cero: true,
+  tarjeta(g, { mide: "bc_no_res", ...m, titulo: "Inversión de no residentes", bajada: "Inversión directa y de portafolio, netas · En millones de USD", fuente: F.bc, cero: true,
     series: [{ v: "bc_ied", nombre: "Directa", tipo: "bar", stack: "s", color: "verde" }, { v: "bc_portafolio", nombre: "Portafolio", tipo: "bar", stack: "s", color: "turquesa" }], leyenda: true });
-  tarjeta(g, { ...m, titulo: "Organismos internacionales", bajada: "FMI y otros organismos (desembolsos menos pagos de capital) · En millones de USD", fuente: F.bc, cero: true, leyenda: true,
+  tarjeta(g, { mide: "bc_organismos", ...m, titulo: "Organismos internacionales", bajada: "FMI y otros organismos (desembolsos menos pagos de capital) · En millones de USD", fuente: F.bc, cero: true, leyenda: true,
     series: barras([["bc_fmi", "FMI", "rojo"], ["bc_otros_organismos", "Otros organismos", "ocre"]]) });
 
   g = h("Por sector de actividad");
   tmp("_mc_energia", sumar(["mc_petroleo", "mc_gas", "mc_electricidad"]));
-  tarjeta(g, { ...m, titulo: "Oferta neta de los sectores exportadores", bajada: "Agro, energía (petróleo, gas y electricidad) y minería · Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
+  tarjeta(g, { mide: "bc_sec_expo", ...m, titulo: "Oferta neta de los sectores exportadores", bajada: "Agro, energía (petróleo, gas y electricidad) y minería · Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
     series: [{ v: "mc_oleaginosos_cerealeros", nombre: "Agro" }, { v: "_mc_energia", nombre: "Energía", color: "naranja" }, { v: "mc_mineria", nombre: "Minería", color: "celeste" }] });
-  tarjeta(g, { ...m, titulo: "Demanda neta de la industria", bajada: "Automotriz, maquinarias y equipos, metales comunes y química · Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
+  tarjeta(g, { mide: "bc_sec_ind", ...m, titulo: "Demanda neta de la industria", bajada: "Automotriz, maquinarias y equipos, metales comunes y química · Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
     series: [{ v: "mc_automotriz", nombre: "Automotriz" }, { v: "mc_maquinarias", nombre: "Maquinarias", color: "celeste" }, { v: "mc_metales_comunes", nombre: "Metales comunes", color: "naranja" }, { v: "mc_quimica", nombre: "Química", color: "gris" }] });
-  tarjeta(g, { ...m, titulo: "Comercio, alimentos y sector público", bajada: "Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
+  tarjeta(g, { mide: "bc_sec_com", ...m, titulo: "Comercio, alimentos y sector público", bajada: "Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
     series: [{ v: "mc_alimentos", nombre: "Alimentos" }, { v: "mc_comercio", nombre: "Comercio", color: "celeste" }, { v: "mc_sector_publico", nombre: "Sector público", color: "naranja" }] });
-  tarjeta(g, { ...m, titulo: "Energía por rama", bajada: "Petróleo, gas y electricidad · Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
+  tarjeta(g, { mide: "bc_sec_energia", ...m, titulo: "Energía por rama", bajada: "Petróleo, gas y electricidad · Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
     series: [{ v: "mc_petroleo", nombre: "Petróleo" }, { v: "mc_gas", nombre: "Gas", color: "celeste" }, { v: "mc_electricidad", nombre: "Electricidad", color: "naranja" }] });
 }
 
 function internacional(main) {
   const g = grilla(main);
   const y = (cfg) => tarjeta(g, { fuente: F.yahoo, ...cfg });
-  tarjeta(g, { titulo: () => `El bono del Tesoro a 10 años rinde ${fmt(ult("ust_10y")[1], 2)}%`, bajada: "Rendimiento de bonos del Tesoro de EE.UU. · En %",
+  tarjeta(g, { mide: "ust", titulo: () => `El bono del Tesoro a 10 años rinde ${fmt(ult("ust_10y")[1], 2)}%`, bajada: "Rendimiento de bonos del Tesoro de EE.UU. · En %",
     fuente: "Fuente: elaboración propia en base a US Treasury.", dec: 2, decEje: 1,
     series: [{ v: "ust_10y", nombre: "10 años" }, { v: "ust_2y", nombre: "2 años", color: "celeste" }, { v: "ust_30y", nombre: "30 años", color: "gris" }] });
-  y({ titulo: () => `El VIX está en ${fmt(ult("vix")[1], 1)} puntos`, bajada: "Volatilidad implícita del S&P 500 · Índice", dec: 1, recortePicos: true, series: [{ v: "vix", nombre: "VIX" }] });
-  y({ titulo: () => `El S&P 500 está en ${fmt(ult("sp500")[1], 0)} puntos`, bajada: "Índice bursátil de EE.UU.", dec: 0, series: [{ v: "sp500", nombre: "S&P 500" }] });
-  y({ titulo: () => `El dólar global (DXY) está en ${fmt(ult("dxy")[1], 1)}`, bajada: "Índice del dólar frente a una canasta de monedas", dec: 1, series: [{ v: "dxy", nombre: "DXY" }] });
-  y({ titulo: () => `El real cotiza a R$ ${fmt(ult("brl_usd")[1], 2)} por dólar`, bajada: "Reales por dólar", dec: 2, decEje: 2, series: [{ v: "brl_usd", nombre: "BRL" }] });
-  y({ titulo: () => `El Brent cotiza a USD ${fmt(ult("brent")[1], 1)} por barril`, bajada: "Petróleo Brent, contrato más cercano · En USD por barril", dec: 1, series: [{ v: "brent", nombre: "Brent" }] });
-  y({ titulo: () => `El gas natural cotiza a USD ${fmt(ult("gas_natural_hh")[1], 2)} por MMBtu`, bajada: "Henry Hub, contrato más cercano · En USD por MMBtu", dec: 2, decEje: 1, recortePicos: true, series: [{ v: "gas_natural_hh", nombre: "Gas natural" }] });
-  y({ titulo: () => `La soja cotiza a USD ${fmt(ult("soja_cbot")[1] * 0.367437, 0)} por tonelada`, bajada: "Soja en Chicago, contrato más cercano · En USD por tonelada", dec: 0,
+  y({ mide: "vix", titulo: () => `El VIX está en ${fmt(ult("vix")[1], 1)} puntos`, bajada: "Volatilidad implícita del S&P 500 · Índice", dec: 1, recortePicos: true, series: [{ v: "vix", nombre: "VIX" }] });
+  y({ mide: "sp500", titulo: () => `El S&P 500 está en ${fmt(ult("sp500")[1], 0)} puntos`, bajada: "Índice bursátil de EE.UU.", dec: 0, series: [{ v: "sp500", nombre: "S&P 500" }] });
+  y({ mide: "dxy", titulo: () => `El dólar global (DXY) está en ${fmt(ult("dxy")[1], 1)}`, bajada: "Índice del dólar frente a una canasta de monedas", dec: 1, series: [{ v: "dxy", nombre: "DXY" }] });
+  y({ mide: "brl", titulo: () => `El real cotiza a R$ ${fmt(ult("brl_usd")[1], 2)} por dólar`, bajada: "Reales por dólar", dec: 2, decEje: 2, series: [{ v: "brl_usd", nombre: "BRL" }] });
+  y({ mide: "brent", titulo: () => `El Brent cotiza a USD ${fmt(ult("brent")[1], 1)} por barril`, bajada: "Petróleo Brent, contrato más cercano · En USD por barril", dec: 1, series: [{ v: "brent", nombre: "Brent" }] });
+  y({ mide: "gas", titulo: () => `El gas natural cotiza a USD ${fmt(ult("gas_natural_hh")[1], 2)} por MMBtu`, bajada: "Henry Hub, contrato más cercano · En USD por MMBtu", dec: 2, decEje: 1, recortePicos: true, series: [{ v: "gas_natural_hh", nombre: "Gas natural" }] });
+  y({ mide: "soja", titulo: () => `La soja cotiza a USD ${fmt(ult("soja_cbot")[1] * 0.367437, 0)} por tonelada`, bajada: "Soja en Chicago, contrato más cercano · En USD por tonelada", dec: 0,
     series: [{ v: "soja_cbot", nombre: "Soja", escala: 0.367437 }] });
-  y({ titulo: () => `El maíz cotiza a USD ${fmt(ult("maiz_cbot")[1] * 0.393679, 0)} por tonelada`, bajada: "Maíz en Chicago, contrato más cercano · En USD por tonelada", dec: 0,
+  y({ mide: "maiz", titulo: () => `El maíz cotiza a USD ${fmt(ult("maiz_cbot")[1] * 0.393679, 0)} por tonelada`, bajada: "Maíz en Chicago, contrato más cercano · En USD por tonelada", dec: 0,
     series: [{ v: "maiz_cbot", nombre: "Maíz", escala: 0.393679 }] });
-  y({ titulo: () => `El trigo cotiza a USD ${fmt(ult("trigo_cbot")[1] * 0.367437, 0)} por tonelada`, bajada: "Trigo en Chicago, contrato más cercano · En USD por tonelada", dec: 0,
+  y({ mide: "trigo", titulo: () => `El trigo cotiza a USD ${fmt(ult("trigo_cbot")[1] * 0.367437, 0)} por tonelada`, bajada: "Trigo en Chicago, contrato más cercano · En USD por tonelada", dec: 0,
     series: [{ v: "trigo_cbot", nombre: "Trigo", escala: 0.367437 }] });
-  y({ titulo: () => `El oro cotiza a USD ${fmt(ult("oro")[1], 0)} por onza`, bajada: "Oro, contrato más cercano · En USD por onza troy", dec: 0, series: [{ v: "oro", nombre: "Oro" }] });
-  y({ titulo: () => `El cobre cotiza a USD ${fmt(ult("cobre")[1] * 2204.62, 0)} por tonelada`, bajada: "Cobre en Nueva York (COMEX), contrato más cercano · En USD por tonelada", dec: 0,
+  y({ mide: "oro", titulo: () => `El oro cotiza a USD ${fmt(ult("oro")[1], 0)} por onza`, bajada: "Oro, contrato más cercano · En USD por onza troy", dec: 0, series: [{ v: "oro", nombre: "Oro" }] });
+  y({ mide: "cobre", titulo: () => `El cobre cotiza a USD ${fmt(ult("cobre")[1] * 2204.62, 0)} por tonelada`, bajada: "Cobre en Nueva York (COMEX), contrato más cercano · En USD por tonelada", dec: 0,
     series: [{ v: "cobre", nombre: "Cobre", escala: 2204.62 }] });
 }
 
