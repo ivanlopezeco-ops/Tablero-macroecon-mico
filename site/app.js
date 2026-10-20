@@ -533,36 +533,73 @@ const BONOS_GRUPOS = [["Bonares", ["AO27", "AO28", "AO29", "AN29", "AL29", "AL30
 const BONOS_MON = [["ars", "Pesos"], ["mep", "USD MEP"], ["ccl", "USD CCL"]];
 const BONOS_SEL = { mon: "mep" };
 const bonoV = (t, mon) => `bono_${t.toLowerCase()}_${mon}`;
+// TIR y duration se calculan con el precio en dólares; en la vista en pesos se usa el dólar MEP.
+const bonoMonUsd = () => (BONOS_SEL.mon === "ccl" ? "ccl" : "mep");
+const bonoM = (pref, t) => `${pref}_${t.toLowerCase()}_${bonoMonUsd()}`;
 
 function tablaBonos(el, card) {
   el.style.height = "auto";
   const mon = BONOS_SEL.mon;
-  botonera(card.querySelector(".chips"), BONOS_MON, mon, (k) => { BONOS_SEL.mon = k; card._redibujar(); });
+  botonera(card.querySelector(".chips"), BONOS_MON, mon, (k) => { BONOS_SEL.mon = k; render(); });
   const filas = []; let hayProv = false;
   BONOS_GRUPOS.forEach(([g, ts]) => {
-    filas.push(`<tr class="grupo"><td colspan="6">${g}</td></tr>`);
+    filas.push(`<tr class="grupo"><td colspan="8">${g}</td></tr>`);
     ts.forEach((t) => {
       const v = bonoV(t, mon), s = S(v);
-      if (!s.length) { filas.push(`<tr><td>${t}</td><td colspan="5">s/d</td></tr>`); return; }
+      if (!s.length) { filas.push(`<tr><td>${t}</td><td colspan="7">s/d</td></tr>`); return; }
       const [f, x] = s.at(-1), xp = s.length > 1 ? s.at(-2)[1] : null;
       const desde = (dias) => { const b = valEn(v, iso(Date.parse(f) - dias * 864e5)); return b ? (x / b - 1) * 100 : null; };
       const cel = (d) => (d == null ? "<td></td>" : `<td class="${Math.abs(d) < 0.005 ? "" : d > 0 ? "dif-pos" : "dif-neg"}">${fmtS(d, 2)}%</td>`);
       const prov = esProv(v); if (prov) hayProv = true;
+      const tir = ult(bonoM("bono_tir", t))[1], md = ult(bonoM("bono_md", t))[1];
       filas.push(`<tr><td>${t}</td><td>${fmt(x, mon === "ars" ? 0 : 2)}</td>${cel(xp ? (x / xp - 1) * 100 : null)}${cel(desde(7))}${cel(desde(30))}` +
+        `<td>${tir == null ? "" : fmt(tir, 2) + "%"}</td><td>${md == null ? "" : fmt(md, 2)}</td>` +
         `<td class="${prov ? "est" : ""}">${fechaCorta(f)}${prov ? " *" : ""}</td></tr>`);
     });
   });
   const tw = document.createElement("div");
-  tw.innerHTML = `<table class="tabla"><tr><th>Bono</th><th>Precio</th><th>Día</th><th>7 días</th><th>30 días</th><th>Dato</th></tr>${filas.join("")}</table>` +
+  tw.innerHTML = `<table class="tabla"><tr><th>Bono</th><th>Precio</th><th>Día</th><th>7 días</th><th>30 días</th><th>TIR</th><th>Duration</th><th>Dato</th></tr>${filas.join("")}</table>` +
     (hayProv ? '<p class="fuente">*Dato del día, provisorio: último precio operado con 20 minutos de demora, hasta que sale el cierre.</p>' : "");
   el.appendChild(tw);
+}
+
+function curvaBonos(el) {
+  const c = COL(); const ch = echarts.init(el); charts.push(ch);
+  const color = { Bonares: c.azul, Globales: c.celeste, Bopreales: c.naranja };
+  const series = BONOS_GRUPOS.map(([g, ts]) => ({
+    name: g, type: "scatter", symbolSize: 9, itemStyle: { color: color[g] },
+    data: ts.map((t) => ({ name: t, value: [ult(bonoM("bono_md", t))[1], ult(bonoM("bono_tir", t))[1]] })).filter((p) => p.value[0] != null && p.value[1] != null),
+    label: { show: true, position: "top", formatter: (p) => p.name, color: color[g], fontSize: 10, fontWeight: 600 },
+  }));
+  ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" },
+    legend: { top: 0, left: 0, itemWidth: 12, itemHeight: 8, textStyle: { color: c.texto2, fontSize: 11 } },
+    grid: { left: 8, right: 16, top: 34, bottom: 24, containLabel: true },
+    tooltip: { trigger: "item", backgroundColor: c.card, borderColor: c.eje, textStyle: { color: c.tinta, fontSize: 12 },
+      formatter: (p) => `<b>${p.name}</b><br>TIR ${fmt(p.value[1], 2)}% · duration ${fmt(p.value[0], 2)} años` },
+    xAxis: { type: "value", name: "Duration modificada (años)", nameLocation: "middle", nameGap: 26, nameTextStyle: { color: c.texto2, fontSize: 11 },
+      axisLabel: { color: c.texto2, fontSize: 11 }, axisLine: { lineStyle: { color: c.eje } }, splitLine: { show: false } },
+    yAxis: { type: "value", scale: true, axisLabel: { color: c.texto2, fontSize: 11, formatter: (v) => fmt(v, 0) + "%" }, splitLine: { lineStyle: { color: c.grilla } } },
+    series });
 }
 
 function bonos(main) {
   const g = grilla(main);
   const F_B = F.byma + " Los Globales en pesos del día salen de A3 Mercados. Precios por cada 100 nominales, plazo de liquidación 24 hs.";
-  tarjeta(g, { ancha: true, titulo: "Bonares, Globales y Bopreales", bajada: "Precio, variación y fecha del último dato · Por cada 100 nominales",
-    fuente: F_B, chips: true, render: tablaBonos });
+  const F_T = F_B + " TIR efectiva anual con precio limpio más intereses corridos; flujos de las fichas técnicas de BYMA, sin ajuste por feriados ni opciones de rescate. La serie histórica de BYMA viene ajustada por amortizaciones: se corrige desde enero de 2025 y en los bonos que amortizan quedan saltos de 1 a 2 puntos en las fechas de pago.";
+  const monTxt = () => (bonoMonUsd() === "ccl" ? "dólar CCL" : "dólar MEP");
+  tarjeta(g, { ancha: true, titulo: "Bonares, Globales y Bopreales", bajada: () => `Precio, variación, TIR y duration · Por cada 100 nominales · TIR y duration con el ${monTxt()}`,
+    fuente: F_T, chips: true, render: tablaBonos });
+  tarjeta(g, { titulo: () => {
+      const t = BONOS_GRUPOS.slice(0, 2).flatMap(([, ts]) => ts).map((x) => ult(bonoM("bono_tir", x))[1]).filter((x) => x != null);
+      return `La curva de Bonares y Globales rinde entre ${fmt(Math.min(...t), 1)}% y ${fmt(Math.max(...t), 1)}%`; },
+    bajada: () => `TIR contra duration modificada, con el ${monTxt()} · En % efectivo anual y en años`, fuente: F_T, sinRango: true, alto: 340, render: curvaBonos });
+  tarjeta(g, { titulo: () => `El AL30 rinde ${fmt(ult(bonoM("bono_tir", "AL30"))[1], 1)}% y el GD30 ${fmt(ult(bonoM("bono_tir", "GD30"))[1], 1)}%`,
+    bajada: () => `TIR de los bonos 2030 con el ${monTxt()} · En % efectivo anual`, fuente: F_T, dec: 1,
+    series: [{ v: bonoM("bono_tir", "AL30"), nombre: "AL30" }, { v: bonoM("bono_tir", "GD30"), nombre: "GD30", color: "celeste" }] });
+  tarjeta(g, { titulo: () => `El GD35 rinde ${fmt(ult(bonoM("bono_tir", "GD35"))[1], 1)}% y el GD41 ${fmt(ult(bonoM("bono_tir", "GD41"))[1], 1)}%`,
+    bajada: () => `TIR de los Globales largos con el ${monTxt()} · En % efectivo anual`, fuente: F_T, dec: 1, leyenda: true,
+    series: [{ v: bonoM("bono_tir", "GD35"), nombre: "GD35" }, { v: bonoM("bono_tir", "GD38"), nombre: "GD38", color: "celeste" },
+      { v: bonoM("bono_tir", "GD41"), nombre: "GD41", color: "naranja" }, { v: bonoM("bono_tir", "GD46"), nombre: "GD46", color: "gris" }] });
   tarjeta(g, { titulo: () => `El AL30 cotiza a USD ${fmt(ult("bono_al30_mep")[1], 2)} y el GD30 a USD ${fmt(ult("bono_gd30_mep")[1], 2)}`,
     bajada: "Bonar y Global 2030 en dólar MEP · En USD por cada 100 nominales", fuente: F_B, dec: 1,
     series: [{ v: "bono_al30_mep", nombre: "AL30" }, { v: "bono_gd30_mep", nombre: "GD30", color: "celeste" }] });

@@ -15,6 +15,7 @@ import traceback
 import numpy as np
 import pandas as pd
 
+import bonos as B
 import fuentes as F
 
 BASE = pathlib.Path(__file__).resolve().parents[1]
@@ -222,6 +223,28 @@ def derivadas(df):
         out.append(largo(((1 + tem / 100) / (1 + rem_d / 100) - 1) * 100, f"tasa_real_ex_ante_{tasa}",
                          "% mensual", f"Cálculo: TEM {tasa.upper()} vs inflación esperada próx. mes (REM)"))
 
+    # TIR, duration modificada y convexidad de los bonos soberanos (flujos de la ficha técnica de BYMA)
+    try:
+        flujos = B.cargar()
+        for _g, t, *_ in F.BONOS:
+            for mon in ("mep", "ccl"):
+                v = f"bono_{t.lower()}_{mon}"
+                s = serie(df, v)
+                s = s[s > 0]
+                if s.empty:
+                    continue
+                fe = s.index.values.astype("datetime64[D]")
+                px, ok = B.precio_real(flujos[t], fe, s.values)
+                r = B.calcular(flujos[t], fe, px)
+                r[~ok] = float("nan")
+                prov = set(df.loc[(df["variable"] == v) & df["fuente"].astype(str).str.contains("provisorio"), "fecha"])
+                for k, (pref, uni) in enumerate([("bono_tir", "% TEA"), ("bono_md", "años"), ("bono_cx", "años²")]):
+                    ser = pd.Series(r[:, k], index=s.index).dropna()
+                    out.append(provisorio(largo(ser, f"{pref}_{t.lower()}_{mon}", uni,
+                                                "Cálculo propio: flujos de la ficha técnica de BYMA y precio de BYMA"), prov))
+    except Exception:  # noqa: BLE001
+        notas["bonos_tir"] = "ERROR: " + traceback.format_exc()[-300:]
+
     return pd.concat(out, ignore_index=True), notas
 
 
@@ -300,11 +323,29 @@ def validar(df, notas, estado):
             L.append(f"| {r['variable'][10:]} | {r['valor']:.2f} | {r['fuente']} |")
         L.append("")
 
+    try:
+        cfg = json.loads(B.CONFIG.read_text(encoding="utf-8"))
+        flujos, ref = cfg["bonos"], cfg["saldo_byma"]
+        L.append(f"## 5e. Bonos: saldo de capital contra BYMA ({ref['fecha']}) y TIR al último dato\n\n"
+                 "| bono | saldo flujos | saldo BYMA | TIR MEP % | TIR CCL % | MD MEP |\n|---|---:|---:|---:|---:|---:|")
+        liq = dt.date.fromisoformat(ref["fecha"])
+        for _g, t, *_ in F.BONOS:
+            sa = B.saldo(flujos[t], liq) / 100
+            sb = ref["ratio"].get(t, 1.0)
+            u = lambda var: (serie(df, var).iloc[-1] if len(serie(df, var)) else float("nan"))  # noqa: E731
+            L.append(f"| {t} | {sa:.4f} | {sb:.4f}{' ⚠' if abs(sa - sb) > 0.001 else ''} | {u('bono_tir_' + t.lower() + '_mep'):.2f} | "
+                     f"{u('bono_tir_' + t.lower() + '_ccl'):.2f} | {u('bono_md_' + t.lower() + '_mep'):.2f} |")
+        L.append("\nPrecio limpio de BYMA más intereses corridos; base efectiva anual, liquidación a 24 hs. "
+                 "Contraste del 20/10/26 contra El Dashboard (eldashboard.com.ar): duration y convexidad coinciden dentro de 2%; "
+                 "su TIR resulta de usar el precio sin intereses corridos, y la diferencia es igual a intereses corridos / (precio x duration).\n")
+    except Exception:  # noqa: BLE001
+        L.append("## 5e. Bonos\n\nERROR: " + traceback.format_exc()[-300:] + "\n")
+
     L.append("## 6. Último dato por variable"+"\n"+"\n"+"Rezago en días hábiles (h) para series diarias y en días corridos desde el inicio del período (d) para las mensuales. "
              "El límite es el rezago normal de publicación de cada fuente; solo se marca lo que lo supera."+"\n"+"\n"+
              "| variable | último dato | valor | rezago | límite | estado |"+"\n"+"|---|---|---:|---:|---:|---|")
     for r in evaluar_rezagos(df):
-        L.append(f"| {r['variable']} | {r['fecha']} | {r['valor']:,.2f} | {r['rezago']}{r['unidad']} | {r['limite']}{r['unidad']} | "
+        L.append(f"| {r['variable']} | {r['fecha']} | {r['valor']:,.2f} | {r['txt_rez']} | {r['txt_lim']} | "
                  f"{'**ATRASADA**' if r['atrasada'] else 'al día'} |")
 
     L.append("\n## 7. Estado de fuentes\n\n| fuente | estado | filas | detalle |\n|---|---|---:|---|")
@@ -312,7 +353,7 @@ def validar(df, notas, estado):
         L.append(f"| {k} | {v['estado']} | {v.get('filas', 0)} | {v.get('error', '')[:150]} |")
     atr = [r for r in evaluar_rezagos(df) if r["atrasada"]]
     cab = [f"## 0. Alertas de rezago ({len(atr)})\n"]
-    cab += [f"- {r['variable']}: último dato {r['fecha']}, rezago {r['rezago']}{r['unidad']} (demora normal: {r['limite']}{r['unidad']})" for r in atr] or ["- Sin series atrasadas."]
+    cab += [f"- {r['variable']}: último dato {r['fecha']}, rezago {r['txt_rez']} (demora normal: {r['txt_lim']})" for r in atr] or ["- Sin series atrasadas."]
     cab.append("")
     L[1:1] = cab
     (DATA / "validacion.md").write_text("\n".join(L), encoding="utf-8")
@@ -367,8 +408,13 @@ def evaluar_rezagos(df):
             continue
         f = pd.Timestamp(r["fecha"]).date()
         rez, u, lim, atr = rezago_de(var, f, F.HOY)
+        if u == "m":
+            esperado = (pd.Timestamp(f) + pd.offsets.MonthBegin(1)).date() + dt.timedelta(days=lim)
+            txt_rez, txt_lim = f"{rez}d", f"próximo dato ~{esperado:%d/%m}"
+        else:
+            txt_rez, txt_lim = f"{rez}{u}", f"{lim}{u}"
         filas.append({"variable": var, "fecha": f, "valor": r["valor"], "rezago": rez, "unidad": u,
-                      "limite": lim, "atrasada": atr})
+                      "limite": lim, "atrasada": atr, "txt_rez": txt_rez, "txt_lim": txt_lim})
     return filas
 
 
