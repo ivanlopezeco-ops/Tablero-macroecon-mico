@@ -8,7 +8,7 @@ const MIDE = {
 
   // ---------------------------------------------------------------- reservas
   reservas_netas: [
-    "Reservas netas y súper netas con el método de Federico Machado. Las netas son las reservas brutas menos los encajes en dólares, el swap con China, los pasivos con el BIS y los repos. Las súper netas restan además el Bopreal a un año y los depósitos del Tesoro en dólares en el BCRA.",
+    "Reservas netas y súper netas. Las netas son las reservas brutas menos los encajes en dólares, el swap con China, los pasivos con el BIS y los repos. Las súper netas restan además el Bopreal a un año y los depósitos del Tesoro en dólares en el BCRA.",
     "El swap está pactado en yuanes y se valúa con el tipo de pase del BCRA. La regla de liquidez del BCRA queda afuera del cálculo. El tramo punteado se estima por calibración contra el gráfico que publica Machado, con una precisión aproximada de 500 millones de USD.",
   ],
   tabla_reservas: [

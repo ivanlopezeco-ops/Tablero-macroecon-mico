@@ -116,6 +116,42 @@ function grafico(el, cfg) {
   });
   const muestraV = (prepar[0].filter((p) => p[0] >= ra && p[0] <= rb).slice(-1)[0] || prepar[0].slice(-1)[0] || [0, 0])[1];
   const dec = cfg.dec ?? (Math.abs(muestraV || 0) >= 1000 ? 0 : 1);
+  // Suma o promedio del período visible (series de flujo). cfg.resumen: "suma" | "prom" | {modo, solo: [nombres]}
+  el._resumen = "";
+  if (cfg.resumen) {
+    const modo = cfg.resumen.modo || cfg.resumen, solo = cfg.resumen.solo;
+    const partes = cfg.series.filter((s) => !solo || solo.includes(s.nombre)).map((s) => {
+      const xs = (s.datos || S(s.v)).filter((p) => p[0] >= ra && p[0] <= rb && p[1] != null).map((p) => p[1] * (s.escala || 1));
+      if (!xs.length) return null;
+      const tot = xs.reduce((a, b) => a + b, 0);
+      return `${cfg.series.length > 1 ? s.nombre + " " : ""}<b>${(modo === "suma" ? fmtS : fmt)(modo === "suma" ? tot : tot / xs.length, cfg.decResumen ?? (modo === "suma" ? 0 : dec))}</b>`;
+    }).filter(Boolean);
+    const per = `${mensual ? mesCorto(ra) : fechaCorta(ra)} a ${mensual ? mesCorto(rb) : fechaCorta(rb)}`;
+    if (partes.length) el._resumen = `${modo === "suma" ? "Acumulado" : (cfg.mensual ? "Promedio mensual" : "Promedio diario")} del ${per}: ${partes.join(" · ")}`;
+  }
+  // Variaciones en el tooltip: "pct" (niveles) o "dif" (tasas, spreads). Por defecto se deduce de la unidad de la serie.
+  const tipoVar = (s) => {
+    if (cfg.base100 || cfg.resumen || agregado || (s.tipo || cfg.tipo) === "bar") return null;
+    if (s.vt !== undefined || cfg.varTooltip !== undefined) return s.vt !== undefined ? s.vt : cfg.varTooltip;
+    const u = s.v ? meta(s.v).u || "" : "";
+    return !u ? null : /%|pb/.test(u) ? "dif" : /^(USD|ARS) M$/.test(u) ? "mixto" : "pct";
+  };
+  const vts = cfg.series.map(tipoVar);
+  const porNombre = new Map(cfg.series.map((s, i) => [s.nombre, i]));
+  const valorAntes = (datos, f) => { for (let k = datos.length - 1; k >= 0; k--) if (datos[k][0] <= f && datos[k][1] != null) return datos[k][1]; return null; };
+  const unidadDif = (s) => (/pb/.test(meta(s.v).u || "") ? " pb" : " pp");
+  const variaciones = (i, f, x) => {
+    const vt = vts[i]; if (!vt || x == null) return "";
+    const datos = prepar[i], s = cfg.series[i];
+    const atras = mensual ? [[mesAtras(f, 1), "mes ant."], [mesAtras(f, 12), "i.a."]] : [[iso(Date.parse(f) - 30 * 864e5), "30 d"], [iso(Date.parse(f) - 365 * 864e5), "i.a."]];
+    const out = atras.map(([f0, et]) => {
+      const y = valorAntes(datos, f0); if (y == null || (vt === "pct" && !y)) return null;
+      if (datos[0][0] > f0) return null;
+      if (vt === "mixto") return `${et} ${fmtS(x - y, 0)} M${y > 0 && x > 0 ? ` (${fmtS((x / y - 1) * 100, 1)}%)` : ""}`;
+      return `${et} ${vt === "pct" ? fmtS((x / y - 1) * 100, 1) + "%" : fmtS(x - y, /pb/.test(meta(s.v).u || "") ? 0 : 2) + unidadDif(s)}`;
+    }).filter(Boolean);
+    return out.length ? ` <span style="color:${c.nota}">· ${out.join(" · ")}</span>` : "";
+  };
   cfg.series.forEach((s, i) => {
     const datos = prepar[i];
     const enVentana = datos.filter((p) => p[0] >= ra && p[0] <= rb);
@@ -184,7 +220,8 @@ function grafico(el, cfg) {
       formatter: (ps) => {
         const f = ps[0].value[0];
         const filas = ps.filter((p) => p.value[1] != null && (!p.seriesName.endsWith("(estimado)") || !ps.some((q) => q.seriesName === p.seriesName.replace(" (estimado)", "") && q.value[0] === f)))
-          .map((p) => `<span style="color:${p.color}">●</span> ${p.seriesName.replace(" (estimado)", "*")}: <b>${fmt(p.value[1], dec)}</b>`);
+          .map((p) => `<span style="color:${p.color}">●</span> ${p.seriesName.replace(" (estimado)", "*")}: <b>${fmt(p.value[1], dec)}</b>` +
+            variaciones(porNombre.get(p.seriesName.replace(" (estimado)", "")), p.value[0], p.value[1]));
         return `<div style="font-size:11px;color:${c.texto2}">${mensual ? mesCorto(f) : fechaCorta(f)}</div>${filas.join("<br>")}`;
       },
     },
@@ -320,6 +357,11 @@ function tarjeta(cont, cfg) {
     if (el.dataset.log) baj.innerHTML += " · Escala logarítmica";
     if (el.dataset.recorte) baj.innerHTML += ` · Eje cortado en ${el.dataset.recorte}: hay picos fuera de escala`;
     if (el.dataset.agregado) baj.innerHTML += el.dataset.agregado === "suma" ? " · Sumas mensuales" : " · Promedios mensuales";
+    let res = card.querySelector(".resumen-periodo");
+    if (el._resumen) {
+      if (!res) { res = document.createElement("p"); res.className = "resumen-periodo"; baj.after(res); }
+      res.innerHTML = el._resumen;
+    } else if (res) res.remove();
     if (cfg.series && cfg.series[0].v) {   // aviso si la serie principal dejó de actualizarse, o si el último dato es del día
       const v0 = cfg.series[0].v; const f = ult(v0)[0]; const dias = f ? (Date.now() - Date.parse(f)) / 864e5 : 0;
       if (f && dias > (cfg.mensual ? 110 : 10)) baj.insertAdjacentHTML("beforeend", ` · <span class="viejo">último dato: ${cfg.mensual ? mesCorto(f) : fechaCorta(f)}</span>`);
@@ -406,7 +448,7 @@ const F = {
   bc: "Fuente: elaboración propia en base a BCRA (balance cambiario).",
 };
 
-const CARD_TABLA_RES = { mide: "tabla_reservas", titulo: "De reservas brutas a súper netas", bajada: "Composición por fecha, método Machado · En millones de USD",
+const CARD_TABLA_RES = { mide: "tabla_reservas", titulo: "De reservas brutas a súper netas", bajada: "Composición por fecha · En millones de USD",
   fuente: F.bcra + " Swap, encajes y depósitos del Tesoro valuados al día.", render: tablaReservas };
 
 const SECCIONES = [
@@ -531,7 +573,7 @@ function resumen(main) {
     { lbl: "Distancia al techo de la banda", v: "distancia_techo_banda", dec: 1, u: " %" },
     { lbl: "Riesgo país", v: "riesgo_pais_argentina", u: " pb" },
     { lbl: "Reservas brutas", v: "reservas_brutas", u: " M USD" },
-    { lbl: "Reservas netas (Machado)", v: "reservas_netas", u: " M USD" },
+    { lbl: "Reservas netas", v: "reservas_netas", u: " M USD" },
     { lbl: "Compras BCRA en el año", v: "compras_bcra_acum_anio", u: " M USD" },
     { lbl: "TAMAR", v: "tamar", dec: 2, u: " % TNA" },
     { lbl: "Caución 1 día", v: "caucion_a3_pesos_1d", dec: 2, u: " % TNA" },
@@ -540,7 +582,7 @@ function resumen(main) {
   ].forEach((x) => kpi(k, x));
   const g = grilla(main);
   tarjeta(g, { mide: "reservas_netas", titulo: () => `Las reservas netas suman USD ${fmt(ult("reservas_netas")[1])} millones`,
-    bajada: "Netas y súper netas, método Machado · En millones de USD", fuente: F.bcra + " *Tramo estimado por calibración.",
+    bajada: "Netas y súper netas · En millones de USD", fuente: F.bcra + " *Tramo estimado por calibración.",
     cero: true, series: [{ v: "reservas_netas", nombre: "Netas", estimadoAntes: "2026-07-01" },
       { v: "reservas_super_netas", nombre: "Súper netas", estimadoAntes: "2026-09-30", color: "celeste" }] });
   tarjeta(g, CARD_TABLA_RES);
@@ -581,31 +623,46 @@ function cambiario(main) {
     bajada: "Dólar futuro: contrato más corto y diciembre, contra el A3500 · En pesos por dólar", fuente: F.a3, logAuto: true,
     series: [{ v: "futuro_diciembre", nombre: "Diciembre" }, { v: "futuro_fin_mes", nombre: "Fin de mes", color: "celeste" }, { v: "tc_mayorista_a3500", nombre: "A3500", color: "gris" }] });
   tarjeta(g, { mide: "volumen_mlc", ancha: true, titulo: () => `En el MLC se operaron USD ${fmt(ult("volumen_mlc")[1])} millones en la última rueda`,
-    bajada: "Volumen diario operado en el mercado de cambios · En millones de USD", fuente: F.a3, tipo: "bar", sinEtiquetas: true, desdeCero: true, agregar: "prom",
+    bajada: "Volumen diario operado en el mercado de cambios · En millones de USD", fuente: F.a3, tipo: "bar", sinEtiquetas: true, desdeCero: true, agregar: "prom", resumen: "prom",
     series: [{ v: "volumen_mlc", nombre: "Volumen" }] });
 }
 
 function reservas(main) {
   const g = grilla(main);
   tarjeta(g, { mide: "reservas_netas", ancha: true, titulo: () => `Las reservas netas suman USD ${fmt(ult("reservas_netas")[1])} millones y las súper netas USD ${fmt(ult("reservas_super_netas")[1])} millones`,
-    bajada: "Método Machado · En millones de USD", fuente: F.bcra + " *Tramo discontinuo: BIS, repos y Bopreal estimados por calibración contra el gráfico de F. Machado. El BCRA publica las reservas con dos o tres días hábiles de rezago.",
+    bajada: "Brutas menos pasivos de corto plazo · En millones de USD", fuente: F.bcra + " *Tramo discontinuo: BIS, repos y Bopreal estimados por calibración contra el gráfico de F. Machado. El BCRA publica las reservas con dos o tres días hábiles de rezago.",
     cero: true, series: [{ v: "reservas_netas", nombre: "Netas", estimadoAntes: "2026-07-01" },
       { v: "reservas_super_netas", nombre: "Súper netas", estimadoAntes: "2026-09-30", color: "celeste" }] });
   tarjeta(g, CARD_TABLA_RES);
   tarjeta(g, { mide: "reservas_brutas", titulo: () => `Las reservas brutas suman USD ${fmt(ult("reservas_brutas")[1])} millones`,
     bajada: "Stock diario · En millones de USD", fuente: F.bcra, series: [{ v: "reservas_brutas", nombre: "Brutas" }] });
   tarjeta(g, { mide: "compras", titulo: () => `El BCRA compró USD ${fmt(ult("compras_bcra_acum_anio")[1])} millones en el año`,
-    bajada: "Compras diarias en el mercado de cambios · En millones de USD", fuente: F.bcra + " El BCRA publica este dato con unos cuatro días hábiles de rezago.", tipo: "bar", sinEtiquetas: true, cero: true, agregar: "suma", negGris: true,
+    bajada: "Compras diarias en el mercado de cambios · En millones de USD", fuente: F.bcra + " El BCRA publica este dato con unos cuatro días hábiles de rezago.", tipo: "bar", sinEtiquetas: true, cero: true, agregar: "suma", negGris: true, resumen: "suma",
     series: [{ v: "compras_bcra_mlc", nombre: "Compras" }] });
   tarjeta(g, { mide: "compras_pct", titulo: () => `Las compras equivalen al ${fmt(ult("compras_bcra_pct_volumen")[1], 1)}% del volumen del MLC`,
-    bajada: "Compras del BCRA sobre volumen operado · En %", fuente: F.bcra + " Volumen de A3 Mercados.", tipo: "bar", sinEtiquetas: true, cero: true, agregar: "prom",
+    bajada: "Compras del BCRA sobre volumen operado · En %", fuente: F.bcra + " Volumen de A3 Mercados.", tipo: "bar", sinEtiquetas: true, cero: true, agregar: "prom", resumen: "prom", decResumen: 1,
     series: [{ v: "compras_bcra_pct_volumen", nombre: "Compras / volumen" }] });
   tarjeta(g, { mide: "dep_tesoro", titulo: () => `El Tesoro tiene USD ${fmt(ult("res_dep_tesoro")[1])} millones depositados en el BCRA`,
     bajada: "Depósitos del gobierno en moneda extranjera · En millones de USD", fuente: F.bcra,
     series: [{ v: "res_dep_tesoro", nombre: "Depósitos" }] });
 }
 
+const GLOSARIO_TASAS = [
+  ["TAMAR", "Tasa promedio que pagan los bancos privados por plazos fijos de $1.000 millones o más, a 30-35 días. Es la tasa mayorista de referencia: ajusta muchos préstamos a empresas y los bonos del Tesoro a tasa TAMAR."],
+  ["BADLAR", "Tasa promedio que pagan los bancos privados por plazos fijos de más de $1 millón, a 30-35 días. Fue la referencia mayorista hasta la creación de la TAMAR y tiene historia larga."],
+  ["Plazo fijo 30 días", "Tasa promedio de los depósitos a 30 días del sistema, de todos los montos. Es la más cercana a lo que recibe un ahorrista minorista."],
+  ["BAIBAR", "Tasa de los préstamos entre bancos privados (call interbancario), en su mayoría a un día. Muestra cuánto cuesta la liquidez entre entidades."],
+  ["Caución", "Préstamo de un día entre inversores en el mercado de capitales, garantizado con títulos. Es la tasa de corto plazo de los fondos y las empresas que colocan pesos en la bolsa."],
+  ["Pases y repo", "Préstamos de un día entre entidades garantizados con títulos públicos (pases entre terceros que informa el BCRA y rueda REPO de A3). Junto con la caución marcan la tasa overnight."],
+  ["LECAP y BONCAP", "Letras y bonos del Tesoro a tasa fija que capitalizan intereses y pagan todo al vencimiento. La curva muestra la TEM de mercado de cada una según su precio."],
+  ["Tasa real ex ante", "TEM de la TAMAR o la BADLAR descontada la inflación que el REM espera para el mes siguiente. Positiva: la tasa le gana a la inflación esperada."],
+  ["TNA, TEA y TEM", "TNA: tasa nominal anual, sin capitalizar (la que publican los bancos). TEA: efectiva anual, con capitalización. TEM: efectiva mensual, comparable con la inflación del mes. Una TNA de 30% a 30 días equivale a una TEM de 2,47% y una TEA de 34,5%."],
+];
+
 function tasas(main) {
+  const glos = document.createElement("details"); glos.className = "card ancha glosario";
+  glos.innerHTML = `<summary>Qué es cada tasa</summary><dl>${GLOSARIO_TASAS.map(([t, d]) => `<dt>${t}</dt><dd>${d}</dd>`).join("")}</dl>`;
+  main.appendChild(glos);
   const g = grilla(main);
   const hayInfl = Object.keys(D.series).some((k) => k.startsWith("inflacion_implicita_"));
   tarjeta(g, { mide: "tasas_bancos", titulo: () => `La TAMAR se ubica en ${fmt(ult("tamar")[1], 1)}% anual`,
@@ -1026,7 +1083,7 @@ function balance(main) {
   const fu = ult("bc_cuenta_corriente")[0];
   intro.textContent = `Datos mensuales del balance cambiario del BCRA${fu ? `, último mes publicado: ${mesCorto(fu)}` : ""}. Netos en millones de USD: positivo = ingreso de divisas, negativo = salida.`;
   main.appendChild(intro);
-  const m = { mensual: true, dec: 0 };
+  const m = { mensual: true, dec: 0, resumen: "suma" };
   const h = (t) => { const x = document.createElement("h2"); x.className = "subtitulo"; x.textContent = t; main.appendChild(x); return grilla(main); };
   const barras = (lista) => lista.map(([v, nombre, color]) => ({ v, nombre, color, tipo: "bar", stack: "s" }));
 
@@ -1056,7 +1113,7 @@ function balance(main) {
 
   g = h("Cuenta financiera");
   tarjeta(g, { mide: "bc_cf", ...m, ancha: true, titulo: () => `La cuenta financiera cambiaria dio ${fmtS(ult("bc_cuenta_financiera")[1])} millones en ${mesCorto(fu)}`,
-    bajada: "Componentes por concepto · En millones de USD", fuente: F.bc, leyenda: true, cero: true, alto: 380,
+    bajada: "Componentes por concepto · En millones de USD", fuente: F.bc, leyenda: true, cero: true, alto: 380, resumen: { modo: "suma", solo: ["Total"] },
     series: [...barras([["bc_billetes_divisas_spnf", "Billetes y divisas (SPNF)", "naranja"], ["bc_prestamos_titulos_deuda", "Préstamos y títulos de deuda", "azul"], ["bc_ied", "Inversión directa", "verde"],
       ["bc_portafolio", "Portafolio", "turquesa"], ["bc_fmi", "FMI", "rojo"], ["bc_otros_organismos", "Otros organismos", "ocre"], ["bc_fae_sector_financiero", "FAE sector financiero", "violeta"],
       ["bc_fae_sector_publico", "FAE sector público", "marron"], ["bc_canje", "Canje", "celeste"], ["bc_otros_movimientos", "Otros movimientos", "gris"]]),
@@ -1066,7 +1123,7 @@ function balance(main) {
   tarjeta(g, { mide: "bc_personas", ...m, titulo: () => `Las personas humanas demandaron USD ${fmt(-ult("mc_personas_humanas")[1])} millones netos en ${mesCorto(ult("mc_personas_humanas")[0])}`,
     bajada: "Operaciones de personas humanas en el mercado de cambios · En millones de USD", fuente: F.bc, cero: true,
     series: [{ v: "mc_personas_humanas", nombre: "Neto", tipo: "bar", color: "naranja" }] });
-  tarjeta(g, { mide: "bc_fae", ...m, titulo: "Formación de activos externos: compras y ventas", bajada: "Billetes y divisas sin fines específicos del sector privado no financiero · En millones de USD", fuente: F.bc + " Detalle de compras: hoja MC por concepto.", leyenda: true, cero: true,
+  tarjeta(g, { mide: "bc_fae", ...m, titulo: "Formación de activos externos: compras y ventas", bajada: "Billetes y divisas sin fines específicos del sector privado no financiero · En millones de USD", fuente: F.bc + " Detalle de compras: hoja MC por concepto.", leyenda: true, cero: true, resumen: { modo: "suma", solo: ["Neto"] },
     series: [...barras([["mcc_billetes_compras", "Compras de billetes", "naranja"], ["mcc_otras_inversiones", "Otras inversiones en el exterior", "ocre"], ["mcc_ide_residentes", "Inversión directa en el exterior", "marron"],
       ["mcc_billetes_ventas", "Ventas de billetes", "celeste"], ["mcc_divisas_ventas", "Ventas de divisas", "azul"]]), { v: "bc_billetes_divisas_spnf", nombre: "Neto", color: "tinta" }] });
   tarjeta(g, { mide: "bc_deuda", ...m, titulo: () => `La deuda financiera privada y pública dejó ${fmtS(ult("bc_prestamos_titulos_deuda")[1])} millones netos`,
@@ -1171,6 +1228,8 @@ function licitacionesGrafico(el, card) {
   const c = COL(); const ch = echarts.init(el); charts.push(ch);
   const [a, b] = rango(card._r);
   const L = (D.licitaciones || []).filter((x) => x.f >= a && x.f <= b);
+  const tot = (k) => L.reduce((s, x) => s + (x[k] || 0), 0) / 1e6;
+  el._resumen = L.length ? `Acumulado del ${fechaCorta(a)} a ${fechaCorta(b)}: ${L.length} licitaciones, adjudicado <b>$${fmt(tot("adjudicado"), 2)} billones</b> sobre ofertas por $${fmt(tot("ofertado"), 2)} billones` : "";
   ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" },
     legend: { top: 0, left: 0, itemWidth: 12, itemHeight: 8, textStyle: { color: c.texto2, fontSize: 11 } },
     grid: { left: 8, right: 16, top: 34, bottom: 28, containLabel: true },
@@ -1208,7 +1267,7 @@ function fiscal(main) {
   tarjeta(g, { mide: "resultado_primario", titulo: () => { const v = ult("_rpr")[1], w = ult("_rfr")[1];
       return `En ${mesCorto(ult("_rpr")[0])} hubo un ${v >= 0 ? "superávit" : "déficit"} primario de $${fmt(Math.abs(v))} y un ${w >= 0 ? "superávit" : "déficit"} financiero de $${fmt(Math.abs(w))} miles de millones`; },
     bajada: `Sector público nacional, base caja · En miles de millones de pesos a precios de ${aPrecios}`, leyenda: true,
-    fuente: "Fuente: elaboración propia en base a Ministerio de Economía (Secretaría de Hacienda). Deflactado por IPC del INDEC.", mensual: true, cero: true,
+    fuente: "Fuente: elaboración propia en base a Ministerio de Economía (Secretaría de Hacienda). Deflactado por IPC del INDEC.", mensual: true, cero: true, resumen: "suma",
     series: [{ v: "_rpr", nombre: "Resultado primario", tipo: "bar" }, { v: "_int", nombre: "Intereses (con signo negativo)", tipo: "bar", color: "naranja" },
       { v: "_rfr", nombre: "Resultado financiero", color: "gris" }] });
   tmp("_rec_t", varIA("recaudacion_total", true)); tmp("_rec_dgi", varIA("recaudacion_dgi", true));
