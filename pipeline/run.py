@@ -10,6 +10,7 @@ import datetime as dt
 import json
 import os
 import pathlib
+import re
 import traceback
 
 import numpy as np
@@ -266,6 +267,15 @@ def derivadas(df):
     except Exception:  # noqa: BLE001
         notas["inflacion_implicita"] = "ERROR: " + traceback.format_exc()[-300:]
 
+    # Carry trade y dólar futuro contra la banda proyectada (la foto del día va a data/curva_fx.json)
+    try:
+        import carry
+        partes_c, foto = carry.calcular(df)
+        out += partes_c
+        (DATA / "curva_fx.json").write_text(json.dumps(foto, ensure_ascii=False), encoding="utf-8")
+    except Exception:  # noqa: BLE001
+        notas["carry"] = "ERROR: " + traceback.format_exc()[-300:]
+
     return pd.concat(out, ignore_index=True), notas
 
 
@@ -409,7 +419,7 @@ REZAGO_ESPERADO = [
     (("tcrm", "tcr_brasil", "tcr_eeuu"), "h", 5),
     (("demanda_electrica",), "h", 3),
     (("gd30_",), "h", 2),  # solo histórico de BYMA; el intradiario trae AL30 pero no GD30
-    (("badlar", "baibar", "tamar", "tasa_"), "h", 2),
+    (("badlar", "baibar", "tamar", "tasa_", "carry_", "devaluacion_implicita_"), "h", 2),
     (("riesgo_pais_argentina",), "h", 1),
     (("riesgo_pais_",), "h", 2),
 ]
@@ -438,7 +448,7 @@ def evaluar_rezagos(df):
     ult = df.sort_values("fecha").groupby("variable").last()
     filas = []
     for var, r in ult.iterrows():
-        if var == "merval_sp":   # terminó el 16/10/26: lo reemplaza el MSCI MERVAL
+        if var in ("merval_sp", "rem_ipc_esperado"):   # S&P Merval terminó el 16/10/26; el REM esperado está fechado a futuro
             continue
         if var.startswith("futuro_DLR") or var.startswith("lecap_tem_") or var.startswith(("cer_px_", "cer_tir_real_")):
             continue
@@ -457,7 +467,7 @@ def evaluar_rezagos(df):
 
 
 # ---------------------------------------------------------------- main
-VERSION_HISTORIA = 5  # 5: Merval, ADR, industria y fiscal necesitan su historia. subir este número fuerza una descarga histórica completa en la próxima corrida
+VERSION_HISTORIA = 6  # 6: historia de la curva de tasa fija (letras vencidas) para el carry. subir este número fuerza una descarga histórica completa en la próxima corrida
 
 
 def modo_completo():
@@ -470,8 +480,8 @@ def modo_completo():
 
 # Cada cuántas horas se vuelve a pedir cada fuente (0 = en todas las corridas). Las mensuales o lentas
 # no hace falta bajarlas cada hora; si una falla, se reintenta en la corrida siguiente.
-FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "indec_emae": 3, "indec_industria": 6, "bls_cpi": 12,
-                "rem": 12, "balance_cambiario": 12, "cammesa": 6, "argentinadatos": 2, "bonos_historicos": 2, "calendario_indec": 24}
+FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "indec_ipc": 3, "indec_emae": 3, "indec_industria": 6, "indec_ica": 3, "bls_cpi": 12,
+                "rem": 12, "balance_cambiario": 12, "cammesa": 6, "argentinadatos": 2, "bonos_historicos": 2, "calendario_indec": 6}
 
 
 def toca(nombre, previo):
@@ -495,7 +505,7 @@ def main():
                        ("bonos_historicos", F.bonos_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
                        ("treasury", F.treasury), ("yahoo", F.yahoo), ("byma_indices", F.byma_indices),("datos_gob", F.datos_gob), ("indec_ipc", F.indec_ipc),
-                       ("indec_emae", F.indec_emae), ("indec_industria", F.indec_industria), ("bls_cpi", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
+                       ("indec_emae", F.indec_emae), ("indec_industria", F.indec_industria), ("indec_ica", F.indec_ica), ("bls_cpi", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
                        ("balance_cambiario", F.balance_cambiario), ("a3_mae", F.a3_mae)]:
         if not toca(nombre, previo):
             estado[nombre] = {**previo[nombre], "omitida": True}
@@ -525,6 +535,12 @@ def main():
     if toca("calendario_indec", previo):
         try:
             cal, errores = F.calendario_indec()
+            for nombre, fn in (("BCRA", F.calendario_bcra), ("licitación", F.proxima_licitacion)):
+                try:
+                    cal += fn()
+                except Exception as e:  # noqa: BLE001
+                    errores.append(f"{nombre}: {e}"[:120])
+            cal.sort(key=lambda x: (x["f"], x["t"]))
             (DATA / "calendario.json").write_text(json.dumps(cal, ensure_ascii=False), encoding="utf-8")
             estado["calendario_indec"] = {"estado": "ok", "filas": len(cal), "ok_utc": dt.datetime.utcnow().isoformat()}
             if errores:
@@ -551,7 +567,15 @@ def main():
     fpath = RAW / "lecap_fichas.json"
     fichas = json.loads(fpath.read_text(encoding="utf-8")) if fpath.exists() else {}
     try:
-        d = F.lecaps(fichas)
+        lic_path = DATA / "licitaciones.json"
+        tem_lic = F.tem_licitaciones(json.loads(lic_path.read_text(encoding="utf-8"))) if lic_path.exists() else {}
+        hist = sorted({i["t"] for x in (json.loads(lic_path.read_text(encoding="utf-8")) if lic_path.exists() else [])
+                       for i in x.get("inst", []) if i.get("t") and re.fullmatch(r"[ST]\d{2}[A-Z]\d", i["t"])})
+        if F.COMPLETO and lic_path.exists():   # letras vencidas sin ficha en BYMA: ficha armada con los comunicados
+            for sym, fi in F.fichas_desde_licitaciones(json.loads(lic_path.read_text(encoding="utf-8"))).items():
+                if not fichas.get(sym, {}).get("tem"):
+                    fichas[sym] = fi
+        d = F.lecaps(fichas, tem_lic, hist)
         partes.append(d)
         estado["lecaps"] = {"estado": "ok", "filas": len(d)}
         fpath.write_text(json.dumps(fichas, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -595,8 +619,9 @@ def main():
         base = pd.concat([viejo, nuevo], ignore_index=True)  # lo nuevo pisa a lo viejo en la misma fecha
     else:
         base = nuevo
-    if F.COMPLETO:  # la curva LECAP se recalcula entera con la historia de cada letra
-        base = base[~base["variable"].str.startswith("lecap_tem_") | base.index.isin(base.index[len(base) - len(nuevo):])]
+    if F.COMPLETO:  # la curva de cada letra que se volvió a bajar se recalcula entera; las demás conservan su historia
+        rehechas = set(nuevo.loc[nuevo["variable"].str.startswith("lecap_tem_"), "variable"])
+        base = base[~base["variable"].isin(rehechas) | base.index.isin(base.index[len(base) - len(nuevo):])]
     # Variables descartadas: foto de caución de BYMA (la reemplaza A3) y EMBIG del BCRP (no empalma con el EMBIGD)
     base = base[~base["variable"].str.match(r"caucion_pesos_\d+d$|riesgo_pais_.*_bcrp$|riesgo_pais_latam_largo$")]
     base = base[~base["variable"].isin(["reservas_netas", "reservas_super_netas", "caucion_pesos_1d_vwap", "compras_bcra_pct_volumen"])]

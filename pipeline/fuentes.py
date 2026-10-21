@@ -371,8 +371,7 @@ DATOS_GOB = {
     "148.3_INIVELNAL_DICI_M_26": ("ipc_nivel_general", "índice dic-16=100"),
     "148.3_INUCLEONAL_DICI_M_19": ("ipc_nucleo", "índice dic-16=100"),
     "143.3_NO_PR_2004_A_31": ("emae_desest", "índice 2004=100"),
-    "74.3_IET_0_M_16": ("exportaciones", "USD M"),
-    "74.3_IIT_0_M_25": ("importaciones", "USD M"),
+    # exportaciones e importaciones: directo del INDEC (indec_ica), que publica un mes antes que datos.gob.ar
     "452.3_RESULTADO_RIO_0_M_18_54": ("resultado_primario_spn", "ARS M"),
     "452.3_INTERESES_TOS_0_M_15_62": ("intereses_netos_spn", "ARS M"),
     # (oct-26: el resultado financiero 452.3_RESULTADO_ERO_0_M_20_25 y la seguridad social 172.3_SRIDAD_IAL_M_0_0_16
@@ -452,6 +451,28 @@ def indec_emae():
                           "INDEC (sh_emae_mensual_base2004.xls)"))
     if not filas:
         raise RuntimeError("EMAE: no se encontraron filas en el Excel del INDEC")
+    return _df(filas)
+
+
+def indec_ica():
+    """Exportaciones e importaciones mensuales (ICA) del Excel del INDEC, que se actualiza el día de publicación
+    (datos.gob.ar llega un mes después). El mes se reconoce por las tres primeras letras: el Excel trae erratas
+    como "Septiembree"."""
+    r = _get("https://www.indec.gob.ar/ftp/cuadros/economia/balanmensual.xls", verify=False)
+    d = pd.read_excel(io.BytesIO(r.content), header=None)
+    pref = {m[:3].lower(): i for m, i in MESES.items()}
+    filas, anio = [], None
+    for _, f in d.iterrows():
+        s0 = str(f[0]).strip()
+        if re.match(r"^\d{4}", s0):
+            anio = int(s0[:4])
+        mes = pref.get(str(f[1]).strip()[:3].lower())
+        if anio and mes and pd.notna(f[2]):
+            fecha = dt.date(anio, mes, 1)
+            filas += [(fecha, "exportaciones", f[2], "USD M", "INDEC (balanmensual.xls)"),
+                      (fecha, "importaciones", f[7], "USD M", "INDEC (balanmensual.xls)")]
+    if not filas:
+        raise RuntimeError("ICA: no se encontraron filas en el Excel del INDEC")
     return _df(filas)
 
 
@@ -554,6 +575,7 @@ def indec_industria():
 # comunicados ya leídos. El comunicado no informa los vencimientos, de modo que el rollover no sale de acá.
 GOB = "https://www.argentina.gob.ar"
 LIC_DESDE = dt.date(2024, 1, 1)
+LIC_VERSION = 2  # subirlo vuelve a leer todos los comunicados (2: TEM de emisión de las letras nuevas)
 
 
 def _num_ar(s):
@@ -572,7 +594,7 @@ def _licitacion(url):
     if not fechas:
         raise ValueError("sin fecha")
     fecha = fechas[0]
-    lic = {"f": fecha.isoformat(), "url": url, "titulo": re.sub(r"\s*\|.*", "", re.search(r"<title>(.*?)</title>", t, re.S).group(1)).strip(),
+    lic = {"v": LIC_VERSION, "f": fecha.isoformat(), "url": url, "titulo": re.sub(r"\s*\|.*", "", re.search(r"<title>(.*?)</title>", t, re.S).group(1)).strip(),
            "ofertado": None, "adjudicado": None, "inst": []}
     # Totales: la frase del primer párrafo (en billones o millones de pesos, valor efectivo)
     m = re.search(r"ofertas por un total de valor efectivo de \$ ?([\d.,]+) (billones|millones).*?adjudic\w+ un total de valor efectivo (?:de )?\$ ?([\d.,]+) (billones|millones)", texto)
@@ -585,12 +607,15 @@ def _licitacion(url):
             continue
         i_ve = next((i for i, c in enumerate(cab) if c.lower().startswith("valor efectivo adjudicado")), None)
         i_tir = next((i for i, c in enumerate(cab) if c.upper().startswith("TIREA")), None)
+        i_px = next((i for i, c in enumerate(cab) if "corte" in c.lower()), None)
         for _, r in tabla.iterrows():
             d = str(r.iloc[0])
             tk = re.search(r"\(([A-Z0-9]{4,6})\s*[-–]", d)
             lic["inst"].append({"t": tk.group(1) if tk else None, "d": d[:200], "tipo": re.sub(r"(?i)^instrumentos?\s*", "", cab[0]).strip(),
                                 "ve": _num_ar(r.iloc[i_ve]) if i_ve is not None else None,
-                                "tirea": _num_ar(r.iloc[i_tir]) if i_tir is not None else None})
+                                "tirea": _num_ar(r.iloc[i_tir]) if i_tir is not None else None,
+                                # en las letras nuevas la columna de corte trae la TEM de emisión ("2,25% (**)")
+                                "tem": _num_ar(r.iloc[i_px]) if i_px is not None and "%" in str(r.iloc[i_px]) else None})
     if lic["adjudicado"] is None and any(x["ve"] for x in lic["inst"]):   # comunicados viejos sin la frase de totales
         lic["adjudicado"] = sum(x["ve"] or 0 for x in lic["inst"])
         lic["suma_instrumentos"] = True
@@ -599,6 +624,7 @@ def _licitacion(url):
 
 def licitaciones(previas):
     """Resultados de las licitaciones del Tesoro por efectivo. `previas`: lista ya guardada (data/licitaciones.json)."""
+    previas = [x for x in previas if x.get("v") == LIC_VERSION]
     vistas = {x["url"] for x in previas}
     nuevas, errores = [], []
     for pagina in range(60):
@@ -679,6 +705,45 @@ def calendario_indec():
         raise RuntimeError("; ".join(errores) or "calendario vacío")
     filas.sort(key=lambda x: (x["f"], x["t"]))
     return filas, errores
+
+
+BCRA_CAL_TEMAS = {"Relevamiento de Expectativas de Mercado": ("Expectativas (REM)", True),
+                  "Informe de Evolución del Mercado de Cambios y Balance Cambiario": ("Balance cambiario", True),
+                  "Informe Monetario Mensual": ("Informe monetario (BCRA)", False)}
+
+
+def calendario_bcra():
+    """Fechas previstas de publicación del BCRA (página "Fechas de publicación")."""
+    import html as _html
+    t = _get("https://www.bcra.gob.ar/calendario-de-informes/", verify=False).text
+    txt = re.sub(r"<script.*?</script>|<style.*?</style>", "", t, flags=re.S)
+    txt = _html.unescape(re.sub(r"\s+", " ", re.sub("<[^>]+>", " | ", txt)))
+    cortos = {m[:3].lower(): i for m, i in MESES.items()}
+    filas = []
+    for nombre, d, m, a in re.findall(r"([A-ZÁÉÍÓÚ][^|]{5,120}?)(?:\s*\|)+\s*(\d{1,2}) (\w{3}) (\d{4})", txt):
+        nombre = nombre.strip()
+        for clave, (etq, en_tablero) in BCRA_CAL_TEMAS.items():
+            if nombre.startswith(clave) and m.lower() in cortos:
+                filas.append({"f": dt.date(int(a), cortos[m.lower()], int(d)).isoformat(), "t": etq, "d": nombre, "tab": en_tablero})
+    if not filas:
+        raise RuntimeError("calendario del BCRA vacío")
+    return filas
+
+
+def proxima_licitacion():
+    """Licitaciones ya llamadas y todavía no hechas. La fecha sale del comunicado de llamado
+    ("finalizará a las 15:00 horas del día miércoles 14 de octubre de 2026"). El cronograma anual de Finanzas es
+    un PDF que marca los días solo con colores y no se puede leer como texto."""
+    t = _get(f"{GOB}/economia/finanzas/noticias").text
+    filas = []
+    for u in list(dict.fromkeys(re.findall(r'href="(/noticias/llamado[^"]*licitaci[^"]*)"', t)))[:3]:
+        tx = re.sub(r"\s+", " ", re.sub("<[^>]+>", " ", _get(GOB + u).text)).lower()
+        m = re.search(r"finalizar[áa] a las [\d:]+ horas del d[íi]a \w+ (\d{1,2}) de (\w+) de (\d{4})", tx)
+        if m and m.group(2).capitalize() in CAL_MESES:
+            f = dt.date(int(m.group(3)), CAL_MESES[m.group(2).capitalize()], int(m.group(1)))
+            if f >= HOY:
+                filas.append({"f": f.isoformat(), "t": "Licitación del Tesoro", "d": "Licitación por efectivo de instrumentos del Tesoro", "tab": True})
+    return filas
 
 
 def cpi_eeuu():
@@ -785,6 +850,12 @@ def rem():
     men = men[men["per"] > men["Fecha de pronóstico"]].sort_values("per").groupby("Fecha de pronóstico").first()
     for f, r in men.iterrows():
         filas.append((f, "rem_inflacion_mes_siguiente", r["Mediana"], "% mensual", "BCRA REM (mediana)"))
+    # Trayectoria mensual esperada en la última encuesta, fechada por el mes al que se refiere (la usa la proyección de la banda)
+    tray = ipc[ipc["Referencia"].astype(str).str.contains("mensual")].copy()
+    tray["per"] = pd.to_datetime(tray["Período"], errors="coerce")
+    ultima = tray["Fecha de pronóstico"].max()
+    for _, r in tray[tray["Fecha de pronóstico"].eq(ultima) & tray["per"].notna()].iterrows():
+        filas.append((r["per"], "rem_ipc_esperado", r["Mediana"], "% mensual", f"BCRA REM (mediana, encuesta de {ultima:%Y-%m})"))
     tc = df[df["Variable"].eq("Tipo de cambio nominal")].copy()
     tc["per"] = pd.to_datetime(tc["Período"], errors="coerce")
     tc = tc[tc["per"].dt.month.eq(12) & tc["per"].dt.year.eq(tc["Fecha de pronóstico"].dt.year)]
@@ -938,7 +1009,39 @@ except Exception:  # noqa: BLE001
     TEM_MANUAL = {}
 
 
-def lecaps(fichas):
+def tem_licitaciones(lic):
+    """TEM de emisión de las LECAP y BONCAP nuevas, por fecha de vencimiento, desde los comunicados de licitación."""
+    out = {}
+    for x in lic:
+        for i in x.get("inst", []):
+            m = re.search(r"VENCIMIENTO (\d{1,2}) DE (\w+) DE (\d{4})", i["d"].upper())
+            if i.get("tem") and "CAPITALIZABLE" in i["d"].upper() and m and m.group(2).capitalize() in CAL_MESES:
+                out[dt.date(int(m.group(3)), CAL_MESES[m.group(2).capitalize()], int(m.group(1))).isoformat()] = i["tem"]
+    return out
+
+
+def fichas_desde_licitaciones(lic):
+    """Fichas de las LECAP y BONCAP que ya vencieron (BYMA no da su ficha técnica): vencimiento y TEM de la licitación
+    en que salieron como "nueva", y emisión en la liquidación, dos días hábiles después (aproximado: no contempla
+    feriados). Un día de error en la emisión mueve la TEM de mercado en menos de 0,05 puntos en letras de dos meses."""
+    nuevas, tickers = {}, {}
+    for x in sorted(lic, key=lambda y: y["f"]):
+        for i in x.get("inst", []):
+            m = re.search(r"VENCIMIENTO (\d{1,2}) DE (\w+) DE (\d{4})", i["d"].upper())
+            if not m or "CAPITALIZABLE" not in i["d"].upper() or m.group(2).capitalize() not in CAL_MESES:
+                continue
+            ven = dt.date(int(m.group(3)), CAL_MESES[m.group(2).capitalize()], int(m.group(1))).isoformat()
+            # "(nueva)" o "(S31E5 - nueva)"; se descartan TEM fuera de rango (celdas mal leídas)
+            if i.get("tem") and 0.5 <= i["tem"] <= 10 and "NUEVA" in i["d"].upper() and ven not in nuevas:
+                emi = (pd.Timestamp(x["f"]) + pd.offsets.BDay(2)).date().isoformat()
+                nuevas[ven] = {"tem": i["tem"] / 100, "emision": emi, "vencimiento": ven,
+                               "denominacion": i["d"][:120], "origen": f"licitación del {x['f']}"}
+            if i.get("t") and re.fullmatch(r"[ST]\d{2}[A-Z]\d", i["t"]):
+                tickers[i["t"]] = ven
+    return {t: nuevas[v] for t, v in tickers.items() if v in nuevas}
+
+
+def lecaps(fichas, tem_lic=None, historicas=()):
     """TEM de mercado de cada LECAP/BONCAP: pago final (100 capitalizado a la TEM de emisión) vs precio."""
     r = requests.post(f"{BYMA}/lebacs", json={"excludeZeroPxAndQty": False, "T1": True, "T0": False,
                       "page_number": 1, "page_size": 500}, headers=BYMA_H, verify=False, timeout=90)
@@ -953,8 +1056,12 @@ def lecaps(fichas):
                 syms.add(t)
     except Exception:  # noqa: BLE001
         pass
-    # De noche el panel lista pocas letras: se suman las ya conocidas que no vencieron
-    syms = sorted(syms | {k for k, v in fichas.items() if v.get("vencimiento", "") > str(HOY)})
+    # De noche el panel lista pocas letras: se suman las ya conocidas que no vencieron. En la corrida completa se suman
+    # también las vencidas (las de las licitaciones desde 2024), para que la curva tenga historia: BYMA conserva sus precios.
+    syms = syms | {k for k, v in fichas.items() if v.get("vencimiento", "") > str(HOY)}
+    if COMPLETO:
+        syms |= set(historicas) | set(fichas)
+    syms = sorted(syms)
     filas = []
     t0 = int(dt.datetime.combine(desde(HOY - dt.timedelta(days=800)), dt.time()).timestamp())
     for sym in syms:
@@ -964,6 +1071,8 @@ def lecaps(fichas):
             fi = fichas[sym]
             if not fi["tem"] and TEM_MANUAL.get(sym):  # la ficha no trae la tasa: se toma de config/lecap_tem.json
                 fi = {**fi, "tem": TEM_MANUAL[sym] / 100}
+            elif not fi["tem"] and (tem_lic or {}).get(fi["vencimiento"]):  # o del comunicado de la licitación en que se emitió
+                fi = {**fi, "tem": tem_lic[fi["vencimiento"]] / 100}
             if not fi["tem"]:
                 continue
             emi, ven = pd.Timestamp(fi["emision"]), pd.Timestamp(fi["vencimiento"])
@@ -975,7 +1084,7 @@ def lecaps(fichas):
                 f = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
                 liq = pd.Timestamp(f) + pd.offsets.BDay(1)
                 dias = (ven - liq).days
-                if c and dias >= 10:  # con menos de 10 días el redondeo distorsiona la tasa
+                if c and dias >= 10 and f <= ven.date():  # con menos de 10 días el redondeo distorsiona la tasa
                     tem = ((pago / c) ** (30 / dias) - 1) * 100
                     filas.append((f, f"lecap_tem_{sym}", tem, "% TEM",
                                   f"Cálculo: BYMA {sym} (vence {fi['vencimiento']}, TEM emisión {fi['tem']*100:.2f}%)"))

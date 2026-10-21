@@ -19,13 +19,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0D131A; --card: #141C25; --borde: #222D3A; --tinta: #E7ECF2; --texto2: #A3AEBA; --nota: #7D8996;
-    --grilla: #1E2833; --eje: #2C3846; --azul: #5B9BF0; --celeste: #8CC0F5; --gris: #7D8997; --naranja: #E9975A; --verde: #5DBB87; --violeta: #A08BE6; --ocre: #D9B44E; --rojo: #E5796F; --turquesa: #4FC3D6; --marron: #B78C70;
+    --grilla: #1E2833; --eje: #2C3846; --azul: #5B9BF0; --celeste: #C2E0FF; --gris: #7D8997; --naranja: #E9975A; --verde: #5DBB87; --violeta: #A08BE6; --ocre: #D9B44E; --rojo: #E5796F; --turquesa: #4FC3D6; --marron: #B78C70;
     --chip: #1B2530; --sombra: none; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0D131A; --card: #141C25; --borde: #222D3A; --tinta: #E7ECF2; --texto2: #A3AEBA; --nota: #7D8996;
-  --grilla: #1E2833; --eje: #2C3846; --azul: #5B9BF0; --celeste: #8CC0F5; --gris: #7D8997; --naranja: #E9975A; --verde: #5DBB87; --violeta: #A08BE6; --ocre: #D9B44E; --rojo: #E5796F; --turquesa: #4FC3D6; --marron: #B78C70;
+  --grilla: #1E2833; --eje: #2C3846; --azul: #5B9BF0; --celeste: #C2E0FF; --gris: #7D8997; --naranja: #E9975A; --verde: #5DBB87; --violeta: #A08BE6; --ocre: #D9B44E; --rojo: #E5796F; --turquesa: #4FC3D6; --marron: #B78C70;
   --chip: #1B2530; --sombra: none; color-scheme: dark;
 }
 
@@ -168,3 +168,5 @@ table.tabla { width: 100%; border-collapse: collapse; font-size: 13px; margin-to
 
 .tabla th.izq, .tabla td.izq { text-align: left; }
 .tabla .marca { font-size: 11px; color: var(--azul); }
+/* el selector de período se dibuja antes de que aparezca la barra de scroll: no debe desbordar */
+#nav { overflow: hidden; max-width: 100%; }

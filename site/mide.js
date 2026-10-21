@@ -4,7 +4,7 @@
 
 const MIDE = {
   // ---------------------------------------------------------------- calendario
-  calendario: "Próximas fechas de publicación del INDEC según su calendario anual de difusión, para las estadísticas de coyuntura. Las que dicen \"En el tablero\" alimentan series del tablero: la inflación, el EMAE, el comercio exterior, el IPI manufacturero y el ISAC. El tablero lee el calendario del semestre en curso y del siguiente y se actualiza solo.",
+  calendario: "Próximas fechas de publicación del INDEC (calendario anual de difusión), del BCRA (REM, balance cambiario e informe monetario, según su página de fechas de publicación) y de la próxima licitación del Tesoro, que aparece cuando Finanzas publica el llamado, dos o tres días hábiles antes. El cronograma anual de licitaciones es un PDF que marca los días solo con colores y no se puede leer automáticamente. Las que dicen \"En el tablero\" alimentan series del tablero: la inflación, el EMAE, el comercio exterior, el IPI manufacturero y el ISAC. El tablero lee el calendario del semestre en curso y del siguiente y se actualiza solo.",
 
   // ---------------------------------------------------------------- reservas
   reservas_netas: [
@@ -96,7 +96,17 @@ const MIDE = {
     "No incluye canjes, conversiones, segundas vueltas ni emisiones en dólares. En los comunicados de 2024 que no traen la frase de totales, el adjudicado es la suma de los instrumentos.",
     "El rollover no se calcula: los comunicados no informan cuánto vencía y la cifra que circula en la prensa usa los vencimientos en manos privadas, que Finanzas no publica en un formato estable.",
   ],
-  tabla_licitaciones: "Instrumentos adjudicados en las últimas seis licitaciones: valor efectivo en billones de pesos y TIREA de corte (tasa interna de retorno efectiva anual). En los bonos CER la TIREA es real y en los dólar linked, en dólares. Cuando la letra es nueva y el comunicado no trae el ticker, se muestra su vencimiento.",
+  tabla_licitaciones: "Instrumentos adjudicados en las últimas seis licitaciones: valor efectivo en billones de pesos y TIREA de corte (tasa interna de retorno efectiva anual). En las LECAP y BONCAP que ya cotizaban, la tasa de corte se compara con la de mercado del día hábil anterior en BYMA, llevada a tasa efectiva anual: una diferencia positiva indica que el Tesoro convalidó una tasa mayor que la del mercado. En los bonos CER la TIREA es real y en los dólar linked, en dólares. Cuando la letra es nueva y el comunicado no trae el ticker, se muestra su vencimiento.",
+
+  carry: [
+    "Carry trade: cuánto rinde por mes, medido en dólares, quedarse en tasa fija en pesos si el dólar termina donde lo paga hoy el futuro. Es (1 + TEM de la tasa fija) / (1 + devaluación implícita mensual) - 1.",
+    "La devaluación implícita sale de cada contrato de dólar futuro contra el A3500 del día; la tasa fija, de la curva de LECAP y BONCAP interpolada al mismo plazo. Las series a 3 y 6 meses interpolan entre contratos. Para reconstruir la curva de antes, las letras ya vencidas se toman de los comunicados de licitación (vencimiento, TEM de emisión y emisión dos días hábiles después de la licitación).",
+  ],
+  carry_curva: "Para cada vencimiento de dólar futuro: tasa fija en pesos (TEM interpolada en la curva de LECAP y BONCAP), devaluación implícita mensual en el futuro y carry. Solo hay dato donde la curva de tasa fija cubre el plazo, sin extrapolar. El título indica el dólar al que se empata: si al vencimiento el A3500 queda por debajo, la tasa fija rindió más que comprar dólares hoy.",
+  futuros_banda: [
+    "Precio de cada contrato de dólar futuro, techo de la banda cambiaria proyectado a esa fecha y dólar que empata la tasa fija (A3500 de hoy capitalizado a la TEM de la curva al mismo plazo).",
+    "Desde enero de 2026 el techo se ajusta cada mes por la última inflación publicada por el INDEC, la de dos meses antes. Para los meses cuyo IPC ya salió se usa el dato; para los demás, la mediana del REM. Con los datos de 2026 la regla reproduce el techo de fin de mes con diferencias menores a 0,3%.",
+  ],
 
   // ---------------------------------------------------------------- acciones
   merval_usd: [
@@ -161,6 +171,9 @@ const TIPOS = {
 };
 
 const TIPO = {
+  carry: "Cálculo propio",
+  carry_curva: "Cálculo propio",
+  futuros_banda: "Cálculo propio",
   merval_usd: "Cálculo propio",
   merval: "Mercado",
   adr_base100: "Mercado",

@@ -29,7 +29,7 @@ const prev = (v) => { const s = S(v); return s.length > 1 ? s[s.length - 2] : [n
 const esProv = (v) => { const p = meta(v).p; const f = ult(v)[0]; return !!(p && f && f >= p); };
 const valEn = (v, f) => { const s = S(v); for (let i = s.length - 1; i >= 0; i--) if (s[i][0] <= f) return s[i][1]; return null; };
 const iso = (t) => new Date(t).toISOString().slice(0, 10);
-const hoy = () => iso(Date.now());
+const hoy = () => new Date().toLocaleDateString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" });   // fecha de Argentina, no UTC
 function rango(r = R) {            // [desde, hasta] en ISO
   if (r.desde) return [r.desde, r.hasta || hoy()];
   return [r.dias ? iso(Date.now() - r.dias * 864e5) : "1900-01-01", hoy()];
@@ -482,7 +482,7 @@ function extremoDesde(v) {          // ¿el último dato es el más alto / bajo 
   const alto = i < 0 ? "inicio" : s[i][0];
   let j = s.length - 2; while (j >= 0 && s[j][1] > x) j--;
   const bajo = j < 0 ? "inicio" : s[j][0];
-  const lejos = (g) => g === "inicio" || (Date.parse(f) - Date.parse(g)) / 864e5 > 90;
+  const lejos = (g) => (g === "inicio" && !D.parcial) || (g !== "inicio" && (Date.parse(f) - Date.parse(g)) / 864e5 > 90);   // con el archivo chico no se sabe si es "de toda la serie"
   if (lejos(alto)) return { tipo: "alto", desde: alto };
   if (lejos(bajo)) return { tipo: "bajo", desde: bajo };
   return null;
@@ -547,7 +547,7 @@ function novedades() {
 const DIAS_SEM = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 function tablaCalendario(el) {
   el.style.height = "auto";
-  const prox = (D.calendario || []).filter((x) => x.f >= hoy()).slice(0, 10);
+  const prox = (D.calendario || []).filter((x) => x.f >= hoy()).slice(0, 12);
   if (!prox.length) { el.innerHTML = '<p class="seccion-intro" style="margin:24px 0">Sin fechas cargadas.</p>'; return; }
   const periodo = (d) => { const m = d.match(/\. ([^.]+ de \d{4})$/); return m ? m[1] : ""; };
   const filas = prox.map((x) => {
@@ -592,8 +592,8 @@ function resumen(main) {
   tarjeta(g, { mide: "riesgo_ppal", titulo: () => `El riesgo país está en ${fmt(ult("riesgo_pais_argentina")[1])} puntos`,
     bajada: "Argentina (eje izquierdo) y promedio simple de América Latina sin Venezuela ni Argentina (eje derecho) · En puntos básicos", fuente: F.bcrd,
     dec: 0, leyenda: true, series: [{ v: "riesgo_pais_argentina", nombre: "Argentina", color: "azul" }, { v: promedioGrupo("latam"), nombre: "LATAM sin VZ y ARG", color: "ocre", eje2: true }] });
-  tarjeta(g, { mide: "calendario", ancha: true, titulo: "Próximas publicaciones del INDEC", bajada: "Fechas del calendario oficial de difusión · Las marcadas alimentan series del tablero",
-    fuente: "Fuente: elaboración propia en base al calendario de difusión del INDEC.", render: tablaCalendario });
+  tarjeta(g, { mide: "calendario", ancha: true, titulo: "Próximas publicaciones", bajada: "INDEC, BCRA y licitaciones del Tesoro · Las marcadas alimentan series del tablero",
+    fuente: "Fuente: elaboración propia en base a los calendarios de difusión del INDEC y del BCRA y a los llamados a licitación de la Secretaría de Finanzas.", render: tablaCalendario });
 }
 
 function estimadoDesdeFuente(v) { return ((meta(v).f || "").match(/desde (\d{4}-\d{2}-\d{2})/) || [])[1]; }
@@ -622,9 +622,67 @@ function cambiario(main) {
   tarjeta(g, { mide: "futuro", titulo: () => `El mercado paga $${fmt(ult("futuro_diciembre")[1], 0)} por el dólar de diciembre`,
     bajada: "Dólar futuro: contrato más corto y diciembre, contra el A3500 · En pesos por dólar", fuente: F.a3, logAuto: true,
     series: [{ v: "futuro_diciembre", nombre: "Diciembre" }, { v: "futuro_fin_mes", nombre: "Fin de mes", color: "celeste" }, { v: "tc_mayorista_a3500", nombre: "A3500", color: "gris" }] });
+  const fx = D.curva_fx || {};
+  const cs = fx.contratos || [];
+  if (S("carry_3m").length) {
+    tarjeta(g, { mide: "carry", titulo: () => `El carry a tres meses rinde ${fmt(ult("carry_3m")[1], 2)}% mensual en dólares`,
+      bajada: "Tasa fija en pesos menos devaluación implícita en los futuros, a plazo constante · En % mensual (TEM)", fuente: F.a3 + " Curva de LECAP y BONCAP de BYMA.",
+      dec: 2, decEje: 1, cero: true, leyenda: true,
+      series: [{ v: "carry_3m", nombre: "Carry a 3 meses" }, { v: "carry_6m", nombre: "Carry a 6 meses", color: "naranja" }] });
+  }
+  if (cs.length) {
+    const conFija = cs.filter((x) => x.fija != null);
+    tarjeta(g, { mide: "carry_curva", titulo: () => { const d = conFija.find((x) => x.c.slice(3, 5) === "12") || conFija.at(-1);
+        return d ? `Hasta ${mesCorto(d.vto)}, la LECAP le gana al futuro si el dólar queda por debajo de $${fmt(d.empate)}` : "Tasa fija contra devaluación implícita"; },
+      bajada: () => `Por vencimiento de cada futuro, al ${fechaCorta(fx.fecha)} · En % mensual (TEM)`, fuente: F.a3 + " Curva de LECAP y BONCAP de BYMA, interpolada al plazo de cada futuro, sin extrapolar.",
+      sinRango: true, alto: 320, render: (el) => carryCurva(el, cs) });
+    tarjeta(g, { mide: "futuros_banda", ancha: true, sinRango: true, alto: 340,
+      titulo: () => { const d = cs.find((x) => x.c.slice(3, 5) === "12") || cs[0]; return `El dólar de ${mesCorto(d.vto)} cotiza ${fmt((1 - d.futuro / d.techo) * 100, 1)}% por debajo del techo de la banda`; },
+      bajada: () => `Futuros por vencimiento, techo proyectado y dólar que empata la tasa fija, al ${fechaCorta(fx.fecha)} · En pesos por dólar`,
+      fuente: F.a3 + " Techo según la regla del BCRA (ajuste mensual por la inflación de dos meses antes): IPC del INDEC publicado y, para lo que falta, mediana del REM.",
+      render: (el) => futurosBanda(el, cs, fx) });
+  }
   tarjeta(g, { mide: "volumen_mlc", ancha: true, titulo: () => `En el MLC se operaron USD ${fmt(ult("volumen_mlc")[1])} millones en la última rueda`,
     bajada: "Volumen diario operado en el mercado de cambios · En millones de USD", fuente: F.a3, tipo: "bar", sinEtiquetas: true, desdeCero: true, agregar: "prom", resumen: "prom",
     series: [{ v: "volumen_mlc", nombre: "Volumen" }] });
+}
+
+// ------------------------------------------------------------------ carry trade y futuros contra la banda (foto del día, data/curva_fx.json)
+function carryCurva(el, cs) {
+  const c = COL(); const ch = echarts.init(el); charts.push(ch);
+  const pts = cs.filter((x) => x.fija != null);
+  ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" },
+    legend: { top: 0, left: 0, itemWidth: 12, itemHeight: 8, textStyle: { color: c.texto2, fontSize: 11 } },
+    grid: { left: 8, right: 16, top: 34, bottom: 24, containLabel: true },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, backgroundColor: c.card, borderColor: c.eje, textStyle: { color: c.tinta, fontSize: 12 }, confine: true,
+      formatter: (ps) => { const x = pts[ps[0].dataIndex];
+        return `<b>Futuro ${mesCorto(x.vto)}</b> · ${x.dias} días<br>Tasa fija: <b>${fmt(x.fija, 2)}%</b> · devaluación implícita: <b>${fmt(x.dev, 2)}%</b><br>Carry: <b>${fmtS(x.carry, 2)}%</b> mensual<br>Futuro $${fmt(x.futuro, 1)} · empata la LECAP en $${fmt(x.empate, 1)}`; } },
+    xAxis: { type: "category", data: pts.map((x) => mesCorto(x.vto)), axisLabel: { color: c.texto2, fontSize: 11 }, axisLine: { lineStyle: { color: c.eje } }, axisTick: { show: false } },
+    yAxis: { type: "value", splitLine: { lineStyle: { color: c.grilla } }, axisLabel: { color: c.texto2, fontSize: 11, formatter: (v) => fmt(v, 1) } },
+    series: [{ name: "Tasa fija", type: "bar", barMaxWidth: 16, itemStyle: { color: c.azul }, data: pts.map((x) => x.fija) },
+      { name: "Devaluación implícita", type: "bar", barMaxWidth: 16, itemStyle: { color: c.naranja }, data: pts.map((x) => x.dev) },
+      { name: "Carry", type: "line", symbolSize: 6, lineStyle: { color: c.gris, width: 2 }, itemStyle: { color: c.gris }, data: pts.map((x) => x.carry) }] });
+}
+
+function futurosBanda(el, cs, fx) {
+  const c = COL(); const ch = echarts.init(el); charts.push(ch);
+  const eje = [fx.fecha, ...cs.map((x) => x.vto)];
+  const linea = (nombre, datos, color, punteada) => ({ name: nombre, type: "line", data: datos, symbolSize: 6, connectNulls: true,
+    lineStyle: { color, width: 2, type: punteada ? [5, 4] : "solid" }, itemStyle: { color } });
+  const techoHoy = valEn("banda_techo", fx.fecha);
+  ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" },
+    legend: { top: 0, left: 0, itemWidth: 14, itemHeight: 8, textStyle: { color: c.texto2, fontSize: 11 } },
+    grid: { left: 8, right: 16, top: 34, bottom: 24, containLabel: true },
+    tooltip: { trigger: "axis", backgroundColor: c.card, borderColor: c.eje, textStyle: { color: c.tinta, fontSize: 12 }, confine: true,
+      formatter: (ps) => { const i = ps[0].dataIndex; if (i === 0) return `<b>Hoy</b> (${fechaCorta(fx.fecha)})<br>A3500: $${fmt(fx.spot, 1)} · techo: $${fmt(techoHoy, 1)}`;
+        const x = cs[i - 1];
+        return `<b>Futuro ${mesCorto(x.vto)}</b><br>Futuro: <b>$${fmt(x.futuro, 1)}</b> (${fmt((1 - x.futuro / x.techo) * 100, 1)}% bajo el techo)<br>Techo proyectado: $${fmt(x.techo, 1)} <span style="color:${c.nota}">(ajuste del mes ${fmt(x.ajuste, 2)}%, ${x.origen})</span>` +
+          (x.empate ? `<br>Empata la LECAP: $${fmt(x.empate, 1)}` : ""); } },
+    xAxis: { type: "category", data: eje.map((f, i) => (i === 0 ? "Hoy" : mesCorto(f))), axisLabel: { color: c.texto2, fontSize: 11 }, axisLine: { lineStyle: { color: c.eje } }, axisTick: { show: false } },
+    yAxis: { type: "value", scale: true, splitLine: { lineStyle: { color: c.grilla } }, axisLabel: { color: c.texto2, fontSize: 11, formatter: (v) => fmt(v) } },
+    series: [linea("Dólar futuro", [fx.spot, ...cs.map((x) => x.futuro)], c.azul),
+      linea("Techo de la banda (proyectado)", [techoHoy, ...cs.map((x) => x.techo)], c.naranja, true),
+      linea("Dólar que empata la tasa fija", [fx.spot, ...cs.map((x) => x.empate)], c.gris)] });
 }
 
 function reservas(main) {
@@ -1243,16 +1301,25 @@ function licitacionesGrafico(el, card) {
       { name: "Adjudicado", type: "bar", barMaxWidth: 18, itemStyle: { color: c.azul }, data: L.map((x) => x.adjudicado / 1e6) }] });
 }
 
+function licMercado(i, f) {       // TEA de mercado de la letra el día hábil anterior a la licitación, y diferencia con el corte
+  const v = i.t && "lecap_tem_" + i.t; const s = v ? S(v) : [];
+  const p = s.filter((q) => q[0] < f).at(-1);
+  if (!p || i.tirea == null || (Date.parse(f) - Date.parse(p[0])) / 864e5 > 5) return "<td></td><td></td>";
+  const tea = ((1 + p[1] / 100) ** (365 / 30) - 1) * 100, d = (i.tirea - tea) * 100;
+  return `<td>${fmt(tea, 2)}%</td><td class="${Math.abs(d) < 0.5 ? "" : d > 0 ? "dif-neg" : "dif-pos"}">${fmtS(d, 0)} pb</td>`;
+}
+
 function tablaLicitaciones(el) {
   el.style.height = "auto";
   const L = (D.licitaciones || []).slice(-6).reverse();
   const filas = L.map((x) => {
     const ins = x.inst.filter((i) => i.ve);
     return ins.map((i, k) => `<tr>${k === 0 ? `<td rowspan="${ins.length}">${fechaCorta(x.f)}<br><span class="est">${fmt(x.adjudicado / 1e6, 2)} bill.</span></td>` : ""}` +
-      `<td class="izq">${licEtiqueta(i)}</td><td class="izq">${licTipo(i.tipo)}</td><td>${fmt(i.ve / 1e6, 2)}</td><td>${i.tirea == null ? "" : fmt(i.tirea, 2) + "%"}</td></tr>`).join("");
+      `<td class="izq">${licEtiqueta(i)}</td><td class="izq">${licTipo(i.tipo)}</td><td>${fmt(i.ve / 1e6, 2)}</td><td>${i.tirea == null ? "" : fmt(i.tirea, 2) + "%"}</td>${licMercado(i, x.f)}</tr>`).join("");
   }).join("");
   const tw = document.createElement("div"); tw.className = "tw";
-  tw.innerHTML = `<table class="tabla"><tr><th>Licitación</th><th class="izq">Instrumento</th><th class="izq">Tipo</th><th>Adjudicado (billones $)</th><th>TIREA de corte</th></tr>${filas}</table>`;
+  tw.innerHTML = `<table class="tabla"><tr><th>Licitación</th><th class="izq">Instrumento</th><th class="izq">Tipo</th><th>Adjudicado (billones $)</th><th>TIREA de corte</th><th>TEA de mercado el día anterior</th><th>Corte - mercado</th></tr>${filas}</table>` +
+    '<p class="fuente">Mercado: TEM de la letra en BYMA el día hábil anterior a la licitación, llevada a tasa efectiva anual. Positivo: el Tesoro convalidó una tasa mayor que la del mercado. Solo para LECAP y BONCAP que ya cotizaban.</p>';
   el.appendChild(tw);
 }
 
@@ -1405,7 +1472,29 @@ try {   // ?r=días (0 = todo) o ?desde=AAAA-MM-DD&hasta=AAAA-MM-DD
   if (q.has("r")) R.dias = +q.get("r");
   if (q.get("desde")) { R.desde = q.get("desde"); R.hasta = q.get("hasta"); }
 } catch (e) {}
-fetch("data.json", { cache: "no-cache" }).then((r) => r.json()).then((j) => {
+// Carga en dos pasos: data_resumen.json (lo que usa el Resumen, últimos dos años, unos 100 KB) dibuja la página enseguida
+// y data.json (todo, varios MB) baja en segundo plano. Las demás pestañas esperan al completo.
+let COMPLETO = false;
+const pedir = (archivo) => fetch(archivo, { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error(archivo + " " + r.status); return r.json(); });
+const cargaCompleta = pedir("data.json");
+const renderBase = render;
+render = function () {   // eslint-disable-line no-func-assign
+  if (COMPLETO || TAB === "resumen") return renderBase();
+  charts.splice(0).forEach((c) => c.dispose());
+  document.getElementById("main").innerHTML = '<p class="seccion-intro" style="margin:32px 0">Cargando datos…</p>';
+};
+function arrancar(j) {
   D = decodificar(j); if (!SECCIONES.some((s) => s.id === TAB)) TAB = "resumen";
   iniciar(); estado(); dibujarNav(); render();
-}).catch((e) => { document.getElementById("main").textContent = "No se pudieron cargar los datos: " + e; });
+}
+cargaCompleta.then((j) => {
+  const yaArranco = !!D;
+  D = decodificar(j); COMPLETO = true;
+  if (!yaArranco) { arrancar(j); return; }
+  estado(); dibujarNav();
+  // en el Resumen solo se redibuja si el período pide más historia que la del archivo chico
+  if (TAB !== "resumen" || R.dias === 0 || R.dias > 730 || (R.desde && Date.parse(R.desde) < Date.now() - 730 * 864e5)) render();
+}).catch((e) => { if (!D) document.getElementById("main").textContent = "No se pudieron cargar los datos: " + e; });
+if (!location.hash || location.hash === "#resumen") {
+  pedir("data_resumen.json").then((j) => { if (!D) arrancar(j); }).catch(() => {});   // si falla, arranca con el completo
+}
