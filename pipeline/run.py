@@ -258,14 +258,22 @@ def derivadas(df):
         notas["bonos_tir"] = "ERROR: " + traceback.format_exc()[-300:]
 
     # Inflación implícita: bonos CER contra la curva de LECAP y BONCAP
+    tabla_inf = None
     try:
         import inflacion
         partes_inf, tabla_inf = inflacion.calcular(df)
         out += partes_inf
         if len(tabla_inf):
-            notas["inflacion_implicita_puntos"] = int(len(tabla_inf))
+            notas["inflacion_implicita_puntos"] = int(tabla_inf["mensual"].notna().sum())
     except Exception:  # noqa: BLE001
         notas["inflacion_implicita"] = "ERROR: " + traceback.format_exc()[-300:]
+
+    # Tasas forward 2027/2028: Bonares (TIR contra cable) y Boncer (tasa real)
+    try:
+        import forwards
+        out += forwards.calcular(pd.concat(out, ignore_index=True), tabla_inf)
+    except Exception:  # noqa: BLE001
+        notas["forwards"] = "ERROR: " + traceback.format_exc()[-300:]
 
     # Carry trade y dólar futuro contra la banda proyectada (la foto del día va a data/curva_fx.json)
     try:

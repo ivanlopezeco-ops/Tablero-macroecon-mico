@@ -55,6 +55,10 @@ const MIDE = {
   curva_bonos: "Cada punto es un bono con su duration modificada (distancia horizontal, sensibilidad al precio ante un cambio de tasa) y su TIR (altura). Los Bopreales se muestran aparte por color porque tienen vencimientos cortos y condiciones distintas de la curva de Bonares y Globales.",
   tir_2030: "TIR del AL30 (ley argentina) y del GD30 (ley Nueva York). Ambos tienen el mismo cronograma de pagos, así que la distancia entre las dos líneas refleja la diferencia de precio entre las dos legislaciones. Para calcular la serie histórica se deshace el ajuste que BYMA aplica a los precios por cada pago de cupón o cuota.",
   tir_largos: "TIR de los Globales 2035, 2038, 2041 y 2046 con el precio en dólar MEP o CCL. Para calcular la serie histórica se deshace el ajuste que BYMA aplica a los precios por cada pago de cupón o cuota.",
+  forward_2728: [
+    "Tasa que el mercado exige por prestar entre el vencimiento 2027 y el 2028, implícita en las tasas de dos bonos de la misma curva: (1 + forward) ^ (t2 - t1) = (1 + tasa larga) ^ t2 / (1 + tasa corta) ^ t1. Se expresa como tasa nominal anual con capitalización semestral (base 180/360).",
+    "En los Bonares AO27 y AO28 se usa la TIR en dólares con el precio contra cable y, como plazo, la duration de Macaulay, porque amortizan en cuotas mensuales. En los Boncer TZX27 y TZX28, que son cero cupón, se usa la tasa real sobre CER y los días al vencimiento. Una suba del forward con la tasa corta quieta indica que el mercado cobra más por el tramo 2027/2028 en particular.",
+  ],
   precio_2030: "Precio del AL30 y del GD30 en dólar MEP, por cada 100 nominales. La serie de BYMA viene ajustada por cada pago de cupón o cuota: no cae el día de pago, de modo que sirve para seguir el rendimiento total.",
   precio_largos: "Precio de los Globales largos en dólar MEP, por cada 100 nominales, con la serie ajustada por cada pago que publica BYMA.",
   precio_bopreales: "Precio de los Bopreales en dólar MEP, por cada 100 nominales. Los Bopreales Serie 1 (A, B, C y D) vencen en octubre de 2027 y los de la Serie 4 (A y B), en octubre de 2028.",
@@ -211,6 +215,7 @@ const TIPO = {
   curva_bonos: "Cálculo propio",
   tir_2030: "Cálculo propio",
   tir_largos: "Cálculo propio",
+  forward_2728: "Cálculo propio",
   precio_2030: "Mercado",
   precio_largos: "Mercado",
   precio_bopreales: "Mercado",

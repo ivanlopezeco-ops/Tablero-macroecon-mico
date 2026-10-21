@@ -56,19 +56,20 @@ def calcular(df):
         if pd.isna(base):
             continue
         for f, precio in _serie(df, var).items():
-            if precio <= 0 or f not in curva:
-                continue
             liq = f + pd.offsets.BDay(1)
             dias = (ven - liq).days
-            puntos = sorted(((v - liq).days, t) for v, t in curva[f])
-            if dias < DIAS_MIN or len(puntos) < 2 or not (puntos[0][0] <= dias <= puntos[-1][0]):
+            if precio <= 0 or dias < DIAS_MIN:
                 continue
             vt = 100 * cer.asof(liq - bd10) / base
             real = (vt / precio) ** (365 / dias) - 1
-            nominal = float(np.interp(dias, [p[0] for p in puntos], [p[1] for p in puntos]))
-            implicita = (1 + nominal) / (1 + real) - 1
-            filas.append({"fecha": f, "sym": sym, "dias": dias, "real": real * 100, "nominal": nominal * 100,
-                          "mensual": ((1 + implicita) ** (1 / 12) - 1) * 100})
+            # la tasa real vale sola; la inflación implícita solo donde la curva nominal cubre el plazo
+            nominal = mensual = np.nan
+            puntos = sorted(((v - liq).days, t) for v, t in curva.get(f, []))
+            if len(puntos) >= 2 and puntos[0][0] <= dias <= puntos[-1][0]:
+                nominal = float(np.interp(dias, [p[0] for p in puntos], [p[1] for p in puntos]))
+                mensual = (((1 + nominal) / (1 + real)) ** (1 / 12) - 1) * 100
+                nominal *= 100
+            filas.append({"fecha": f, "sym": sym, "dias": dias, "real": real * 100, "nominal": nominal, "mensual": mensual})
     if not filas:
         return [], pd.DataFrame()
     t = pd.DataFrame(filas)
@@ -76,11 +77,13 @@ def calcular(df):
     out = []
     for sym, g in t.groupby("sym"):
         g = g.set_index("fecha")
-        for col, var, uni in (("real", f"cer_tir_real_{sym}", "% TEA real"), ("mensual", f"inflacion_implicita_{sym}", "% mensual")):
-            out.append(pd.DataFrame({"fecha": g.index.date, "variable": var, "valor": g[col].values, "unidad": uni, "fuente": fuente}))
+        for col, var, uni, fu in (("real", f"cer_tir_real_{sym}", "% TEA real", "Cálculo propio: precio de BYMA y CER del BCRA"),
+                                  ("mensual", f"inflacion_implicita_{sym}", "% mensual", fuente)):
+            v = g[col].dropna()
+            out.append(pd.DataFrame({"fecha": v.index.date, "variable": var, "valor": v.values, "unidad": uni, "fuente": fu}))
     # horizontes constantes: interpolación entre los bonos que rodean cada horizonte
     hz = []
-    for fecha, g in t.groupby("fecha"):
+    for fecha, g in t.dropna(subset=["mensual"]).groupby("fecha"):
         g = g.sort_values("dias")
         for nombre, h in HORIZONTES.items():
             if len(g) >= 2 and g["dias"].iloc[0] <= h <= g["dias"].iloc[-1]:

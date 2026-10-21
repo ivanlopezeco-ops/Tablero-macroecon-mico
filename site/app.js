@@ -878,6 +878,10 @@ function bonos(main) {
     bajada: () => `TIR de los Globales largos con el ${monTxt()} · En % efectivo anual`, fuente: F_T, dec: 1, leyenda: true,
     series: [{ v: bonoM("bono_tir", "GD35"), nombre: "GD35" }, { v: bonoM("bono_tir", "GD38"), nombre: "GD38", color: "celeste" },
       { v: bonoM("bono_tir", "GD41"), nombre: "GD41", color: "naranja" }, { v: bonoM("bono_tir", "GD46"), nombre: "GD46", color: "gris" }] });
+  tarjeta(g, { mide: "forward_2728", titulo: () => `La tasa forward 2027/2028 es de ${fmt(ult("forward_ao27_ao28")[1], 1)}% en Bonares y de ${fmt(ult("forward_tzx27_tzx28")[1], 1)}% real en CER`,
+    bajada: "Tasa entre los vencimientos 2027 y 2028 implícita en cada par de bonos · Bonares siempre con el dólar CCL · En % TNA base 180/360",
+    fuente: F.byma + " CER del BCRA. Bonares: TIR con el precio contra cable y duration de Macaulay como plazo. Boncer: tasa real de los cero cupón y días al vencimiento como plazo.", dec: 1, leyenda: true,
+    series: [{ v: "forward_ao27_ao28", nombre: "AO27-AO28 (USD, cable)" }, { v: "forward_tzx27_tzx28", nombre: "TZX27-TZX28 (real, CER)", color: "naranja" }] });
   tarjeta(g, { mide: "precio_2030", titulo: () => `El AL30 cotiza a USD ${fmt(ult("bono_al30_mep")[1], 2)} y el GD30 a USD ${fmt(ult("bono_gd30_mep")[1], 2)}`,
     bajada: "Bonar y Global 2030 en dólar MEP · En USD por cada 100 nominales", fuente: F_B, dec: 1,
     series: [{ v: "bono_al30_mep", nombre: "AL30" }, { v: "bono_gd30_mep", nombre: "GD30", color: "celeste" }] });
