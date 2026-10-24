@@ -1,0 +1,173 @@
+{
+ "corrida_utc": "2026-10-24T14:35:41.902580",
+ "modo": "diario",
+ "fuentes": {
+  "byma_intradia": {
+   "estado": "ok",
+   "filas": 0,
+   "ok_utc": "2026-10-24T14:27:55.414656"
+  },
+  "ambito_riesgo": {
+   "estado": "ok",
+   "filas": 30,
+   "ok_utc": "2026-10-24T14:27:55.746117"
+  },
+  "bcra": {
+   "estado": "ok",
+   "filas": 1568,
+   "ok_utc": "2026-10-24T14:28:04.634793"
+  },
+  "bcra_cny": {
+   "estado": "ok",
+   "filas": 82,
+   "ok_utc": "2026-10-24T14:28:05.994077"
+  },
+  "bcrd_embi": {
+   "estado": "ok",
+   "filas": 83819,
+   "ok_utc": "2026-10-24T14:28:07.594624"
+  },
+  "argentinadatos": {
+   "estado": "ok",
+   "filas": 15692,
+   "ok_utc": "2026-10-24T14:28:09.316662"
+  },
+  "byma_historicos": {
+   "estado": "ok",
+   "filas": 498,
+   "ok_utc": "2026-10-24T14:28:16.551593"
+  },
+  "bonos_historicos": {
+   "estado": "ok",
+   "filas": 5187,
+   "ok_utc": "2026-10-24T14:29:21.642760"
+  },
+  "rofex_futuros": {
+   "estado": "ok",
+   "filas": 993,
+   "ok_utc": "2026-10-24T14:29:23.844265"
+  },
+  "cammesa": {
+   "estado": "ok",
+   "filas": 1,
+   "ok_utc": "2026-10-24T14:29:25.028450"
+  },
+  "treasury": {
+   "estado": "ok",
+   "filas": 612,
+   "ok_utc": "2026-10-24T14:29:25.339595"
+  },
+  "yahoo": {
+   "estado": "ok",
+   "filas": 2182,
+   "ok_utc": "2026-10-24T14:29:29.111138"
+  },
+  "byma_indices": {
+   "estado": "ERROR",
+   "error": "KeyError: 'date'",
+   "traza": "Traceback (most recent call last):\n  File \"/home/runner/work/Tablero-macroecon-mico/Tablero-macroecon-mico/pipeline/run.py\", line 523, in main\n    d = fn()\n        ^^^^\n  File \"/home/runner/work/Tablero-macroecon-mico/Tablero-macroecon-mico/pipeline/fuentes.py\", line 361, in byma_indices\n    f = dt.date.fromisoformat(d[\"date\"][:10])\n                              ~^^^^^^^^\nKeyError: 'date'\n",
+   "error_desde": "2026-10-24T14:35:41.902515"
+  },
+  "datos_gob": {
+   "estado": "ok",
+   "filas": 1832,
+   "ok_utc": "2026-10-24T14:29:58.175296"
+  },
+  "indec_ipc": {
+   "estado": "ok",
+   "filas": 236,
+   "ok_utc": "2026-10-24T14:30:00.631487"
+  },
+  "indec_emae": {
+   "estado": "ok",
+   "filas": 272,
+   "ok_utc": "2026-10-24T14:30:02.070878"
+  },
+  "indec_industria": {
+   "estado": "ok",
+   "filas": 3008,
+   "ok_utc": "2026-10-24T14:30:09.387453"
+  },
+  "indec_ica": {
+   "estado": "ok",
+   "filas": 882,
+   "ok_utc": "2026-10-24T14:30:10.814864"
+  },
+  "bls_cpi": {
+   "estado": "ok",
+   "filas": 152,
+   "ok_utc": "2026-10-24T04:32:18.055874",
+   "omitida": true
+  },
+  "rem": {
+   "estado": "ok",
+   "filas": 319,
+   "ok_utc": "2026-10-24T04:32:19.179839",
+   "omitida": true
+  },
+  "itcrm": {
+   "estado": "ok",
+   "filas": 32643,
+   "ok_utc": "2026-10-24T14:30:24.872504"
+  },
+  "balance_cambiario": {
+   "estado": "ok",
+   "filas": 26426,
+   "ok_utc": "2026-10-24T04:32:27.986932",
+   "omitida": true
+  },
+  "a3_mae": {
+   "estado": "ok",
+   "filas": 342,
+   "ok_utc": "2026-10-24T14:30:58.401655"
+  },
+  "servicio_deuda": {
+   "estado": "ok",
+   "filas": 24,
+   "ok_utc": "2026-10-24T14:30:58.403529"
+  },
+  "calendario_indec": {
+   "estado": "ok",
+   "filas": 95,
+   "ok_utc": "2026-10-24T14:31:07.040623"
+  },
+  "licitaciones": {
+   "estado": "ok",
+   "filas": 0,
+   "ok_utc": "2026-10-24T14:34:54.574360",
+   "error": "de-instrumentos-del-tesoro-nacional-denominados-15: `Import lxml` failed.  Use pip, conda, or your preferred package management tool to install the lx | de-instrumentos-del-tesoro-nacional-denominados-13: `Import lxml` failed.  Use pip, conda, or your preferred package management tool to install the lx | de-instrumentos-del-tesoro-nacional-denominados-12: `Import lxml` failed.  Use pip, conda, or your preferred package management tool to install the lx | de-instrumentos-del-tesoro-nacional-denom"
+  },
+  "lecaps": {
+   "estado": "ok",
+   "filas": 614
+  },
+  "cer_bonos": {
+   "estado": "ok",
+   "filas": 1290,
+   "ok_utc": "2026-10-24T14:35:23.118645"
+  },
+  "byma_snapshots": {
+   "estado": "ok",
+   "filas": 0
+  }
+ },
+ "notas": {
+  "tcr_base": "2026-09",
+  "swap_cny_millones_usado": 130010.5,
+  "dep_tesoro": "BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500",
+  "inflacion_implicita_puntos": 1592
+ },
+ "atrasadas": [
+  "caucion_a3_pesos_1d",
+  "caucion_a3_usd_1d",
+  "recaudacion_dga",
+  "recaudacion_dgi",
+  "recaudacion_total",
+  "repo_a3_pesos_1d",
+  "tcr_brasil",
+  "tcr_eeuu",
+  "tcrm",
+  "tcrm_piso",
+  "tcrm_techo"
+ ]
+}
