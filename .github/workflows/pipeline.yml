@@ -75,7 +75,7 @@ jobs:
         id: alerta
         if: always()
         env:
-          PIPELINE_FALLO: ${{ failure() && '1' || '0' }}
+          PIPELINE_FALLO: ${{ job.status == 'failure' && '1' || '0' }}
         run: python pipeline/alerta.py
       - name: Abrir, actualizar o cerrar el issue de alerta
         if: always() && steps.alerta.outcome == 'success'
