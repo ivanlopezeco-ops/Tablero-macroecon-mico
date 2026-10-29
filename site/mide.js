@@ -21,7 +21,7 @@ const MIDE = {
   dep_tesoro: "Depósitos del gobierno en moneda extranjera en el BCRA. El BCRA los informa en pesos y se convierten a dólares con el A3500 de cada día. Se restan de las reservas netas para llegar a las súper netas.",
 
   // ---------------------------------------------------------------- cambiario
-  banda: "El A3500 es el tipo de cambio mayorista de referencia que publica el BCRA. El gráfico lo muestra junto al piso y el techo de la banda cambiaria. La distancia al techo del título se calcula como techo / A3500 - 1.",
+  banda: "El A3500 es el tipo de cambio mayorista de referencia que publica el BCRA. El gráfico lo muestra junto al piso y el techo de la banda cambiaria. La distancia al techo se calcula como (techo / A3500 - 1) × 100: mide la suba porcentual que necesitaría el mayorista para alcanzarlo, tomando el dólar actual como base.",
   tcr_bilateral: [
     "El tipo de cambio real bilateral con EE.UU. lleva el A3500 a precios de un mes base, que es el último con IPC publicado. Se multiplica el A3500 por los precios de EE.UU. (CPI) y se divide por los de Argentina (IPC del INDEC). Los índices mensuales se interpolan por día.",
     "El piso y el techo de la banda reciben el mismo ajuste. El tramo punteado usa una inflación del mes en curso estimada con el REM.",

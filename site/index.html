@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="ampliacion.css">
   <script>
     try { const t = localStorage.getItem("tema"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
@@ -35,6 +36,8 @@
     <nav class="tabs" id="tabs" aria-label="Secciones"></nav>
   </header>
 
+  <div class="aviso-datos" id="avisoDatos" role="status" hidden></div>
+  <div class="aviso-datos" id="avisoCarga" role="alert" hidden></div>
   <main id="main"></main>
 
   <footer class="pie">
@@ -47,6 +50,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
   <script src="mide.js"></script>
+  <script src="ampliacion.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

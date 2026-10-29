@@ -6,6 +6,7 @@ import io
 import json
 import pathlib
 import re
+import numbers
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -354,16 +355,30 @@ MERVAL_MSCI_SEMILLA = {dt.date(2026, 10, 16): 100000.0, dt.date(2026, 10, 19): 9
 def byma_indices():
     """MSCI MERVAL del panel de índices de BYMA: cierre si ya está, si no último valor (provisorio)."""
     r = requests.post(f"{BYMA}/index-price", json={}, headers=BYMA_H, verify=False, timeout=60)
+    r.raise_for_status()
     filas = [(f, "merval_msci", v, "puntos", "MSCI MERVAL (Rava, base 16/10/26 = 100.000)") for f, v in MERVAL_MSCI_SEMILLA.items()]
+    errores, encontrado = [], False
     for d in r.json().get("data", []):
         if d.get("symbol") != "MMSCI":
             continue
+        encontrado = True
+        # El panel puede devolver precios sin fecha, incluso durante el fin de semana.
+        # El reloj del servidor NO fecha la cotización: conservar la última observación.
+        if not d.get("date"):
+            errores.append("MSCI MERVAL: BYMA devolvió la cotización sin fecha; se conserva el último dato fechado")
+            continue
         f = dt.date.fromisoformat(d["date"][:10])
+        if f > HOY:
+            raise ValueError("MSCI MERVAL: fecha de cotización futura")
         if d.get("closingPrice"):
             filas.append((f, "merval_msci", d["closingPrice"], "puntos", "BYMA (MSCI MERVAL)"))
         elif d.get("price") and en_rueda():
             filas.append((f, "merval_msci", d["price"], "puntos", "BYMA (MSCI MERVAL, en la rueda) (provisorio)"))
-    return _df(filas)
+    if not encontrado:
+        raise ValueError("MSCI MERVAL: símbolo MMSCI ausente del panel de BYMA")
+    df = _df(filas)
+    df.attrs["errores"] = errores
+    return df
 
 
 # ---------------------------------------------------------------- INDEC / datos.gob.ar
@@ -580,6 +595,8 @@ LIC_VERSION = 2  # subirlo vuelve a leer todos los comunicados (2: TEM de emisi�
 
 def _num_ar(s):
     """'$ 5.000.000 (***)' / 'USD 987,80' / '29,75%' -> float (None si no hay número)."""
+    if isinstance(s, numbers.Real):
+        return None if pd.isna(s) else float(s)
     m = re.search(r"-?\d[\d.]*(?:,\d+)?", str(s))
     return float(m.group(0).replace(".", "").replace(",", ".")) if m else None
 
@@ -601,7 +618,7 @@ def _licitacion(url):
     if m:
         k = lambda u: 1e6 if u == "billones" else 1  # noqa: E731  (a millones de pesos)
         lic["ofertado"], lic["adjudicado"] = _num_ar(m.group(1)) * k(m.group(2)), _num_ar(m.group(3)) * k(m.group(4))
-    for tabla in pd.read_html(io.StringIO(t)):
+    for tabla in pd.read_html(io.StringIO(t), thousands=".", decimal=","):
         cab = [str(c) for c in tabla.columns]
         if not re.match(r"instrumento", cab[0], re.I) or len(cab) < 6:
             continue
@@ -624,6 +641,7 @@ def _licitacion(url):
 
 def licitaciones(previas):
     """Resultados de las licitaciones del Tesoro por efectivo. `previas`: lista ya guardada (data/licitaciones.json)."""
+    conservadas = list(previas)  # no perder datos si falla la relectura de una versión anterior
     previas = [x for x in previas if x.get("v") == LIC_VERSION]
     vistas = {x["url"] for x in previas}
     nuevas, errores = [], []
@@ -640,7 +658,7 @@ def licitaciones(previas):
         ya_vistas = any(u in vistas for u in urls)   # se llegó a lo leído en corridas anteriores
         if not hay_noticias or ya_vistas or any(x["f"] < str(LIC_DESDE) for x in nuevas):
             break
-    todas = {x["url"]: x for x in previas + nuevas}
+    todas = {x["url"]: x for x in conservadas + nuevas}
     lista = sorted((x for x in todas.values() if x["f"] >= str(LIC_DESDE) and x["adjudicado"]), key=lambda x: x["f"])
     return lista, errores
 

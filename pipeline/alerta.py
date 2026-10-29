@@ -25,15 +25,24 @@ def armar():
     e = json.loads(ruta.read_text(encoding="utf-8")) if ruta.exists() else {"corrida_utc": dt.datetime.utcnow().isoformat()}
     ahora = dt.datetime.utcnow()
     caidas, recientes, parciales = [], [], []
+    parciales_persistentes = []
     for k, v in e.get("fuentes", {}).items():
-        if v.get("estado") == "ERROR":
+        if v.get("estado") in ("ERROR", "PARCIAL") or v.get("error"):
             desde = dt.datetime.fromisoformat(v.get("error_desde") or e["corrida_utc"])
+            if desde.tzinfo:
+                desde = desde.astimezone(dt.timezone.utc).replace(tzinfo=None)
             horas = (ahora - desde).total_seconds() / 3600
-            (caidas if horas >= HORAS_ERROR else recientes).append((k, horas, v.get("error", "")))
-        elif v.get("error"):
-            parciales.append((k, v["error"]))
+            if v.get("estado") == "ERROR":
+                (caidas if horas >= HORAS_ERROR else recientes).append((k, horas, v.get("error", "")))
+            else:
+                parciales.append((k, v.get("error", "")))
+                if horas >= HORAS_ERROR:
+                    parciales_persistentes.append(k)
     atrasadas = e.get("atrasadas", [])
     corte = (DATA / "error.txt").read_text(encoding="utf-8")[-1500:] if (DATA / "error.txt").exists() else ""
+    fallo_workflow = os.environ.get("PIPELINE_FALLO") == "1"
+    if fallo_workflow and not corte:
+        corte = "Falló una etapa del workflow. Revisar el registro de GitHub Actions; la web no se publicó."
 
     L = [f"Corrida del {e['corrida_utc'][:16].replace('T', ' ')} UTC. Tablero: {PAGINA}", ""]
     if corte:
@@ -52,13 +61,15 @@ def armar():
         L += [f"- {k}: {err[:200]}" for k, err in parciales] + [""]
     L += ["Antes de tocar código, revisar `estado.json` en la rama `datos`. El issue se cierra solo cuando todo vuelve a la normalidad."]
 
-    clave = sorted([f"caida:{k}" for k, *_ in caidas] + [f"atraso:{v}" for v in atrasadas] + (["corte"] if corte else []))
+    clave = sorted([f"caida:{k}" for k, *_ in caidas] + [f"parcial:{k}" for k in parciales_persistentes]
+                   + [f"atraso:{v}" for v in atrasadas] + (["corte"] if corte else []))
     firma = hashlib.sha1("|".join(clave).encode()).hexdigest()[:12]
     L.append(f"\n<!-- firma: {firma} -->")
     return bool(clave), firma, "\n".join(L)
 
 
 if __name__ == "__main__":
+    DATA.mkdir(parents=True, exist_ok=True)
     hay, firma, texto = armar()
     (DATA / "alerta.md").write_text(texto, encoding="utf-8")
     print(texto)

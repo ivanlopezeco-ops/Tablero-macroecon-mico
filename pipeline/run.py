@@ -18,6 +18,7 @@ import pandas as pd
 
 import bonos as B
 import fuentes as F
+from salud import normalizar
 
 BASE = pathlib.Path(__file__).resolve().parents[1]
 DATA = BASE / "data"
@@ -564,6 +565,8 @@ def main():
     try:
         previas = json.loads(lpath.read_text(encoding="utf-8")) if lpath.exists() else []
         lic, errores = F.licitaciones(previas)
+        if errores and not lic:
+            raise RuntimeError("No se pudieron leer las licitaciones: " + " | ".join(errores)[:450])
         lpath.write_text(json.dumps(lic, ensure_ascii=False), encoding="utf-8")
         estado["licitaciones"] = {"estado": "ok", "filas": len(lic), "ok_utc": dt.datetime.utcnow().isoformat()}
         if errores:
@@ -632,7 +635,8 @@ def main():
         base = base[~base["variable"].isin(rehechas) | base.index.isin(base.index[len(base) - len(nuevo):])]
     # Variables descartadas: foto de caución de BYMA (la reemplaza A3) y EMBIG del BCRP (no empalma con el EMBIGD)
     base = base[~base["variable"].str.match(r"caucion_pesos_\d+d$|riesgo_pais_.*_bcrp$|riesgo_pais_latam_largo$")]
-    base = base[~base["variable"].isin(["reservas_netas", "reservas_super_netas", "caucion_pesos_1d_vwap", "compras_bcra_pct_volumen"])]
+    # Las reservas previas se reemplazan solo si derivadas() termina bien.
+    base = base[~base["variable"].isin(["caucion_pesos_1d_vwap", "compras_bcra_pct_volumen"])]
     base = base.drop_duplicates(["fecha", "variable"], keep="last")
 
     notas = {}
@@ -643,28 +647,40 @@ def main():
         estado["derivadas"] = {"estado": "ERROR", "error": traceback.format_exc()[-1500:]}
     base = base.drop_duplicates(["fecha", "variable"], keep="last").sort_values(["variable", "fecha"])
     base[COLS].to_csv(archivo, index=False)
-    if F.COMPLETO and not any(v["estado"] == "ERROR" for v in estado.values()):
-        (RAW / "historia.json").write_text(json.dumps({"version": VERSION_HISTORIA, "fecha": str(F.HOY)}))
+    # Los bloques aprobados se calculan aparte; una falla conserva la última versión válida.
+    try:
+        import ampliacion
+        n, errores_ampliacion = ampliacion.actualizar(base)
+        estado["ampliacion"] = {"estado": "ok", "filas": n, "ok_utc": dt.datetime.utcnow().isoformat()}
+        if errores_ampliacion:
+            estado["ampliacion"]["error"] = " | ".join(errores_ampliacion)[:800]
+    except Exception as e:
+        estado["ampliacion"] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}"[:800]}
+    print("ampliacion", estado["ampliacion"]["estado"])
+    for nombre, nota in notas.items():
+        if isinstance(nota, str) and nota.startswith("ERROR:"):
+            estado[f"calculo_{nombre}"] = {"estado": "ERROR", "error": nota}
+    try:
+        validar(base, notas, estado)
+    except Exception:
+        detalle = traceback.format_exc()
+        estado["validacion"] = {"estado": "ERROR", "error": detalle[-1500:]}
+        (DATA / "validacion.md").write_text("ERROR en validación\n\n" + detalle, encoding="utf-8")
 
     # Desde cuándo falla cada fuente: alerta.py avisa solo si la falla dura varias horas (las APIs públicas
     # tienen caídas de una corrida que se arreglan solas).
     ahora = dt.datetime.utcnow().isoformat()
-    for k, v in estado.items():
-        if v.get("estado") == "ERROR":
-            p = previo.get(k, {})
-            v["error_desde"] = p.get("error_desde", ahora) if p.get("estado") == "ERROR" else ahora
+    normalizar(estado, previo, ahora)
+    if F.COMPLETO and all(v["estado"] == "ok" for v in estado.values()):
+        (RAW / "historia.json").write_text(json.dumps({"version": VERSION_HISTORIA, "fecha": str(F.HOY)}))
     (DATA / "estado.json").write_text(json.dumps({"corrida_utc": dt.datetime.utcnow().isoformat(), "modo": "completo" if F.COMPLETO else "diario",
                                                   "fuentes": estado, "notas": notas,
                                                   "atrasadas": [r["variable"] for r in evaluar_rezagos(base) if r["atrasada"]]},
                                                  ensure_ascii=False, indent=1), encoding="utf-8")
-    try:
-        validar(base, notas, estado)
-    except Exception:  # noqa: BLE001
-        (DATA / "validacion.md").write_text("ERROR en validación\n\n" + traceback.format_exc(), encoding="utf-8")
-    (DATA / "error.txt").unlink(missing_ok=True)  # el corte de una corrida anterior ya no corre
     print("filas totales:", len(base), "variables:", base["variable"].nunique())
     import exportar
     exportar.exportar()
+    (DATA / "error.txt").unlink(missing_ok=True)  # solo después de exportar correctamente
 
 
 if __name__ == "__main__":
@@ -674,3 +690,4 @@ if __name__ == "__main__":
         DATA.mkdir(exist_ok=True)
         (DATA / "error.txt").write_text(traceback.format_exc(), encoding="utf-8")
         print(traceback.format_exc())
+        raise

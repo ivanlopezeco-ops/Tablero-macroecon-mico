@@ -14,6 +14,9 @@ on:
       - "pipeline/**"
       - "config/**"
       - "site/**"
+      - "requirements.txt"
+      - "tests/test_*.py"
+      - "tests/test_frontend.cjs"
       - ".github/workflows/pipeline.yml"
 
 permissions:
@@ -49,10 +52,15 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: .github/workflows/pipeline.yml
-      - run: pip install requests pandas openpyxl xlrd pypdf
-      - run: python pipeline/run.py
+          cache-dependency-path: requirements.txt
+      - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -p "test_regresiones.py"
+      - run: python -m unittest discover -s tests -p "test_ampliacion.py"
+      - run: node --test tests/test_frontend.cjs
+      - id: corrida
+        run: python pipeline/run.py
       - name: Guardar la base en la rama datos
+        if: always() && steps.corrida.outcome != 'skipped' && steps.corrida.outcome != ''
         run: |
           rm -rf /tmp/datos && mkdir -p /tmp/datos && cp -r data /tmp/datos/
           cd /tmp/datos
@@ -66,6 +74,8 @@ jobs:
       - name: Avisar fallas
         id: alerta
         if: always()
+        env:
+          PIPELINE_FALLO: ${{ failure() && '1' || '0' }}
         run: python pipeline/alerta.py
       - name: Abrir, actualizar o cerrar el issue de alerta
         if: always() && steps.alerta.outcome == 'success'

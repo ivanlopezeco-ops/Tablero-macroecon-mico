@@ -18,6 +18,12 @@ const PALETA = ["azul", "gris", "celeste", "naranja", "verde", "violeta", "ocre"
 const nf = (dec) => new Intl.NumberFormat("es-AR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
 const fmt = (v, dec = 0) => (v == null || isNaN(v) ? "s/d" : nf(dec).format(v));
 const fmtS = (v, dec = 0) => (v == null || isNaN(v) ? "s/d" : (v > 0 ? "+" : "") + nf(dec).format(v));
+function textoDistanciaTecho(v) {
+  if (v == null || !Number.isFinite(v)) return "No hay un dato de distancia al techo de la banda";
+  if (v < 0) return `El mayorista tendría que bajar ${fmt(Math.abs(v), 1)}% para volver al techo de la banda`;
+  if (v === 0) return "El mayorista está en el techo de la banda";
+  return `El mayorista tendría que subir ${fmt(v, 1)}% para alcanzar el techo de la banda`;
+}
 const fechaCorta = (s) => { const [y, m, d] = s.split("-"); return `${+d}-${MESES[+m - 1]}-${y.slice(2)}`; };
 const mesCorto = (s) => { const [y, m] = s.split("-"); return `${MESES[+m - 1]}-${y.slice(2)}`; };
 
@@ -213,7 +219,7 @@ function grafico(el, cfg) {
   const zoomA = Math.max(Date.parse(ra), t0), zoomB = Math.min(Date.parse(rb) + 864e5, t1 + 864e5);
   ch.setOption({
     animation: false, textStyle: { fontFamily: "Poppins" },
-    legend: leyenda ? { top: 0, left: 0, itemWidth: 14, itemHeight: 8, textStyle: { color: c.texto2, fontSize: 11 }, data: cfg.series.map((s) => s.nombre) } : undefined,
+    legend: leyenda ? { top: 0, left: 0, itemGap: 18, itemWidth: 14, itemHeight: 8, textStyle: { color: c.texto2, fontSize: 11, fontFamily: "Poppins" }, data: cfg.series.map((s) => s.nombre) } : undefined,
     grid: { left: 8, right: margen, top: leyenda ? 10 + 20 * Math.ceil(cfg.series.reduce((t, s) => t + s.nombre.length * 6.6 + 34, 0) / Math.max(200, ancho - 16)) : 14, bottom: 46, containLabel: true },
     tooltip: {
       trigger: "axis", backgroundColor: c.card, borderColor: c.eje, textStyle: { color: c.tinta, fontSize: 12 }, confine: true,
@@ -380,7 +386,7 @@ function kpi(cont, k) {
   const val = k.valor ? k.valor(v) : fmt(v, k.dec ?? 0);
   const dt = d == null ? "" : `${d > 0 ? "▲" : d < 0 ? "▼" : "="} ${fmt(Math.abs(d), k.decD ?? k.dec ?? 0)}`;
   const atraso = f ? Math.round((Date.now() - Date.parse(f)) / 864e5) : 0;
-  const viejo = f && atraso > (k.mensual ? 110 : 9);
+  const viejo = f && (D.estado?.atrasadas || []).includes(k.v);
   const pv = esProv(k.v);
   el.innerHTML = `<div class="lbl">${k.lbl}</div><div class="val">${val}<small>${k.u || ""}</small></div>
     <div class="meta"><span>${dt}</span><span class="${viejo ? "viejo" : pv ? "prov" : ""}" title="${viejo ? `Último dato hace ${atraso} días` : pv ? "Dato del día, provisorio" : ""}">${f ? (k.mensual ? mesCorto(f) : fechaCorta(f)) + (pv ? " ·prov." : "") : ""}</span></div><div class="spark"></div>`;
@@ -495,7 +501,7 @@ function novedades() {
   if (a) {
     const dD = pctVar("tc_mayorista_a3500", prev("tc_mayorista_a3500")[0]);
     const dM = pctVar("tc_mayorista_a3500", finMesAnt(fA));
-    L.push(`El <b>dólar mayorista</b> (A3500) cerró a $${fmt(a, 2)} el ${fechaCorta(fA)}, con una variación de ${fmtS(dD, 2)}% en el día y de ${fmtS(dM, 1)}% en el mes. Está ${fmt(ult("distancia_techo_banda")[1], 1)}% por debajo del techo de la banda.`);
+    L.push(`El <b>dólar mayorista</b> (A3500) cerró a $${fmt(a, 2)} el ${fechaCorta(fA)}, con una variación de ${fmtS(dD, 2)}% en el día y de ${fmtS(dM, 1)}% en el mes. ${textoDistanciaTecho(ult("distancia_techo_banda")[1])}.`);
   }
   const [fC, ccl] = ult("ccl");
   if (ccl) {
@@ -600,7 +606,7 @@ function estimadoDesdeFuente(v) { return ((meta(v).f || "").match(/desde (\d{4}-
 
 function cambiario(main) {
   const g = grilla(main);
-  tarjeta(g, { mide: "banda", titulo: () => `El mayorista está ${fmt(ult("distancia_techo_banda")[1], 1)}% por debajo del techo de la banda`,
+  tarjeta(g, { mide: "banda", titulo: () => textoDistanciaTecho(ult("distancia_techo_banda")[1]),
     bajada: "A3500 y límites de la banda cambiaria · En pesos por dólar corrientes", fuente: F.bcra, logAuto: true,
     series: [{ v: "tc_mayorista_a3500", nombre: "A3500" }, { v: "banda_techo", nombre: "Techo" }, { v: "banda_piso", nombre: "Piso", color: "gris" }] });
   const base = (meta("tcr_bilateral").u.match(/de (\d{4}-\d{2})/) || [])[1];
@@ -703,6 +709,7 @@ function reservas(main) {
   tarjeta(g, { mide: "dep_tesoro", titulo: () => `El Tesoro tiene USD ${fmt(ult("res_dep_tesoro")[1])} millones depositados en el BCRA`,
     bajada: "Depósitos del gobierno en moneda extranjera · En millones de USD", fuente: F.bcra,
     series: [{ v: "res_dep_tesoro", nombre: "Depósitos" }] });
+  ampReservas(main);
 }
 
 const GLOSARIO_TASAS = [
@@ -829,6 +836,8 @@ function curvaBonos(el) {
     name: g, type: "scatter", symbolSize: 9, itemStyle: { color: color[g] },
     data: ts.map((t) => ({ name: t, value: [ult(bonoM("bono_md", t))[1], ult(bonoM("bono_tir", t))[1]] })).filter((p) => p.value[0] != null && p.value[1] != null),
     label: { show: true, position: "top", formatter: (p) => p.name, color: color[g], fontSize: 10, fontWeight: 600 },
+    labelLayout: { hideOverlap: true },
+    emphasis: { label: { show: true } },
   }));
   ch.setOption({ animation: false, textStyle: { fontFamily: "Poppins" },
     legend: { top: 0, left: 0, itemWidth: 12, itemHeight: 8, textStyle: { color: c.texto2, fontSize: 11 } },
@@ -1443,15 +1452,42 @@ function moverNav() {
 function estado() {
   const e = D.estado; const gen = new Date(D.generado);
   document.getElementById("actualizado").textContent =
-    `Datos al ${gen.toLocaleDateString("es-AR", { day: "numeric", month: "long" })}, ${gen.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false })} h`;
-  const filas = Object.entries(e.fuentes).map(([k, v]) => `<tr><td>${k}</td><td>${v.estado}</td><td>${v.filas ?? ""}</td><td>${(v.error || "").slice(0, 120)}</td></tr>`);
-  document.getElementById("estado").innerHTML = `<table class="tabla"><tr><th>Fuente</th><th>Estado</th><th>Filas</th><th>Detalle</th></tr>${filas.join("")}</table>`;
+    `Última actualización del tablero: ${gen.toLocaleDateString("es-AR", { day: "numeric", month: "long", timeZone: "America/Argentina/Buenos_Aires" })}, ${gen.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/Argentina/Buenos_Aires" })} h`;
+  const problemas = Object.entries(e.fuentes).filter(([, v]) => v.estado === "ERROR" || v.estado === "PARCIAL" || v.error);
+  const atrasadas = e.atrasadas || [];
+  const aviso = document.getElementById("avisoDatos");
+  aviso.replaceChildren(); aviso.hidden = !problemas.length && !atrasadas.length;
+  if (!aviso.hidden) {
+    const detalle = [];
+    if (problemas.length) detalle.push(`Fuentes con problemas: ${problemas.map(([k]) => k).join(", ")}`);
+    if (atrasadas.length) detalle.push(`${atrasadas.length} series con demora mayor a la esperada`);
+    aviso.append(document.createTextNode(detalle.join(". ") + ". "));
+    const enlace = document.createElement("a"); enlace.href = "#estado"; enlace.textContent = "Ver estado y fechas";
+    enlace.onclick = () => { document.getElementById("estado").closest("details").open = true; };
+    aviso.append(enlace);
+  }
+  const panel = document.getElementById("estado"); panel.replaceChildren();
+  const tabla = document.createElement("table"); tabla.className = "tabla";
+  const encabezado = document.createElement("tr");
+  ["Fuente", "Estado", "Filas", "Detalle"].forEach((t) => { const th = document.createElement("th"); th.textContent = t; encabezado.append(th); });
+  tabla.append(encabezado);
+  Object.entries(e.fuentes).forEach(([k, v]) => {
+    const tr = document.createElement("tr");
+    const status = v.estado === "ok" && v.error ? (v.filas === 0 ? "ERROR" : "PARCIAL") : v.estado;
+    [k, status, v.filas ?? "", v.error || ""].forEach((t) => { const td = document.createElement("td"); td.textContent = String(t); tr.append(td); });
+    tabla.append(tr);
+  });
+  panel.append(tabla);
+  if (atrasadas.length) {
+    const p = document.createElement("p"); p.textContent = "Series atrasadas: " + atrasadas.join(", "); panel.append(p);
+  }
 }
 
 function iniciar() {
   const tabs = document.getElementById("tabs");
   SECCIONES.forEach((s) => { const b = document.createElement("button"); b.textContent = s.nombre; b.dataset.id = s.id;
-    if (s.id === TAB) b.className = "on"; b.onclick = () => { TAB = s.id; tabs.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+    b.setAttribute("aria-pressed", String(s.id === TAB));
+    if (s.id === TAB) b.className = "on"; b.onclick = () => { TAB = s.id; tabs.querySelectorAll("button").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", String(x === b)); });
       try { history.replaceState(null, "", "#" + TAB); } catch (e) {} render(); window.scrollTo(0, 0); }; tabs.appendChild(b); });
   document.querySelectorAll("#rangos button").forEach((b) => b.classList.toggle("on", !R.desde && +b.dataset.r === R.dias));
   document.querySelectorAll("#rangos button").forEach((b) => b.onclick = () => {
@@ -1470,6 +1506,7 @@ function iniciar() {
     if (NAV) NAV.resize(); clearTimeout(tr); tr = setTimeout(render, 250); });
 }
 
+instalarAmpliacion();
 const h = location.hash.slice(1); if (h) TAB = h;
 try {   // ?r=días (0 = todo) o ?desde=AAAA-MM-DD&hasta=AAAA-MM-DD
   const q = new URLSearchParams(location.search);
@@ -1479,26 +1516,53 @@ try {   // ?r=días (0 = todo) o ?desde=AAAA-MM-DD&hasta=AAAA-MM-DD
 // Carga en dos pasos: data_resumen.json (lo que usa el Resumen, últimos dos años, unos 100 KB) dibuja la página enseguida
 // y data.json (todo, varios MB) baja en segundo plano. Las demás pestañas esperan al completo.
 let COMPLETO = false;
-const pedir = (archivo) => fetch(archivo, { cache: "no-cache" }).then((r) => { if (!r.ok) throw new Error(archivo + " " + r.status); return r.json(); });
-const cargaCompleta = pedir("data.json");
+let errorCarga = null, cargandoCompleto = false;
+async function pedir(archivo) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 45000);
+  try {
+    const r = await fetch(archivo, { cache: "no-cache", signal: controller.signal });
+    if (!r.ok) throw new Error(archivo + " " + r.status);
+    return await r.json();
+  } finally { clearTimeout(timeout); }
+}
+function mostrarErrorCarga() {
+  const aviso = document.getElementById("avisoCarga"); aviso.hidden = !errorCarga; aviso.replaceChildren();
+  if (!errorCarga) return;
+  aviso.append(document.createTextNode(D ? "No se pudo descargar la base completa. El resumen disponible sigue visible. " : "No se pudieron cargar los datos. "));
+  const boton = document.createElement("button"); boton.textContent = "Reintentar carga"; boton.onclick = cargarCompleto; aviso.append(boton);
+}
 const renderBase = render;
 render = function () {   // eslint-disable-line no-func-assign
   if (COMPLETO || TAB === "resumen") return renderBase();
   charts.splice(0).forEach((c) => c.dispose());
-  document.getElementById("main").innerHTML = '<p class="seccion-intro" style="margin:32px 0">Cargando datos…</p>';
+  document.getElementById("main").innerHTML = `<p class="seccion-intro" style="margin:32px 0">${errorCarga ? "Esta sección necesita la base completa. Usá Reintentar carga para volver a descargarla." : "Cargando datos…"}</p>`;
 };
 function arrancar(j) {
   D = decodificar(j); if (!SECCIONES.some((s) => s.id === TAB)) TAB = "resumen";
-  iniciar(); estado(); dibujarNav(); render();
+  iniciar(); estado(); dibujarNav(); render(); mostrarErrorCarga();
 }
-cargaCompleta.then((j) => {
-  const yaArranco = !!D;
-  D = decodificar(j); COMPLETO = true;
-  if (!yaArranco) { arrancar(j); return; }
-  estado(); dibujarNav();
-  // en el Resumen solo se redibuja si el período pide más historia que la del archivo chico
-  if (TAB !== "resumen" || R.dias === 0 || R.dias > 730 || (R.desde && Date.parse(R.desde) < Date.now() - 730 * 864e5)) render();
-}).catch((e) => { if (!D) document.getElementById("main").textContent = "No se pudieron cargar los datos: " + e; });
+async function cargarCompleto() {
+  if (cargandoCompleto) return;
+  cargandoCompleto = true; errorCarga = null; mostrarErrorCarga();
+  if (D) render();
+  try {
+    const j = await pedir("data.json");
+    const yaArranco = !!D;
+    D = decodificar(j); COMPLETO = true;
+    if (!yaArranco) { arrancar(j); return; }
+    estado(); dibujarNav();
+    // Con la base completa se reemplaza también un resumen de una publicación anterior.
+    render();
+  } catch (e) {
+    errorCarga = e; mostrarErrorCarga();
+    if (D) render(); else document.getElementById("main").textContent = "La carga no se completó. Podés reintentar con el botón de arriba.";
+  } finally { cargandoCompleto = false; }
+}
+// Dar tiempo a la tipografía sin bloquear los datos si su servidor no responde.
+Promise.race([document.fonts?.ready || Promise.resolve(), new Promise(resolve => setTimeout(resolve, 1500))]).then(() => {
+cargarCompleto();
 if (!location.hash || location.hash === "#resumen") {
   pedir("data_resumen.json").then((j) => { if (!D) arrancar(j); }).catch(() => {});   // si falla, arranca con el completo
 }
+});

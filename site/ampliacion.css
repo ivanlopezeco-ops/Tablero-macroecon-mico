@@ -1,0 +1,12 @@
+.amp-intro {margin:28px 0 24px;max-width:1000px}
+.amp-intro h2 {font-size:26px;line-height:1.3;margin:0 0 10px;font-weight:600;text-wrap:balance}
+.amp-intro p {font-size:14px;line-height:1.75;color:var(--texto2);margin:0;max-width:95ch}
+.amp-nota {font-size:13px;line-height:1.75;color:var(--texto2);margin:22px 0;max-width:110ch}
+.amp-selector {display:flex;align-items:center;gap:10px;font-size:13px;color:var(--texto2);margin:12px 0 18px;flex-wrap:wrap}
+.amp-selector select {font:inherit;color:var(--tinta);background:var(--card);padding:8px 12px;border:1px solid var(--eje);border-radius:5px;max-width:100%;cursor:pointer}
+.amp-scroll {overflow:auto}
+.amp-scroll .tabla th[scope=row] {text-align:left;font-weight:500;white-space:normal;min-width:140px}
+.amp-scroll .tabla td {white-space:normal}
+.amp-scroll .tabla th,.amp-scroll .tabla td {padding:11px 10px;line-height:1.5;font-variant-numeric:tabular-nums}
+select:focus-visible,summary:focus-visible {outline:2px solid var(--azul);outline-offset:3px}
+@media(max-width:600px){.amp-intro h2{font-size:22px}.amp-intro{margin-top:20px}.amp-scroll .tabla{font-size:12px}}
