@@ -1,4 +1,4 @@
-# Test 7 — 2026-10-29 16:59 UTC
+# Test 7 — 2026-10-29 18:12 UTC
 
 
 ## INDEC IPC
@@ -33,9 +33,9 @@ requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='fred.stlouisfed.org',
 
 
 ## BLS CPI
-{"status":"REQUEST_SUCCEEDED","responseTime":85,"message":[],"Results":{
+{"status":"REQUEST_SUCCEEDED","responseTime":100,"message":[],"Results":{
 "series":
-[{"seriesID":"CUSR0000SA0","data":[{"year":"2026","period":"M09","periodName":"September","latest":"true","value":"336.298","footnotes":[{}]},{"year":"2026","period":"M08","periodName":"August","value":"334.131","footnotes":[{}]},{"year":"2026","period":"M07","periodName":"July","value":"332.813","footnotes":[{}]},{"year":"2026","period":"M06","periodName":"June","value":"332.568","footnotes":[{}]},{"year":"2026","period":"M05","periodName":"May","value":"333.979","footnotes":[{}]},{"year":"2026","period":"M04",
+[{"seriesID":"CUSR0000SA0","data":[{"year":"2026","period":"M09","periodName":"September","latest":"true","value":"336.298","footnotes":[{}]},{"year":"2026","period":"M08","periodName":"August","value":"334.131","footnotes":[{}]},{"year":"2026","period":"M07","periodName":"July","value":"332.813","footnotes":[{}]},{"year":"2026","period":"M06","periodName":"June","value":"332.568","footnotes":[{}]},{"year":"2026","period":"M05","periodName":"May","value":"333.979","footnotes":[{}]},{"year":"2026","period":"M04"
 
 ## BCRA series.xlsm filas diarias
 === BASE MONETARIA (6443, 33)
