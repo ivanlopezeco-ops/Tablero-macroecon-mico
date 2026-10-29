@@ -94,6 +94,72 @@ class IndiceByma(unittest.TestCase):
             fuentes.byma_indices()
 
 
+class Descargas(unittest.TestCase):
+    def respuesta(self, status=200):
+        r = Mock(status_code=status)
+        if status >= 400:
+            r.raise_for_status.side_effect = fuentes.requests.HTTPError(str(status))
+        return r
+
+    def test_descarga_cortada_reintenta_misma_url(self):
+        ok = self.respuesta()
+        cortada = fuentes.requests.exceptions.ChunkedEncodingError("archivo incompleto")
+        with patch.object(fuentes.requests, "get", side_effect=[cortada, ok]) as get, patch("time.sleep"):
+            self.assertIs(fuentes._get(fuentes.F_BC), ok)
+        self.assertEqual(get.call_count, 2)
+        self.assertEqual(get.call_args_list[0], get.call_args_list[1])
+
+    def test_descarga_cortada_persistente_no_se_oculta(self):
+        with patch.object(fuentes.requests, "get", side_effect=fuentes.requests.exceptions.ChunkedEncodingError("incompleto")) as get, patch("time.sleep"):
+            with self.assertRaises(fuentes.requests.exceptions.ChunkedEncodingError):
+                fuentes._get(fuentes.F_BC)
+        self.assertEqual(get.call_count, 3)
+
+    def test_error_500_sigue_reintentando(self):
+        mal, ok = self.respuesta(503), self.respuesta()
+        with patch.object(fuentes.requests, "get", side_effect=[mal, ok]), patch("time.sleep"):
+            self.assertIs(fuentes._get("https://ejemplo.test"), ok)
+        mal.close.assert_called_once()
+
+    def test_error_400_generico_no_se_reintenta(self):
+        with patch.object(fuentes.requests, "get", return_value=self.respuesta(400)) as get, patch("time.sleep"):
+            with self.assertRaises(fuentes.requests.HTTPError):
+                fuentes._get("https://ejemplo.test")
+        self.assertEqual(get.call_count, 1)
+
+    def test_byma_400_transitorio_mismos_parametros(self):
+        mal, ok = self.respuesta(400), self.respuesta()
+        ok.json.return_value = {"t": [1792512000], "c": [65.25]}
+        with patch.object(fuentes.requests, "get", side_effect=[mal, ok]) as get, patch("time.sleep"):
+            df = fuentes._byma_historia({"AL30D 24HS": ("al30_usd_mep", "USD")})
+        self.assertFalse(df.attrs["errores"])
+        self.assertEqual(df.iloc[0]["valor"], 65.25)
+        self.assertEqual(df.iloc[0]["unidad"], "USD")
+        self.assertEqual(df.iloc[0]["fuente"], "BYMA (AL30D 24HS)")
+        self.assertEqual(get.call_args_list[0], get.call_args_list[1])
+        self.assertEqual(get.call_args.kwargs["params"]["symbol"], "AL30D 24HS")
+
+    def test_byma_400_persistente_se_informa_despues_de_tres_intentos(self):
+        with patch.object(fuentes.requests, "get", return_value=self.respuesta(400)) as get, patch("time.sleep"):
+            with self.assertRaisesRegex(RuntimeError, "AL30D 24HS: 400"):
+                fuentes._byma_historia({"AL30D 24HS": ("al30_usd_mep", "USD")})
+        self.assertEqual(get.call_count, 3)
+
+    def test_byma_un_simbolo_fallido_no_descarta_los_demas(self):
+        ok = self.respuesta()
+        ok.json.return_value = {"t": [1792512000], "c": [65.25]}
+        def descargar(url, **kw):
+            if kw["params"]["symbol"] == "AL30D 24HS":
+                raise fuentes.requests.HTTPError("400")
+            return ok
+        with patch.object(fuentes, "_get", side_effect=descargar):
+            df = fuentes.byma_historicos()
+        self.assertEqual(set(df["variable"]), {v for s, (v, _) in fuentes.BYMA_SIMBOLOS.items() if s != "AL30D 24HS"})
+        self.assertEqual(len(df.attrs["errores"]), 1)
+        self.assertIn("AL30D 24HS", df.attrs["errores"][0])
+        self.assertTrue(df["valor"].eq(65.25).all())
+
+
 class Licitaciones(unittest.TestCase):
     def test_numeros_argentinos_y_numeros_ya_convertidos(self):
         self.assertEqual(fuentes._num_ar("1.000,50"), 1000.5)

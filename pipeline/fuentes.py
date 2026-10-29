@@ -30,20 +30,21 @@ def desde(primero):
 COLS = ["fecha", "variable", "valor", "unidad", "fuente"]
 
 
-def _get(url, intentos=3, **kw):
-    """GET con reintentos: las APIs públicas (BCRA sobre todo) devuelven errores 5xx transitorios."""
+def _get(url, intentos=3, reintentar_status=(), **kw):
+    """GET con reintentos limitados para fallas de red y códigos transitorios conocidos."""
     import time
     kw.setdefault("headers", UA)
     kw.setdefault("timeout", 90)
     for i in range(intentos):
         try:
             r = requests.get(url, **kw)
-            if r.status_code >= 500 and i < intentos - 1:
+            if (r.status_code >= 500 or r.status_code in reintentar_status) and i < intentos - 1:
+                r.close()
                 time.sleep(4 * (i + 1))
                 continue
             r.raise_for_status()
             return r
-        except (requests.ConnectionError, requests.Timeout):
+        except (requests.ConnectionError, requests.Timeout, requests.exceptions.ChunkedEncodingError):
             if i == intentos - 1:
                 raise
             time.sleep(4 * (i + 1))
@@ -212,7 +213,9 @@ def _byma_historia(simbolos, dias=800):
     filas, errores = [], []
     for sym, (var, uni) in simbolos.items():
         try:
-            j = _get(f"{BYMA}/chart/historical-series/history", verify=False,
+            # Este endpoint también devuelve HTTP 400 de forma intermitente para
+            # consultas válidas. Repetir la misma consulta; nunca cambiar especie o plazo.
+            j = _get(f"{BYMA}/chart/historical-series/history", verify=False, reintentar_status=(400,),
                      params={"symbol": sym, "resolution": "D", "from": t0, "to": hasta}).json()
             for t, c in zip(j.get("t", []), j.get("c", [])):
                 fecha = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
@@ -233,16 +236,7 @@ def bonos_historicos():
 
 def byma_historicos():
     """BYMA ofrece unos dos años de historia diaria; lo anterior queda en la base acumulada."""
-    t0 = int(dt.datetime.combine(desde(HOY - dt.timedelta(days=800)), dt.time()).timestamp())
-    hasta = int(dt.datetime.now().timestamp())
-    filas = []
-    for sym, (var, uni) in BYMA_SIMBOLOS.items():
-        j = _get(f"{BYMA}/chart/historical-series/history", verify=False,
-                 params={"symbol": sym, "resolution": "D", "from": t0, "to": hasta}).json()
-        for t, c in zip(j.get("t", []), j.get("c", [])):
-            fecha = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
-            filas.append((fecha, var, c, uni, f"BYMA ({sym})"))
-    return _df(filas)
+    return _byma_historia(BYMA_SIMBOLOS)
 
 
 def byma_snapshots():

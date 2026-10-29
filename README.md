@@ -23,6 +23,8 @@ Estas pruebas no descargan fuentes ni modifican la base. Los scripts `test_fuent
 
 Las fuentes pueden quedar en `ok`, `PARCIAL` o `ERROR`. Las fallas completas y parciales persistentes conservan su fecha de inicio y activan la alerta después de tres horas. La web señala fuentes con problemas y series que superan su rezago esperado. Si BYMA no informa la fecha de una cotización del Merval, se mantiene el último dato fechado: no se usa la fecha de consulta como fecha del precio.
 
+Las descargas GET hacen hasta tres intentos ante cortes de conexión, transferencias incompletas y errores HTTP 5xx, con pausas de 4 y 8 segundos. En los históricos de BYMA para MEP/CCL y bonos se reintenta también el HTTP 400: se comprobó que consultas válidas rechazadas en una corrida responden correctamente al repetirlas. Cada intento conserva URL, especie, plazo de liquidación, período y parámetros; no utiliza una fuente alternativa. Si un símbolo sigue fallando, se informa el error y se guardan los demás símbolos descargados. La base acumulada conserva los datos previos de la serie fallida. El balance cambiario sigue usando el mismo Excel del BCRA, las mismas hojas, unidades y signos.
+
 ## Bloques incorporados el 29 de octubre de 2026
 
 Se incorporan los flujos de reservas dentro de Reservas, y las secciones Liquidez y Empleo e ingresos. No se incorporan los bloques experimentales de comercio, colocaciones de deuda ni el duplicado de pagos y recursos. La copia `version-local-ampliada` es un borrador anterior, no la fuente de publicación. La versión vigente se genera desde `site/` y `pipeline/` en `main`.
