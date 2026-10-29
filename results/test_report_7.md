@@ -1,4 +1,4 @@
-# Test 7 — 2026-10-16 20:16 UTC
+# Test 7 — 2026-10-29 16:59 UTC
 
 
 ## INDEC IPC
@@ -33,15 +33,15 @@ requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='fred.stlouisfed.org',
 
 
 ## BLS CPI
-{"status":"REQUEST_SUCCEEDED","responseTime":95,"message":[],"Results":{
+{"status":"REQUEST_SUCCEEDED","responseTime":85,"message":[],"Results":{
 "series":
 [{"seriesID":"CUSR0000SA0","data":[{"year":"2026","period":"M09","periodName":"September","latest":"true","value":"336.298","footnotes":[{}]},{"year":"2026","period":"M08","periodName":"August","value":"334.131","footnotes":[{}]},{"year":"2026","period":"M07","periodName":"July","value":"332.813","footnotes":[{}]},{"year":"2026","period":"M06","periodName":"June","value":"332.568","footnotes":[{}]},{"year":"2026","period":"M05","periodName":"May","value":"333.979","footnotes":[{}]},{"year":"2026","period":"M04",
 
 ## BCRA series.xlsm filas diarias
-=== BASE MONETARIA (6434, 33)
+=== BASE MONETARIA (6443, 33)
 0 C60 | nan | nan | Gerencia de Estadísticas Mon | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan
 1 nan | nan | BASE MONETARIA | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan
-2 nan | nan | NOTAS METODOLOGICAS | nan | nan | nan | 15/10/2026 | nan | nan | nan | nan | nan | nan | nan | nan | nan
+2 nan | nan | NOTAS METODOLOGICAS | nan | nan | nan | 28/10/2026 | nan | nan | nan | nan | nan | nan | nan | nan | nan
 3 Fecha | nan | Variaciones Diarias | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan
 4 nan | nan | Factores de Explicación de l | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan
 5 nan | nan | Total | Compras Netas de Divisas | nan | Otras Operaciones con el Tes | nan | nan | Pases, LELIQ, NOTALIQ y Rede | nan | nan | nan | LEBAC y NOBAC | Rescate de Cuasimonedas | Operaciones con LEFI | Otros
@@ -53,34 +53,34 @@ requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='fred.stlouisfed.org',
 10 2003-01-03 00:00:00 | nan | 57.63999999999944 | 206.65925 | 0 | 0 | 0 | -1.640000000000001 | -0.1500000000000057 | 0 | 0 | -0.06766472 | -148.304377346458 | 0 | 0 | 1.142792066457468
 11 2003-01-06 00:00:00 | nan | 163.7400000000016 | 172.239104 | 0 | 0 | 0 | -7.890000000000008 | 0.03000000000000114 | 0 | 0 | 0.798643592 | 0 | 0 | 0 | -1.437747591998396
 --- últimas filas diarias
-2026-10-08 00: | nan | 282039 | 65293 | 0 | 0 | 0 | -432.55067021 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 217178.5506702
-2026-10-09 00: | nan | -463787 | 104591.5 | 0 | 0 | 0 | -433.52852175 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | -567944.971478
+2026-10-22 00: | nan | -113376 | 93215.5 | 0 | 0 | 0 | -242.788364749 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | -206348.711635
+2026-10-23 00: | nan | -271599 | 64183 | 0 | 0 | 0 | -959.125642729 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | -334822.874357
 2026-09-01 00: | nan | -542118 | 717482.75 | 0 | 0 | 0 | -270815.711338 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | -988785.038661
-2026-10-01 00: | nan | -381101 | 517617.25 | 0 | 0 | 0 | 59717.65919657 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | -958435.909196
+2026-10-01 00: | nan | -96520 | 1902534 | 0 | 0 | 0 | -925897.435590 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | -1073156.56440
 2026-09-01 00: | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan
 2026-10-01 00: | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan
-=== RESERVAS (6148, 17)
+=== RESERVAS (6157, 17)
 0 C76 | nan | nan | Gerencia de Estadísticas Mon | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan
 1 nan | nan | RESERVAS INTERNACIONALES | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan
-2 nan | nan | NOTAS METODOLOGICAS | nan | nan | nan | 15/10/2026 | nan | nan | nan | nan | nan | nan | nan | nan | nan
+2 nan | nan | NOTAS METODOLOGICAS | nan | nan | nan | 28/10/2026 | nan | nan | nan | nan | nan | nan | nan | nan | nan
 3 Fecha | nan | Stock de Reservas Internacio | nan | nan | nan | Variaciones Diarias | nan | nan | nan | nan | nan | nan | Asignaciones DEGs 2009 (Stoc | nan | Tipo de cambio
 (1 u$s = … $)
 4 nan | nan | nan | nan | nan | nan | Reservas Internacionales | Factores de explicación de l | nan | nan | nan | nan | nan | nan | nan | nan
 5 nan | nan | Total | Oro, Divisas, Colocaciones a | Divisas - Pase Pasivo en USD | nan | nan | Compra de Divisas | Organismos Internacionales | Otras Operaciones del Sector | Efectivo Mínimo | Otros 
 (incl. pases pasivos  | nan | nan | nan | nan
 6 nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan
-7 nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan |
+7 nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | 
 
 ## BCRA catálogo: compras/reservas
-1: Reservas internacionales | 2026-10-13
-47: Efecto monetario de las compras netas de divisas al sector privado y otros  | 2026-10-09
-48: Efecto monetario de las compras netas de divisas al tesoro nacional  | 2026-10-09
-74: Reservas internacionales (excluidas asignaciones deg 2009) | 2026-10-09
-75: Oro, divisas, colocaciones a plazo y otros activos de reserva | 2026-10-09
-76: Divisas-pase pasivo en dólares con el exterior | 2026-10-09
-77: Reservas internacionales  | 2026-10-09
-78: Variación de reservas internacionales por compra de divisas  | 2026-10-09
-79: Variación de reservas internacionales por operaciones con organismos internacionales | 2026-10-09
-80: Variación de reservas internacionales por otras operaciones del sector público  | 2026-10-09
-81: Variación de reservas internacionales por efectivo mínimo  | 2026-10-09
-82: Variación de reservas internacionales por otras operaciones no incluidas en otros rubros  | 2026-10-09
+1: Reservas internacionales | 2026-10-26
+47: Efecto monetario de las compras netas de divisas al sector privado y otros  | 2026-10-23
+48: Efecto monetario de las compras netas de divisas al tesoro nacional  | 2026-10-23
+74: Reservas internacionales (excluidas asignaciones deg 2009) | 2026-10-23
+75: Oro, divisas, colocaciones a plazo y otros activos de reserva | 2026-10-23
+76: Divisas-pase pasivo en dólares con el exterior | 2026-10-23
+77: Reservas internacionales  | 2026-10-23
+78: Variación de reservas internacionales por compra de divisas  | 2026-10-23
+79: Variación de reservas internacionales por operaciones con organismos internacionales | 2026-10-23
+80: Variación de reservas internacionales por otras operaciones del sector público  | 2026-10-23
+81: Variación de reservas internacionales por efectivo mínimo  | 2026-10-23
+82: Variación de reservas internacionales por otras operaciones no incluidas en otros rubros  | 2026-10-23
