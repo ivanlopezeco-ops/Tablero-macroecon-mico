@@ -878,7 +878,8 @@ def rem():
 
 F_REM = ("https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/"
          "relevamiento-expectativas-mercado-historico.xlsx")
-F_ITCRM = "https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/ITCRMSerie.xlsx"
+# Ruta vigente enlazada por la página oficial; ITCRMSerie.xlsx quedó detenido el 16/10/26.
+F_ITCRM = "https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/itcrm-serie.xlsx"
 
 
 def itcrm():

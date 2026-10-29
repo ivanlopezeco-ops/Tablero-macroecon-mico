@@ -176,6 +176,44 @@ class Licitaciones(unittest.TestCase):
         self.assertEqual(datos, [anterior]); self.assertTrue(errores)
 
 
+class RezagosPublicacion(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import run
+        cls.pipeline = run
+
+    def test_recaudacion_no_exige_un_mes_sin_cerrar(self):
+        for hoy in [dt.date(2026, 10, 29), dt.date(2026, 10, 31)]:
+            self.assertFalse(self.pipeline.rezago_de("recaudacion_total", dt.date(2026, 9, 1), hoy)[3])
+
+    def test_alerta_despues_de_cinco_habiles(self):
+        fecha = dt.date(2026, 9, 1)
+        self.assertEqual(self.pipeline.limite_mensual_habil(fecha, 5), dt.date(2026, 11, 6))
+        self.assertFalse(self.pipeline.rezago_de("recaudacion_dgi", fecha, dt.date(2026, 11, 6))[3])
+        self.assertTrue(self.pipeline.rezago_de("recaudacion_dgi", fecha, dt.date(2026, 11, 7))[3])
+
+    def test_excluye_feriados_nacionales(self):
+        # Abril cierra el 30; el 1 de mayo es feriado y el fin de semana no cuenta.
+        self.assertEqual(self.pipeline.limite_mensual_habil(dt.date(2026, 3, 1), 5), dt.date(2026, 5, 8))
+
+    def test_cierre_de_anio_y_feriado_de_enero(self):
+        self.assertEqual(self.pipeline.limite_mensual_habil(dt.date(2026, 11, 1), 5), dt.date(2027, 1, 8))
+
+    def test_mes_bisiesto(self):
+        self.assertEqual(self.pipeline.limite_mensual_habil(dt.date(2024, 1, 1), 5), dt.date(2024, 3, 7))
+
+    def test_los_otros_criterios_no_cambian(self):
+        fecha = dt.date(2026, 9, 1)
+        self.assertFalse(self.pipeline.rezago_de("ipc_nivel_general", fecha, dt.date(2026, 11, 20))[3])
+        self.assertTrue(self.pipeline.rezago_de("ipc_nivel_general", fecha, dt.date(2026, 11, 21))[3])
+
+    def test_itcrm_ruta_nueva_no_espera_la_cache_anterior(self):
+        estado = {"estado": "ok", "ok_utc": dt.datetime.utcnow().isoformat()}
+        with patch.object(fuentes, "COMPLETO", False):
+            self.assertTrue(self.pipeline.toca("itcrm", {"itcrm": estado}))
+            self.assertFalse(self.pipeline.toca("itcrm", {"itcrm": {**estado, "url": fuentes.F_ITCRM}}))
+
+
 class CalculosFinancieros(unittest.TestCase):
     def test_bono_cero_cupon_rinde_diez_por_ciento(self):
         flujos = [{"f": "2026-01-01", "int": 0, "am": 110}]

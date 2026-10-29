@@ -12,6 +12,7 @@ import os
 import pathlib
 import re
 import traceback
+from functools import lru_cache
 
 import numpy as np
 import pandas as pd
@@ -415,13 +416,14 @@ def validar(df, notas, estado):
 # suma un día de más). "d" = días corridos desde la fecha del dato. "m" = serie mensual: el límite es la
 # demora normal de publicación, en días desde el inicio del período; está atrasada solo si el período
 # siguiente ya debería haber salido. Los límites de las mensuales son aproximados: se ajustan con lo observado.
+# "mh": días hábiles argentinos DESPUÉS del cierre del siguiente mes pendiente de publicación.
 REZAGO_ESPERADO = [
     (("ipc_", "cpi_eeuu"), "m", 50),
     (("emae_",), "m", 85),
     (("ipi_", "isac_"), "m", 75),
     (("exportaciones", "importaciones"), "m", 55),
     (("resultado_primario", "intereses_netos"), "m", 85),
-    (("recaudacion_",), "m", 20),
+    (("recaudacion_",), "mh", 5),
     (("bc_", "bcs_", "mc_", "mcc_"), "m", 75),
     (("rem_",), "d", 45),
     (("reservas_", "res_", "base_monetaria", "m2_", "prestamos_", "depositos_", "encajes_", "lebac_", "compras_bcra"), "h", 4),
@@ -435,6 +437,25 @@ REZAGO_ESPERADO = [
 REZAGO_DEFECTO = ("h", 1)
 
 
+@lru_cache(maxsize=16)
+def feriados_nacionales(anio):
+    import holidays
+    return holidays.country_holidays("AR", years=[anio, anio + 1])
+
+
+def limite_mensual_habil(fecha, dias):
+    """Último mes disponible -> cierre del siguiente mes -> plazo hábil para publicarlo."""
+    cierre = (pd.Timestamp(fecha).to_period("M") + 1).end_time.date()
+    limite = cierre
+    feriados = feriados_nacionales(cierre.year)
+    contados = 0
+    while contados < dias:
+        limite += dt.timedelta(days=1)
+        if limite.weekday() < 5 and limite not in feriados:
+            contados += 1
+    return limite
+
+
 def rezago_de(var, fecha, hoy):
     """Devuelve (rezago, unidad, límite, atrasada) para una variable."""
     unidad, limite = REZAGO_DEFECTO
@@ -446,6 +467,8 @@ def rezago_de(var, fecha, hoy):
         rez = int(np.busday_count(fecha, hoy)) if fecha <= hoy else 0
         return rez, unidad, limite, rez > limite
     rez = (hoy - fecha).days
+    if unidad == "mh":
+        return rez, unidad, limite, hoy > limite_mensual_habil(fecha, limite)
     if unidad == "m":
         siguiente = (pd.Timestamp(fecha) + pd.offsets.MonthBegin(1)).date()
         return rez, unidad, limite, hoy > siguiente + dt.timedelta(days=limite)
@@ -465,9 +488,12 @@ def evaluar_rezagos(df):
             continue          # por bono: terminan solas al acercarse el vencimiento
         f = pd.Timestamp(r["fecha"]).date()
         rez, u, lim, atr = rezago_de(var, f, F.HOY)
-        if u == "m":
-            esperado = (pd.Timestamp(f) + pd.offsets.MonthBegin(1)).date() + dt.timedelta(days=lim)
+        if u in ("m", "mh"):
+            esperado = (limite_mensual_habil(f, lim) if u == "mh" else
+                        (pd.Timestamp(f) + pd.offsets.MonthBegin(1)).date() + dt.timedelta(days=lim))
             txt_rez, txt_lim = f"{rez}d", f"próximo dato ~{esperado:%d/%m}"
+            if u == "mh":
+                txt_lim += f" ({lim} hábiles tras el cierre)"
         else:
             txt_rez, txt_lim = f"{rez}{u}", f"{lim}{u}"
         filas.append({"variable": var, "fecha": f, "valor": r["valor"], "rezago": rez, "unidad": u,
@@ -496,6 +522,9 @@ FRECUENCIA_H = {"bcrd_embi": 2, "treasury": 3, "itcrm": 3, "datos_gob": 6, "inde
 def toca(nombre, previo):
     h = FRECUENCIA_H.get(nombre, 0)
     p = previo.get(nombre, {})
+    # Una ruta nueva debe descargarse aunque la consulta al archivo anterior haya sido reciente.
+    if nombre == "itcrm" and p.get("url") != F.F_ITCRM:
+        return True
     if F.COMPLETO or not h or p.get("estado") != "ok" or not p.get("ok_utc"):
         return True
     return (dt.datetime.utcnow() - dt.datetime.fromisoformat(p["ok_utc"])).total_seconds() / 3600 >= h - 0.25
@@ -524,6 +553,8 @@ def main():
             d = fn()
             partes.append(d)
             estado[nombre] = {"estado": "ok", "filas": len(d), "ok_utc": dt.datetime.utcnow().isoformat()}
+            if nombre == "itcrm":
+                estado[nombre]["url"] = F.F_ITCRM
             if d.attrs.get("errores"):
                 estado[nombre]["error"] = " | ".join(d.attrs["errores"])
         except Exception as e:  # noqa: BLE001

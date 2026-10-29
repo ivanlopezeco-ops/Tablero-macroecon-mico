@@ -27,6 +27,16 @@ Las descargas GET hacen hasta tres intentos ante cortes de conexión, transferen
 
 ## Bloques incorporados el 29 de octubre de 2026
 
+### Revisión de los avisos de atraso (29/10/2026)
+
+Las tres series de recaudación tenían septiembre de 2026, el último período publicado tanto en datos.gob.ar como en la página de la DNIAF. El umbral anterior esperaba octubre antes de que terminara ese mes. El criterio aprobado es esperar **cinco días hábiles desde el cierre del mes siguiente al último disponible**, excluyendo fines de semana y feriados nacionales argentinos mediante `holidays` (calendario AR, categoría pública). Se mantiene el plazo durante todo el quinto día; se alerta al día siguiente. Ejemplo: con septiembre como último dato, octubre cierra el 31/10 y el plazo termina el 6/11/2026. Los otros criterios de rezago no cambian.
+
+El enlace antiguo del BCRA, `ITCRMSerie.xlsx`, seguía respondiendo correctamente pero terminaba el 16/10/2026. La [página oficial del ITCRM](https://www.bcra.gob.ar/indices-de-tipo-de-cambio-multilateral/) enlaza ahora `itcrm-serie.xlsx`, que al revisar llegaba al 28/10/2026. Se descarga la serie oficial completa y se registra su URL en el estado de fuentes; un cambio de URL obliga a descargar aunque la consulta anterior sea reciente.
+
+La incorporación de la nueva versión histórica fue aprobada expresamente: mantiene base 17/12/2015=100 y las mismas columnas, pero revisa valores desde el 2/12/2022 en ITCRM y Brasil, y desde el 9/8/2026 en Estados Unidos. Por ejemplo, ITCRM del 16/10/2026 pasa de 85,4217 a 82,8770. No se mezclan versiones ni se reconstruyen valores; no se atribuye una causa a la revisión. El piso y techo del TCRM se recalculan con la fórmula existente `ITCRM × banda / A3500`. Las dos versiones descargadas y su comparación se conservaron en los artefactos locales de validación.
+
+### Ampliación aprobada
+
 Se incorporan los flujos de reservas dentro de Reservas, y las secciones Liquidez y Empleo e ingresos. No se incorporan los bloques experimentales de comercio, colocaciones de deuda ni el duplicado de pagos y recursos. La copia `version-local-ampliada` es un borrador anterior, no la fuente de publicación. La versión vigente se genera desde `site/` y `pipeline/` en `main`.
 
 `pipeline/ampliacion.py` se ejecuta dentro de la corrida existente. Descarga las series diarias del BCRA cada tres horas y salarios/SIPA cada doce horas; reintenta después de fallas. Guarda observaciones y fuentes en `data/raw/ampliacion-cache.json`, y exporta `data/ampliacion.json`. Ambos archivos se conservan en la rama `datos`. `exportar.py` integra las series con prefijo `amp_` y sus metadatos al JSON completo. No depende de los datos congelados de la copia local ni de PDFs de Drive.
