@@ -189,5 +189,7 @@ table.tabla { width: 100%; border-collapse: collapse; font-size: 13px; margin-to
 #nav { overflow: hidden; max-width: 100%; }
 
 .balance-pdf { margin-bottom: 28px; }
-.balance-pdf .tabla th:first-child { text-align: left; }
-.balance-pdf .fuente { line-height: 1.6; }
+.balance-pdf .tabla { table-layout: fixed; }
+.balance-pdf .tabla th { white-space: normal; }
+.balance-pdf .tabla th:first-child { text-align: left; width: 44%; }
+.balance-pdf .fuente { font-size: 11px; color: var(--nota); line-height: 1.6; }
