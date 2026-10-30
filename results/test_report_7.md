@@ -1,4 +1,4 @@
-# Test 7 — 2026-10-30 20:27 UTC
+# Test 7 — 2026-10-30 20:30 UTC
 
 
 ## INDEC IPC
@@ -33,7 +33,7 @@ requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='fred.stlouisfed.org',
 
 
 ## BLS CPI
-{"status":"REQUEST_SUCCEEDED","responseTime":28,"message":[],"Results":{
+{"status":"REQUEST_SUCCEEDED","responseTime":20,"message":[],"Results":{
 "series":
 [{"seriesID":"CUSR0000SA0","data":[{"year":"2026","period":"M09","periodName":"September","latest":"true","value":"336.298","footnotes":[{}]},{"year":"2026","period":"M08","periodName":"August","value":"334.131","footnotes":[{}]},{"year":"2026","period":"M07","periodName":"July","value":"332.813","footnotes":[{}]},{"year":"2026","period":"M06","periodName":"June","value":"332.568","footnotes":[{}]},{"year":"2026","period":"M05","periodName":"May","value":"333.979","footnotes":[{}]},{"year":"2026","period":"M04",
 
