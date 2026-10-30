@@ -5,6 +5,7 @@ import pathlib
 import sys
 import tempfile
 import unittest
+import pandas as pd
 from unittest.mock import patch
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / 'pipeline'))
@@ -18,6 +19,22 @@ def serie():
 
 
 class Contratos(unittest.TestCase):
+    def test_pce_lee_codigos_general_y_nucleo_no_otro_agregado(self):
+        d = pd.DataFrame([[None] * 16 for _ in range(13)], dtype=object)
+        d.iloc[0, 0] = 'Table 2.3.4U'; d.iloc[1, 0] = '2017=100; seasonally adjusted'
+        for c, mes in enumerate(pd.date_range('2015-01-01', periods=13, freq='MS'), 3):
+            d.iloc[7, c] = mes.strftime('%YM%m')
+            d.iloc[9, c] = d.iloc[12, c] = 100 + c
+            d.iloc[10, c] = 90 + c
+            d.iloc[11, c] = 999
+        d.iloc[9, 2] = d.iloc[12, 2] = 'DPCERG'
+        d.iloc[10, 2] = 'DPCCRG'; d.iloc[11, 2] = 'DPCXRG'
+        out = I.parsear_pce(d)
+        self.assertEqual(out['ipom_pce_nucleo']['d'][0][1], 93)
+        self.assertEqual(len(out['ipom_pce_general_ia']['d']), 1)
+        d.iloc[12, 3] = 444
+        with self.assertRaises(ValueError): I.parsear_pce(d)
+
     def test_variacion_requiere_mes_exacto(self):
         filas = [['2024-01-01', 100], ['2024-03-01', 150], ['2025-01-01', 110]]
         self.assertEqual(I.variacion(filas, 1), [])
@@ -72,11 +89,28 @@ class Contratos(unittest.TestCase):
                 self.assertEqual(I.actualizar()['ipom_prueba']['estado'], 'ERROR')
                 with self.assertRaises(ValueError): I.verificar_archivo(pathlib.Path(tmp) / 'ipom.json')
 
-    def test_fed_conserva_ceros_y_rechaza_limites_cruzados(self):
-        with patch.object(I, 'fred', return_value={'DFEDTARL': [['2020-04-01', 0]], 'DFEDTARU': [['2020-04-01', .25]]}):
-            self.assertEqual(I.fed()['ipom_fed_piso']['d'][0][1], 0)
-        with patch.object(I, 'fred', return_value={'DFEDTARL': [['2020-04-01', .5]], 'DFEDTARU': [['2020-04-01', .25]]}):
-            with self.assertRaises(ValueError): I.fed()
+    def test_fed_usa_rango_no_tasa_efectiva_y_no_completa_dias(self):
+        raw = {'refRates': [{'type':'EFFR','effectiveDate':'2020-04-03','percentRate':0.05,'targetRateFrom':0,'targetRateTo':.25},
+                            {'type':'EFFR','effectiveDate':'2020-04-06','percentRate':0.06,'targetRateFrom':0,'targetRateTo':.25}]}
+        out = I.parsear_fed(raw)
+        self.assertEqual(out['ipom_fed_piso']['d'], [['2020-04-03', 0], ['2020-04-06', 0]])
+        raw['refRates'][0]['targetRateFrom'] = .5
+        with self.assertRaises(ValueError): I.parsear_fed(raw)
+
+    def test_migracion_aprobada_reconsulta_y_respalda_historia_previa(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(I, 'DATA', pathlib.Path(tmp)):
+            with patch.dict(I.FUENTES, {'fed': (serie, 12, 1)}, clear=True): I.actualizar()
+            path = pathlib.Path(tmp) / 'ipom.json'; anterior = json.loads(path.read_text('utf8'))
+            anterior['fuentes']['fed']['version_fuente'] = 1
+            path.write_text(json.dumps(anterior), encoding='utf8')
+            def nueva():
+                s = serie(); s['ipom_prueba']['frecuencia'] = 'diaria'
+                s['ipom_prueba']['d'] = [[f[:8] + '02', v] for f, v in s['ipom_prueba']['d']]
+                return s
+            with patch.dict(I.FUENTES, {'fed': (nueva, 12, 1)}, clear=True): estado = I.actualizar()['ipom_fed']
+            self.assertEqual(estado['estado'], 'ok')
+            self.assertEqual(estado['version_fuente'], 2)
+            self.assertTrue((pathlib.Path(tmp) / 'raw/ipom/migracion-fed-v1.json').exists())
 
     def test_bcra_pagina_todas_las_observaciones(self):
         with tempfile.TemporaryDirectory() as tmp:

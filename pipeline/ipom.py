@@ -4,12 +4,10 @@ Las fechas de consulta son dinámicas. Las revisiones sustituyen la historia com
 una respuesta truncada, vacía o incompatible se rechaza sin borrar datos publicados.
 """
 import datetime as dt
-import io
 import json
 import math
 import pathlib
 import re
-import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
@@ -20,6 +18,7 @@ import ipom_credito as C
 import ipom_cnv as CNV
 
 DATA = pathlib.Path(__file__).resolve().parents[1] / 'data'
+VERSIONES = {'fed': 2, 'pce': 2}  # Cambio de fuentes aprobado por el usuario el 30/10/2026.
 
 
 def serie(nombre, unidad, fuente, url, filas, metodo, mensual=True):
@@ -41,44 +40,60 @@ def variacion(filas, meses):
             if (a := (pd.Timestamp(f) - pd.DateOffset(months=meses)).strftime('%Y-%m-%d')) in datos and datos[a] != 0]
 
 
-def fred(codes):
-    out = {}
-    for code in codes:
-        url = f'https://fred.stlouisfed.org/graph/fredgraph.csv?id={code}&cosd=2015-01-01&coed={F.HOY}'
-        contenido = IO.descargar(url, 'fred-' + code + '.csv').read_bytes()
-        if zipfile.is_zipfile(io.BytesIO(contenido)):
-            with zipfile.ZipFile(io.BytesIO(contenido)) as z:
-                frames = [pd.read_csv(z.open(n)) for n in z.namelist() if n.endswith('.csv')]
-                d = next(x for x in frames if code in x.columns)
-        else:
-            d = pd.read_csv(io.BytesIO(contenido))
-        d[code] = pd.to_numeric(d[code], errors='coerce')
-        d = d[d.observation_date.between('2015-01-01', str(F.HOY))].dropna(subset=[code])
-        out[code] = [[f, float(v)] for f, v in zip(d.observation_date, d[code])]
-    return out
+BEA_URL = 'https://apps.bea.gov/national/Release/XLS/Underlying/Section2All_xls.xlsx'
+NYFED_URL = 'https://markets.newyorkfed.org/api/rates/unsecured/effr/search.json'
+
+
+def parsear_fed(raw):
+    registros = raw['refRates']
+    if not registros or any(r.get('type') != 'EFFR' for r in registros):
+        raise ValueError('NY Fed: respuesta sin registros EFFR')
+    fechas = [r['effectiveDate'] for r in registros]
+    if len(set(fechas)) != len(fechas):
+        raise ValueError('NY Fed: fechas repetidas')
+    if any(float(r['targetRateFrom']) < 0 or float(r['targetRateFrom']) > float(r['targetRateTo']) for r in registros):
+        raise ValueError('NY Fed: límites incompatibles')
+    return {'ipom_' + key: serie(nombre, '% anual', 'Federal Reserve Bank of New York', NYFED_URL,
+            sorted([[r['effectiveDate'], float(r[campo])] for r in registros]),
+            'Límites del rango objetivo publicados por la Fed de Nueva York en el registro EFFR. Se toman targetRateFrom/targetRateTo, no percentRate. Fechas efectivas de días hábiles; no se completan feriados ni fines de semana. Ceros válidos.', False)
+            for key, nombre, campo in [('fed_piso', 'Límite inferior', 'targetRateFrom'), ('fed_techo', 'Límite superior', 'targetRateTo')]}
 
 
 def fed():
-    raw = fred(['DFEDTARL', 'DFEDTARU'])
-    low, high = dict(raw['DFEDTARL']), dict(raw['DFEDTARU'])
-    if low.keys() != high.keys() or any(low[f] > high[f] or low[f] < 0 for f in low):
-        raise ValueError('Fed: límites incompatibles')
-    return {'ipom_' + k: serie(n, '% anual', 'Federal Reserve Board, vía FRED',
-            'https://fred.stlouisfed.org/series/' + code, raw[code],
-            'Límites del rango objetivo de fondos federales. Valores oficiales diarios, incluidos ceros.', False)
-            for code, k, n in [('DFEDTARL', 'fed_piso', 'Límite inferior'), ('DFEDTARU', 'fed_techo', 'Límite superior')]}
+    url = f'{NYFED_URL}?startDate=2015-01-01&endDate={F.HOY}'
+    return parsear_fed(json.loads(IO.descargar(url, 'nyfed-rango.json').read_bytes()))
+
+
+def parsear_pce(d):
+    if '2017=100' not in str(d.iloc[1, 0]) or 'seasonally adjusted' not in str(d.iloc[1, 0]):
+        raise ValueError('BEA: cambió la base o el ajuste estacional de la tabla 2.3.4U')
+    if '2.3.4U' not in str(d.iloc[0, 0]):
+        raise ValueError('BEA: tabla inesperada')
+    fechas = {c: f'{v[:4]}-{v[5:]}-01' for c, v in d.iloc[7].items() if isinstance(v, str) and re.fullmatch(r'\d{4}M\d{2}', v)}
+    out = {}
+    for code, key, nombre in [('DPCERG', 'pce_general', 'PCE general'), ('DPCCRG', 'pce_nucleo', 'PCE sin alimentos ni energía')]:
+        # DPCERG aparece también en la apertura por función: exigir que las filas coincidan.
+        filas = d[d[2] == code]
+        if filas.empty:
+            raise ValueError('BEA: no se encontró ' + code)
+        datos = []
+        for col, fecha in fechas.items():
+            if not '2015-01-01' <= fecha <= str(F.HOY):
+                continue
+            valores = pd.to_numeric(filas[col], errors='coerce')
+            if valores.isna().any() or valores.nunique() != 1 or float(valores.iloc[0]) <= 0:
+                raise ValueError('BEA: dato ausente o inconsistente en ' + code + ' ' + fecha)
+            datos.append([fecha, float(valores.iloc[0])])
+        out['ipom_' + key] = serie(nombre, 'Índice 2017=100', 'BEA, tabla 2.3.4U', BEA_URL, datos,
+            'Índice encadenado de precios del consumo personal, desestacionalizado por BEA. General DPCERG; núcleo DPCCRG, excluye alimentos y energía. Historia oficial vigente, sujeta a revisiones.')
+        for meses, suf, label in [(1, 'mensual', 'mensual'), (12, 'ia', 'interanual')]:
+            out['ipom_' + key + '_' + suf] = serie(nombre, '% ' + label, 'Cálculo sobre BEA, tabla 2.3.4U', BEA_URL,
+                variacion(datos, meses), f'Variación {label}: (índice t / índice t−{meses} − 1) × 100. Fechas exactas, sin imputar meses ni anualizar.')
+    return out
 
 
 def pce():
-    raw = fred(['PCEPI', 'PCEPILFE']); out = {}
-    for code, k, nombre in [('PCEPI', 'pce_general', 'PCE general'), ('PCEPILFE', 'pce_nucleo', 'PCE sin alimentos ni energía')]:
-        url = 'https://fred.stlouisfed.org/series/' + code
-        out['ipom_' + k] = serie(nombre, 'Índice 2017=100', 'BEA, vía FRED', url, raw[code],
-            'Índice encadenado de precios del consumo personal, desestacionalizado por BEA. Sujeto a revisiones oficiales.')
-        for meses, suf, label in [(1, 'mensual', 'mensual'), (12, 'ia', 'interanual')]:
-            out['ipom_' + k + '_' + suf] = serie(nombre, '% ' + label, 'Cálculo sobre BEA, vía FRED', url,
-                variacion(raw[code], meses), f'Variación {label}: (índice t / índice t−{meses} − 1) × 100. Fechas exactas, sin imputar meses ni anualizar.')
-    return out
+    return parsear_pce(pd.read_excel(IO.descargar(BEA_URL, 'bea-pce.xlsx'), sheet_name='U20304-M', header=None))
 
 
 def brasil():
@@ -207,13 +222,18 @@ def actualizar(force=False):
         fn, horas, esperadas = FUENTES[nombre]
         old = previo.get('fuentes', {}).get(nombre, {})
         viejas = {k: series[k] for k in old.get('variables', []) if k in series}
+        version = VERSIONES.get(nombre, 1)
+        migracion = old.get('version_fuente', 1) != version
         reciente = old.get('ok_utc') and (ahora - dt.datetime.fromisoformat(old['ok_utc'])).total_seconds() < horas * 3600
-        if reciente and old.get('estado') == 'ok' and len(viejas) == esperadas and not force:
+        if reciente and old.get('estado') == 'ok' and len(viejas) == esperadas and not force and not migracion:
             return nombre, viejas, {**old, 'cache': True}
         try:
-            nuevas = fn(); validar(nuevas, viejas, esperadas)
+            nuevas = fn(); validar(nuevas, None if migracion else viejas, esperadas)
+            if migracion and viejas:
+                respaldo = IO.RAW / ('migracion-' + nombre + '-v1.json')
+                if not respaldo.exists(): IO.guardar_json(respaldo, {'series': viejas, 'fuente_anterior': old})
             return nombre, nuevas, {'estado': 'ok', 'filas': sum(len(s['d']) for s in nuevas.values()), 'variables': sorted(nuevas),
-                                    'ok_utc': ahora.isoformat(), 'cache': False,
+                                    'ok_utc': ahora.isoformat(), 'cache': False, 'version_fuente': version,
                                     'hasta': {k: s['d'][-1][0] for k, s in nuevas.items()}}
         except Exception as exc:
             return nombre, viejas, {**old, 'estado': 'PARCIAL' if viejas else 'ERROR', 'cache': bool(viejas),

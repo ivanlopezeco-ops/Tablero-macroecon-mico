@@ -2,8 +2,6 @@
 import datetime as dt
 import hashlib
 import json
-import time
-import urllib.request
 from pathlib import Path
 import fuentes as F
 
@@ -18,7 +16,7 @@ def guardar_json(path, obj):
     temp.replace(path)
 
 
-def descargar(url, nombre, horas=0):
+def descargar(url, nombre, horas=0, timeout=60, intentos=2):
     RAW.mkdir(parents=True, exist_ok=True)
     path = RAW / nombre
     meta = RAW / (nombre + '.meta.json')
@@ -28,20 +26,7 @@ def descargar(url, nombre, horas=0):
             and anterior.get('descargado_utc')
             and (ahora - dt.datetime.fromisoformat(anterior['descargado_utc'])).total_seconds() < horas * 3600):
         return path
-    # El endpoint CSV de FRED responde de forma estable con el cliente estándar.
-    if url.startswith('https://fred.stlouisfed.org/'):
-        for intento in range(2):
-            try:
-                request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-                with urllib.request.urlopen(request, timeout=45) as response:
-                    contenido = response.read()
-                break
-            except Exception:
-                if intento:
-                    raise
-                time.sleep(2)
-    else:
-        contenido = F._get(url, timeout=60, intentos=2).content
+    contenido = F._get(url, timeout=timeout, intentos=intentos).content
     if not contenido:
         raise ValueError('Descarga vacía: ' + nombre)
     temp = path.with_suffix(path.suffix + '.tmp')
