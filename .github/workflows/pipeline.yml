@@ -34,7 +34,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     environment:
-      name: github-pages
+      # El entorno de producción admite solo main. Las otras ramas validan sin desplegar.
+      name: ${{ github.ref == 'refs/heads/main' && 'github-pages' || 'validacion-ipom' }}
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
