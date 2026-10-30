@@ -990,7 +990,11 @@ def balance_cambiario():
                 if isinstance(f, (dt.datetime, pd.Timestamp)):
                     filas.append((f, BC_CONCEPTOS[hoja], pd.to_numeric(v, errors="coerce") / 1e6, "USD M",
                                   "BCRA mercado de cambios por concepto"))
-    return _df(filas)
+    from balance_control import completar
+    from balance_pdf import consultar
+    resultado = completar(contenido, _df(filas))
+    resultado.attrs["resumen_pdf"] = consultar(resultado, _get)
+    return resultado
 
 
 # ---------------------------------------------------------------- LECAP / BONCAP (tasa fija)

@@ -57,11 +57,14 @@ jobs:
       - run: python -m unittest discover -s tests -p "test_bopreal_reservas.py"
       - run: python -m unittest discover -s tests -p "test_ampliacion.py"
       - run: python -m unittest discover -s tests -p "test_ipom.py"
+      - run: python -m unittest discover -s tests -p "test_balance.py"
       - run: node --test tests/test_frontend.cjs
       - id: corrida
         run: python pipeline/run.py
       - name: Validar fuentes nuevas antes de publicar
         run: python pipeline/ipom.py --verificar site/data.json
+      - name: Conciliar balance y comprobar informe PDF
+        run: python pipeline/balance_control.py site/data.json
       - name: Evidencia de actualización
         if: always()
         uses: actions/upload-artifact@v4

@@ -187,3 +187,7 @@ table.tabla { width: 100%; border-collapse: collapse; font-size: 13px; margin-to
 .tabla .marca { font-size: 11px; color: var(--azul); }
 /* el selector de período se dibuja antes de que aparezca la barra de scroll: no debe desbordar */
 #nav { overflow: hidden; max-width: 100%; }
+
+.balance-pdf { margin-bottom: 28px; }
+.balance-pdf .tabla th:first-child { text-align: left; }
+.balance-pdf .fuente { line-height: 1.6; }

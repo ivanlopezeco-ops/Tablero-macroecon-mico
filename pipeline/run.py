@@ -524,6 +524,10 @@ def toca(nombre, previo):
     h = FRECUENCIA_H.get(nombre, 0)
     p = previo.get(nombre, {})
     # Una ruta nueva debe descargarse aunque la consulta al archivo anterior haya sido reciente.
+    if nombre == "balance_cambiario":
+        from balance_control import VERSION
+        if p.get("version_fuente") != VERSION:
+            return True
     if nombre == "itcrm" and p.get("url") != F.F_ITCRM:
         return True
     if F.COMPLETO or not h or p.get("estado") != "ok" or not p.get("ok_utc"):
@@ -554,6 +558,10 @@ def main():
             d = fn()
             partes.append(d)
             estado[nombre] = {"estado": "ok", "filas": len(d), "ok_utc": dt.datetime.utcnow().isoformat()}
+            if nombre == "balance_cambiario":
+                estado[nombre]["version_fuente"] = d.attrs["version_fuente"]
+                estado[nombre]["conciliaciones"] = d.attrs["conciliaciones"]
+                estado[nombre]["resumen_pdf"] = d.attrs["resumen_pdf"]
             if nombre == "itcrm":
                 estado[nombre]["url"] = F.F_ITCRM
             if d.attrs.get("errores"):

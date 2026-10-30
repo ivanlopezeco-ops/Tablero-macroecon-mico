@@ -578,7 +578,7 @@ function novedades() {
   const lic = (D.licitaciones || []).at(-1);
   if (lic && (Date.now() - Date.parse(lic.f)) / 864e5 < 20) L.push(`En la <b>licitación del Tesoro</b> del ${fechaCorta(lic.f)} se adjudicaron $${fmt(lic.adjudicado / 1e6, 2)} billones${lic.ofertado ? ` sobre ofertas por $${fmt(lic.ofertado / 1e6, 2)} billones` : ""}.`);
   const [fbc, cc] = ult("bc_cuenta_corriente");
-  if (cc != null) L.push(`En el <b>balance cambiario</b> de ${mesCorto(fbc)}, la cuenta corriente dio ${fmtS(cc)} millones de USD, la financiera ${fmtS(ult("bc_cuenta_financiera")[1])} millones y las personas humanas hicieron compras netas por USD ${fmt(-ult("mc_personas_humanas")[1])} millones.`);
+  if (cc != null) L.push(`En el <b>balance cambiario</b> de ${mesCorto(fbc)}, la cuenta corriente dio ${fmtS(cc)} millones de USD, la financiera ${fmtS(ult("bc_cuenta_financiera")[1])} millones y el registro del anexo de personas humanas, que incluye cancelaciones de tarjetas, dio un neto de ${fmtS(ult("mc_personas_humanas")[1])} millones.`);
   return L;
 }
 
@@ -1181,11 +1181,44 @@ function actividad(main) {
     series: [{ v: "tcrm", nombre: "Multilateral" }, { v: "tcr_brasil", nombre: "Brasil" }, { v: "tcr_eeuu", nombre: "EE.UU.", color: "celeste" }] });
 }
 
+function resumenBalancePDF(main) {
+  const r = D.estado?.fuentes?.balance_cambiario?.resumen_pdf;
+  if (!r?.fecha || !r.valores) return;
+  const filas = [
+    ["personas", "Personas humanas", ["mc_personas_humanas"]],
+    ["agro", "Oleaginosas y cereales", ["mc_oleaginosos_cerealeros"]],
+    ["energia", "Energía", ["mc_petroleo", "mc_gas", "mc_electricidad"]],
+    ["alimentos", "Alimentos, bebidas y tabaco", ["mc_alimentos"]],
+    ["mineria", "Minería", ["mc_mineria"]],
+    ["automotriz", "Industria automotriz", ["mc_automotriz"]],
+    ["comercio", "Comercio", ["mc_comercio"]],
+    ["quimica", "Industria química, caucho y plástico", ["mc_quimica"]],
+    ["maquinarias", "Maquinarias y equipos", ["mc_maquinarias"]],
+    ["metales", "Metales comunes y elaboración", ["mc_metales_comunes"]],
+    ["informatica", "Informática", ["mc_informatica"]],
+    ["transporte", "Transporte", ["mc_transporte"]],
+    ["comunicaciones", "Comunicaciones", ["mc_comunicaciones"]],
+    ["turismo", "Turismo y hotelería", ["mc_turismo"]]
+  ].filter(([k]) => Number.isFinite(r.valores[k]));
+  const seccion = document.createElement("section"); seccion.className = "balance-pdf";
+  const url = `https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/informes/informe-mercado-cambios-balance-cambiario-${r.fecha.slice(0, 7)}.pdf`;
+  seccion.innerHTML = `<h2 class="subtitulo">Resultados del informe PDF · ${mesCorto(r.fecha)}</h2>
+    <p class="seccion-intro">El PDF excluye cancelaciones de deudas locales por tarjetas del resultado sectorial. La historia del anexo las incluye y se conserva en los gráficos. Netos en millones de USD: positivo = venta; negativo = compra.</p>
+    <div class="tw"><table class="tabla"><thead><tr><th>Sector</th><th>Informe PDF<br>Excluye cancelaciones</th><th>Registro del anexo<br>Incluye cancelaciones</th></tr></thead><tbody>${filas.map(([k, n, vars]) => {
+      const puntos = vars.map(v => S(v).find(p => p[0] === r.fecha)?.[1]);
+      const anexo = puntos.every(Number.isFinite) ? puntos.reduce((a, b) => a + b, 0) : null;
+      return `<tr><td>${n}</td><td>${fmtS(r.valores[k])}</td><td>${fmtS(anexo)}</td></tr>`;
+    }).join("")}</tbody></table></div>
+    <p class="fuente">Cifras redondeadas del BCRA. Selección de sectores con valores explícitos en el texto del informe. <a href="${url}" target="_blank" rel="noopener">Abrir PDF oficial</a>. Las dos coberturas se mantienen separadas.</p>`;
+  main.appendChild(seccion);
+}
+
 function balance(main) {
   const intro = document.createElement("p"); intro.className = "seccion-intro";
   const fu = ult("bc_cuenta_corriente")[0];
   intro.textContent = `Datos mensuales del balance cambiario del BCRA${fu ? `, último mes publicado: ${mesCorto(fu)}` : ""}. Netos en millones de USD: positivo = ingreso de divisas, negativo = salida.`;
   main.appendChild(intro);
+  resumenBalancePDF(main);
   const m = { mensual: true, dec: 0, resumen: "suma" };
   const h = (t) => { const x = document.createElement("h2"); x.className = "subtitulo"; x.textContent = t; main.appendChild(x); return grilla(main); };
   const barras = (lista) => lista.map(([v, nombre, color]) => ({ v, nombre, color, tipo: "bar", stack: "s" }));
@@ -1193,7 +1226,7 @@ function balance(main) {
   let g = h("Resultado global");
   tarjeta(g, { mide: "bc_global", ...m, ancha: true, titulo: () => `En ${mesCorto(fu)} las reservas variaron ${fmtS(ult("bc_var_reservas_transacciones")[1])} millones de USD por transacciones`,
     bajada: "Cuentas del balance cambiario y variación de reservas por transacciones · En millones de USD", fuente: F.bc, leyenda: true, cero: true,
-    series: [...barras([["bc_cuenta_corriente", "Cuenta corriente", "azul"], ["bc_cuenta_capital", "Cuenta capital", "ocre"], ["bc_cuenta_financiera", "Cuenta financiera", "celeste"]]),
+    series: [...barras([["bc_cuenta_corriente", "Cuenta corriente", "azul"], ["bc_cuenta_capital", "Cuenta capital", "ocre"], ["bc_cuenta_financiera", "Cuenta financiera", "celeste"], ["bc_no_informado", "Concepto no informado", "gris"]]),
       { v: "bc_var_reservas_transacciones", nombre: "Variación de reservas", color: "naranja" }] });
 
   g = h("Cuenta corriente");
@@ -1203,44 +1236,46 @@ function balance(main) {
   tarjeta(g, { mide: "bc_bienes", ...m, titulo: () => `El saldo de bienes fue de ${fmtS(ult("bc_bienes")[1])} millones`,
     bajada: "Cobros de exportaciones y pagos de importaciones (con signo negativo) · En millones de USD", fuente: F.bc, cero: true,
     series: [{ v: "bc_cobros_exportaciones", nombre: "Cobros expo" }, { v: "bc_pagos_importaciones", nombre: "Pagos impo", color: "naranja" }, { v: "bc_bienes", nombre: "Saldo", color: "gris", tipo: "bar" }] });
-  tarjeta(g, { mide: "bc_expo_mod", ...m, titulo: "Cómo se cobran las exportaciones", bajada: "Cobros por modalidad · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true,
-    series: barras([["mcc_cobros_expo", "Cobros", "azul"], ["mcc_cobros_anticipados", "Anticipados", "celeste"], ["mcc_prefinanciaciones", "Prefinanciaciones del exterior", "verde"], ["mcc_financ_locales_expo", "Financiaciones locales", "ocre"]]) });
-  tarjeta(g, { mide: "bc_impo_mod", ...m, titulo: "Cómo se pagan las importaciones", bajada: "Pagos por modalidad, con signo negativo · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true,
-    series: barras([["mcc_impo_diferidos", "Diferidos y otros", "azul"], ["mcc_impo_vista", "A la vista", "celeste"], ["mcc_impo_anticipados", "Anticipados", "naranja"]]) });
+  tarjeta(g, { mide: "bc_expo_mod", ...m, titulo: "Cómo se cobran las exportaciones", bajada: "Cobros por modalidad · En millones de USD", fuente: F.bc + " Hoja Mercado de Cambios.", leyenda: true,
+    series: [...barras([["mcc_cobros_expo", "Cobros", "azul"], ["mcc_cobros_anticipados", "Anticipados", "celeste"], ["mcc_prefinanciaciones", "Prefinanciaciones del exterior", "verde"], ["mcc_financ_locales_expo", "Financiaciones locales", "ocre"], ["mcc_otros_cobros_bienes", "Otros cobros de bienes", "gris"]]), { v: "bc_cobros_exportaciones", nombre: "Total", color: "tinta" }] });
+  tarjeta(g, { mide: "bc_impo_mod", ...m, titulo: "Cómo se pagan las importaciones", bajada: "Pagos registrados en el mercado de cambios · No incluye operaciones directas con reservas · Millones de USD", fuente: F.bc + " Hoja Mercado de Cambios.", leyenda: true,
+    series: [...barras([["mcc_impo_diferidos", "Diferidos y otros", "azul"], ["mcc_impo_vista", "A la vista", "celeste"], ["mcc_impo_anticipados", "Anticipados", "naranja"]]), { v: "mcc_pagos_importaciones", nombre: "Total del mercado", color: "tinta" }] });
   tarjeta(g, { mide: "bc_viajes", ...m, titulo: () => `Viajes y pasajes restaron ${fmt(-ult("bc_viajes_pasajes_neto")[1])} millones en ${mesCorto(ult("bc_viajes_pasajes_neto")[0])}`,
-    bajada: "Turismo: viajes y pasajes (estimación del BCRA) y consumos con tarjeta en el exterior · Netos en millones de USD", fuente: F.bc + " Anexo tarjetas y viajes.", cero: true,
-    series: [{ v: "bc_viajes_pasajes_neto", nombre: "Viajes y pasajes" }, { v: "bc_tarjetas_neto", nombre: "Tarjetas", color: "celeste" }, { v: "bc_servicios", nombre: "Servicios totales", color: "gris" }] });
-  tarjeta(g, { mide: "bc_intereses", ...m, titulo: "Intereses y utilidades", bajada: "Pagos de intereses por acreedor y giro de utilidades y dividendos · En millones de USD", fuente: F.bc, leyenda: true, cero: true,
-    series: barras([["bc_intereses_fmi", "Intereses FMI", "naranja"], ["bc_intereses_otros_org", "Intereses otros organismos", "ocre"], ["bc_intereses_otros", "Otros intereses", "gris"],
-      ["bc_utilidades_egresos", "Utilidades y dividendos", "celeste"]]) });
+    bajada: "Turismo: viajes y pasajes (estimación del BCRA) y consumos con tarjeta, otros viajes y transporte de pasajeros · Netos en millones de USD", fuente: F.bc + " Anexo tarjetas y viajes.", cero: true,
+    series: [{ v: "bc_viajes_pasajes_neto", nombre: "Viajes y pasajes" }, { v: "bc_tarjetas_neto", nombre: "Tarjetas, otros viajes y pasajes", color: "celeste" }, { v: "bc_servicios", nombre: "Servicios totales", color: "gris" }] });
+  tarjeta(g, { mide: "bc_intereses", ...m, titulo: "Pagos de intereses y rentas", bajada: "Egresos brutos · Intereses, dividendos, remuneraciones y otras rentas · Millones de USD", fuente: F.bc, leyenda: true, cero: true,
+    series: [...barras([["bc_intereses_fmi", "Intereses FMI", "naranja"], ["bc_intereses_otros_org", "Intereses otros organismos", "ocre"], ["bc_intereses_otros", "Otros intereses", "gris"],
+      ["bc_intereses_otros_gob", "Otros pagos de intereses del Gobierno", "marron"], ["bc_dividendos_egresos", "Utilidades y dividendos", "celeste"], ["bc_remuneraciones_egresos", "Remuneraciones", "verde"], ["bc_otras_rentas_egresos", "Otras rentas", "violeta"]]), { v: "bc_rentas_egresos", nombre: "Total de pagos", color: "tinta" }] });
 
   g = h("Cuenta financiera");
   tarjeta(g, { mide: "bc_cf", ...m, ancha: true, titulo: () => `La cuenta financiera cambiaria dio ${fmtS(ult("bc_cuenta_financiera")[1])} millones en ${mesCorto(fu)}`,
     bajada: "Componentes por concepto · En millones de USD", fuente: F.bc, leyenda: true, cero: true, alto: 380, resumen: { modo: "suma", solo: ["Total"] },
     series: [...barras([["bc_billetes_divisas_spnf", "Billetes y divisas (SPNF)", "naranja"], ["bc_prestamos_titulos_deuda", "Préstamos y títulos de deuda", "azul"], ["bc_ied", "Inversión directa", "verde"],
       ["bc_portafolio", "Portafolio", "turquesa"], ["bc_fmi", "FMI", "rojo"], ["bc_otros_organismos", "Otros organismos", "ocre"], ["bc_fae_sector_financiero", "FAE sector financiero", "violeta"],
-      ["bc_fae_sector_publico", "FAE sector público", "marron"], ["bc_canje", "Canje", "celeste"], ["bc_otros_movimientos", "Otros movimientos", "gris"]]),
+      ["bc_fae_sector_publico", "FAE sector público", "marron"], ["bc_canje", "Canje", "celeste"], ["bc_otros_movimientos", "Otros movimientos", "gris"], ["bc_titulos_valores", "Compraventa de títulos valores", "verde"], ["bc_otras_spn", "Otras operaciones del sector público", "marron"], ["bc_cf_diferencia_anexo", "Diferencia histórica del anexo", "gris"]]),
     { v: "bc_cuenta_financiera", nombre: "Total", color: "tinta" }] });
   tarjeta(g, { mide: "bc_cf_sector", ...m, titulo: "Cuenta financiera por sector", bajada: "Sector privado no financiero, financiero y gobierno general y BCRA · En millones de USD", fuente: F.bc + " Hoja Cta. Financiera por sector.", leyenda: true, cero: true,
     series: barras([["bcs_spnf", "Privado no financiero", "azul"], ["bcs_financiero", "Financiero", "celeste"], ["bcs_gobierno_bcra", "Gobierno y BCRA", "naranja"], ["bcs_otros", "Otros", "gris"]]) });
-  tarjeta(g, { mide: "bc_personas", ...m, titulo: () => `Las personas humanas demandaron USD ${fmt(-ult("mc_personas_humanas")[1])} millones netos en ${mesCorto(ult("mc_personas_humanas")[0])}`,
-    bajada: "Operaciones de personas humanas en el mercado de cambios · En millones de USD", fuente: F.bc, cero: true,
+  tarjeta(g, { mide: "bc_personas", ...m, titulo: () => `Personas humanas: registro histórico del anexo`,
+    bajada: "Incluye cancelaciones de deudas por tarjetas · Cobertura distinta del resultado del PDF · Millones de USD", fuente: F.bc, cero: true,
     series: [{ v: "mc_personas_humanas", nombre: "Neto", tipo: "bar", color: "naranja" }] });
-  tarjeta(g, { mide: "bc_fae", ...m, titulo: "Formación de activos externos: compras y ventas", bajada: "Billetes y divisas sin fines específicos del sector privado no financiero · En millones de USD", fuente: F.bc + " Detalle de compras: hoja MC por concepto.", leyenda: true, cero: true, resumen: { modo: "suma", solo: ["Neto"] },
-    series: [...barras([["mcc_billetes_compras", "Compras de billetes", "naranja"], ["mcc_otras_inversiones", "Otras inversiones en el exterior", "ocre"], ["mcc_ide_residentes", "Inversión directa en el exterior", "marron"],
-      ["mcc_billetes_ventas", "Ventas de billetes", "celeste"], ["mcc_divisas_ventas", "Ventas de divisas", "azul"]]), { v: "bc_billetes_divisas_spnf", nombre: "Neto", color: "tinta" }] });
+  tarjeta(g, { mide: "bc_fae", ...m, titulo: "Billetes y divisas sin fines específicos", bajada: "Billetes y divisas sin fines específicos del sector privado no financiero · En millones de USD", fuente: F.bc + " Sector privado no financiero; apertura y total del mismo universo. No equivale a la estimación de ahorro externo del informe.", leyenda: true, cero: true, resumen: { modo: "suma", solo: ["Neto"] },
+    series: [...barras([["bc_spnf_billetes_egr", "Compras de billetes", "naranja"], ["bc_spnf_otras_egr", "Otras inversiones: egresos", "ocre"], ["bc_spnf_ide_egr", "Inversión directa: egresos", "marron"],
+      ["bc_spnf_billetes_ing", "Ventas de billetes", "celeste"], ["bc_spnf_otras_ing", "Otras inversiones: ingresos", "azul"], ["bc_spnf_ide_ing", "Inversión directa: ingresos", "verde"]]), { v: "bc_billetes_divisas_spnf", nombre: "Neto", color: "tinta" }] });
   tarjeta(g, { mide: "bc_deuda", ...m, titulo: () => `La deuda financiera privada y pública dejó ${fmtS(ult("bc_prestamos_titulos_deuda")[1])} millones netos`,
     bajada: "Préstamos financieros, títulos de deuda y líneas de crédito: ingresos y cancelaciones · En millones de USD", fuente: F.bc, cero: true,
     series: [{ v: "bc_prestamos_ingresos", nombre: "Ingresos" }, { v: "bc_prestamos_egresos", nombre: "Cancelaciones", color: "naranja" }, { v: "bc_prestamos_titulos_deuda", nombre: "Neto", color: "gris", tipo: "bar" }] });
-  tarjeta(g, { mide: "bc_deuda_instr", ...m, titulo: "Deuda por instrumento", bajada: "Financiaciones locales y deuda con el exterior, netas · En millones de USD", fuente: F.bc + " Hoja MC por concepto.", leyenda: true, cero: true,
+  tarjeta(g, { mide: "bc_deuda_instr", ...m, titulo: "Deuda por instrumento", bajada: "Financiaciones locales, deuda con el exterior y líneas de crédito · Netos en millones de USD", fuente: F.bc + " Hoja Mercado de Cambios.", leyenda: true, cero: true,
     series: [{ datos: sumar(["mcc_financ_locales_ing", "mcc_financ_locales_egr"]), nombre: "Financiaciones locales", tipo: "bar", stack: "s", color: "celeste" },
-      { datos: sumar(["mcc_deuda_ext_ing", "mcc_deuda_ext_egr"]), nombre: "Préstamos del exterior y títulos", tipo: "bar", stack: "s", color: "azul" }] });
+      { datos: sumar(["mcc_deuda_ext_ing", "mcc_deuda_ext_egr"]), nombre: "Préstamos del exterior y títulos", tipo: "bar", stack: "s", color: "azul" },
+      { datos: sumar(["mcc_lineas_ing", "mcc_lineas_egr"]), nombre: "Líneas de crédito", tipo: "bar", stack: "s", color: "ocre" }, { v: "bc_prestamos_titulos_deuda", nombre: "Total", color: "tinta" }] });
   tarjeta(g, { mide: "bc_no_res", ...m, titulo: "Inversión de no residentes", bajada: "Inversión directa y de portafolio, netas · En millones de USD", fuente: F.bc, cero: true,
     series: [{ v: "bc_ied", nombre: "Directa", tipo: "bar", stack: "s", color: "verde" }, { v: "bc_portafolio", nombre: "Portafolio", tipo: "bar", stack: "s", color: "turquesa" }], leyenda: true });
   tarjeta(g, { mide: "bc_organismos", ...m, titulo: "Organismos internacionales", bajada: "FMI y otros organismos (desembolsos menos pagos de capital) · En millones de USD", fuente: F.bc, cero: true, leyenda: true,
     series: barras([["bc_fmi", "FMI", "rojo"], ["bc_otros_organismos", "Otros organismos", "ocre"]]) });
 
-  g = h("Por sector de actividad");
+  g = h("Por sector de actividad · Registro del anexo");
+  const cobertura = document.createElement("p"); cobertura.className = "seccion-intro"; cobertura.textContent = "La historia sectorial incluye registros de cancelación de deudas locales por tarjetas. Su cobertura es distinta de los resultados ajustados del PDF, mostrados arriba. No se empalman ambas medidas."; g.before(cobertura);
   tmp("_mc_energia", sumar(["mc_petroleo", "mc_gas", "mc_electricidad"]));
   tarjeta(g, { mide: "bc_sec_expo", ...m, titulo: "Oferta neta de los sectores exportadores", bajada: "Agro, energía (petróleo, gas y electricidad) y minería · Netos en millones de USD", fuente: F.bc + " Hoja MC por sector.", cero: true,
     series: [{ v: "mc_oleaginosos_cerealeros", nombre: "Agro" }, { v: "_mc_energia", nombre: "Energía", color: "naranja" }, { v: "mc_mineria", nombre: "Minería", color: "celeste" }] });

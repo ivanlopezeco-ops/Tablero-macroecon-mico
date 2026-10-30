@@ -35,7 +35,7 @@ def exportar():
         dias = ((g["fecha"] - EPOCA).dt.days).tolist()
         t = [dias[0]] + [b - a for a, b in zip(dias, dias[1:])]
         out[var] = {"u": g["unidad"].iloc[-1], "f": g["fuente"].iloc[-1],
-                    "t": t, "v": [_redondear(v) for v in g["valor"]]}
+                    "t": t, "v": [round(float(v), 2) if var.startswith(("bc_", "bcs_", "mcc_", "mc_")) and pd.notna(v) else _redondear(v) for v in g["valor"]]}
         prov = g.loc[g["fuente"].astype(str).str.contains("provisorio"), "fecha"]
         if len(prov):  # primer dato provisorio (del día, se reemplaza por el definitivo)
             out[var]["p"] = f"{prov.min():%Y-%m-%d}"
