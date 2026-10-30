@@ -3,8 +3,8 @@ import concurrent.futures
 import urllib.request
 import time
 urls = [
- 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=PCEPI',
- 'https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=PCEPI&cosd=2015-01-01&vintage_date=2026-10-30',
+ 'https://apps.bea.gov/national/Release/XLS/Underlying/Section2All_xls.xlsx',
+ 'https://markets.newyorkfed.org/api/rates/unsecured/effr/search.json?startDate=2015-01-01&endDate=2026-10-30',
 ]
 def probar(url):
     t=time.monotonic()
