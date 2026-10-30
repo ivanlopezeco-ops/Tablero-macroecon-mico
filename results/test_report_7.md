@@ -1,4 +1,4 @@
-# Test 7 — 2026-10-30 20:15 UTC
+# Test 7 — 2026-10-30 20:20 UTC
 
 
 ## INDEC IPC
@@ -33,7 +33,7 @@ requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='fred.stlouisfed.org',
 
 
 ## BLS CPI
-{"status":"REQUEST_SUCCEEDED","responseTime":19,"message":[],"Results":{
+{"status":"REQUEST_SUCCEEDED","responseTime":20,"message":[],"Results":{
 "series":
 [{"seriesID":"CUSR0000SA0","data":[{"year":"2026","period":"M09","periodName":"September","latest":"true","value":"336.298","footnotes":[{}]},{"year":"2026","period":"M08","periodName":"August","value":"334.131","footnotes":[{}]},{"year":"2026","period":"M07","periodName":"July","value":"332.813","footnotes":[{}]},{"year":"2026","period":"M06","periodName":"June","value":"332.568","footnotes":[{}]},{"year":"2026","period":"M05","periodName":"May","value":"333.979","footnotes":[{}]},{"year":"2026","period":"M04",
 
@@ -72,15 +72,15 @@ requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='fred.stlouisfed.org',
 7 nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan | nan
 
 ## BCRA catálogo: compras/reservas
-1: Reservas internacionales | 2026-10-27
-47: Efecto monetario de las compras netas de divisas al sector privado y otros  | 2026-10-26
-48: Efecto monetario de las compras netas de divisas al tesoro nacional  | 2026-10-26
-74: Reservas internacionales (excluidas asignaciones deg 2009) | 2026-10-26
-75: Oro, divisas, colocaciones a plazo y otros activos de reserva | 2026-10-26
-76: Divisas-pase pasivo en dólares con el exterior | 2026-10-26
-77: Reservas internacionales  | 2026-10-26
-78: Variación de reservas internacionales por compra de divisas  | 2026-10-26
-79: Variación de reservas internacionales por operaciones con organismos internacionales | 2026-10-26
-80: Variación de reservas internacionales por otras operaciones del sector público  | 2026-10-26
-81: Variación de reservas internacionales por efectivo mínimo  | 2026-10-26
-82: Variación de reservas internacionales por otras operaciones no incluidas en otros rubros  | 2026-10-26
+1: Reservas internacionales | 2026-10-28
+47: Efecto monetario de las compras netas de divisas al sector privado y otros  | 2026-10-27
+48: Efecto monetario de las compras netas de divisas al tesoro nacional  | 2026-10-27
+74: Reservas internacionales (excluidas asignaciones deg 2009) | 2026-10-27
+75: Oro, divisas, colocaciones a plazo y otros activos de reserva | 2026-10-27
+76: Divisas-pase pasivo en dólares con el exterior | 2026-10-27
+77: Reservas internacionales  | 2026-10-27
+78: Variación de reservas internacionales por compra de divisas  | 2026-10-27
+79: Variación de reservas internacionales por operaciones con organismos internacionales | 2026-10-27
+80: Variación de reservas internacionales por otras operaciones del sector público  | 2026-10-27
+81: Variación de reservas internacionales por efectivo mínimo  | 2026-10-27
+82: Variación de reservas internacionales por otras operaciones no incluidas en otros rubros  | 2026-10-27
