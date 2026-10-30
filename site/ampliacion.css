@@ -10,3 +10,4 @@
 .amp-scroll .tabla th,.amp-scroll .tabla td {padding:11px 10px;line-height:1.5;font-variant-numeric:tabular-nums}
 select:focus-visible,summary:focus-visible {outline:2px solid var(--azul);outline-offset:3px}
 @media(max-width:600px){.amp-intro h2{font-size:22px}.amp-intro{margin-top:20px}.amp-scroll .tabla{font-size:12px}}
+.ipom-card .fuente { overflow-wrap: anywhere; }

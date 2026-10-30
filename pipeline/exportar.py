@@ -42,6 +42,10 @@ def exportar():
     amp = json.loads(amp_path.read_text(encoding="utf-8")) if amp_path.exists() else {}
     out.update(amp.get("series", {}))
     amp_meta = {k: v for k, v in amp.items() if k != "series"}
+    ipom_path = BASE / "data" / "ipom.json"
+    ipom = json.loads(ipom_path.read_text(encoding="utf-8")) if ipom_path.exists() else {}
+    out.update(ipom.get("series", {}))
+    ipom_meta = {k: v for k, v in ipom.items() if k != "series"}
     site = BASE / "site"
     site.mkdir(exist_ok=True)
     cal_path = BASE / "data" / "calendario.json"
@@ -53,7 +57,7 @@ def exportar():
     lic_path = BASE / "data" / "licitaciones.json"
     licitaciones = json.loads(lic_path.read_text(encoding="utf-8")) if lic_path.exists() else []
     texto = json.dumps({"generado": dt.datetime.utcnow().isoformat() + "Z", "estado": estado, "series": out, "calendario": calendario,
-                        "servicio_deuda": servicio_deuda, "licitaciones": licitaciones, "curva_fx": curva_fx, "ampliacion": amp_meta},
+                        "servicio_deuda": servicio_deuda, "licitaciones": licitaciones, "curva_fx": curva_fx, "ampliacion": amp_meta, "ipom": ipom_meta},
                        ensure_ascii=False, separators=(",", ":"))
     (site / "data.json").write_text(texto, encoding="utf-8")
     print("data.json:", len(out), "variables,", round(len(texto) / 1e6, 2), "MB")

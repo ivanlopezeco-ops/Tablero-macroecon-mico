@@ -38,8 +38,6 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
       # La base de datos vive en la rama "datos", con un solo commit que se reemplaza en cada corrida:
       # así el repositorio no crece con cada actualización horaria.
       - name: Traer la base acumulada
@@ -56,11 +54,24 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python -m unittest discover -s tests -p "test_regresiones.py"
       - run: python -m unittest discover -s tests -p "test_ampliacion.py"
+      - run: python -m unittest discover -s tests -p "test_ipom.py"
       - run: node --test tests/test_frontend.cjs
       - id: corrida
         run: python pipeline/run.py
+      - name: Validar fuentes nuevas antes de publicar
+        run: python pipeline/ipom.py --verificar site/data.json
+      - name: Evidencia de actualización
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validacion-ipom
+          path: |
+            data/ipom.json
+            data/estado.json
+            data/validacion.md
+          retention-days: 7
       - name: Guardar la base en la rama datos
-        if: always() && steps.corrida.outcome != 'skipped' && steps.corrida.outcome != ''
+        if: always() && github.ref == 'refs/heads/main' && steps.corrida.outcome != 'skipped' && steps.corrida.outcome != ''
         run: |
           rm -rf /tmp/datos && mkdir -p /tmp/datos && cp -r data /tmp/datos/
           cd /tmp/datos
@@ -73,12 +84,12 @@ jobs:
       # se atrasa, recibe un comentario solo cuando cambia la lista de problemas y se cierra cuando todo vuelve a andar.
       - name: Avisar fallas
         id: alerta
-        if: always()
+        if: always() && github.ref == 'refs/heads/main'
         env:
           PIPELINE_FALLO: ${{ job.status == 'failure' && '1' || '0' }}
         run: python pipeline/alerta.py
       - name: Abrir, actualizar o cerrar el issue de alerta
-        if: always() && steps.alerta.outcome == 'success'
+        if: always() && github.ref == 'refs/heads/main' && steps.alerta.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           HAY: ${{ steps.alerta.outputs.hay }}
@@ -97,8 +108,11 @@ jobs:
             gh issue close "$n" --comment "Todas las fuentes responden y ninguna serie está atrasada."
           fi
       - uses: actions/configure-pages@v5
+        if: github.ref == 'refs/heads/main'
       - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
         with:
           path: site
       - id: deploy
+        if: github.ref == 'refs/heads/main'
         uses: actions/deploy-pages@v4

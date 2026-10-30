@@ -688,6 +688,11 @@ def main():
     except Exception as e:
         estado["ampliacion"] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}"[:800]}
     print("ampliacion", estado["ampliacion"]["estado"])
+    try:
+        import ipom
+        estado.update(ipom.actualizar(force=F.COMPLETO))
+    except Exception as e:
+        estado["ipom"] = {"estado": "ERROR", "error": f"{type(e).__name__}: {e}"[:800]}
     for nombre, nota in notas.items():
         if isinstance(nota, str) and nota.startswith("ERROR:"):
             estado[f"calculo_{nombre}"] = {"estado": "ERROR", "error": nota}

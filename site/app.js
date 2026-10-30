@@ -171,7 +171,7 @@ function grafico(el, cfg) {
       color, fontWeight: 600, fontSize: chica ? 10 : 11, fontFamily: "Poppins", distance: 6,
     };
     const base = {
-      name: s.nombre, type: tipo, showSymbol: !!cfg.mensual && tipo !== "bar" && enVentana.length < 80,
+      name: s.nombre, type: tipo, step: s.step, showSymbol: !!cfg.mensual && tipo !== "bar" && enVentana.length < 80,
       symbol: "emptyCircle", symbolSize: 5, itemStyle: { color, borderColor: color }, lineStyle: { width: grosor, color },
       emphasis: { disabled: true }, z: 10 - i, barMaxWidth: 14, labelLayout: { moveOverlap: "shiftY" }, yAxisIndex: s.eje2 ? 1 : 0,
       sampling: datos.length > 1500 && tipo === "line" ? "lttb" : undefined, large: datos.length > 3000 && tipo === "bar", stack: s.stack,
@@ -1478,6 +1478,7 @@ function estado() {
     tabla.append(tr);
   });
   panel.append(tabla);
+  if (typeof ipomEstado === 'function') ipomEstado();
   if (atrasadas.length) {
     const p = document.createElement("p"); p.textContent = "Series atrasadas: " + atrasadas.join(", "); panel.append(p);
   }
@@ -1507,6 +1508,7 @@ function iniciar() {
 }
 
 instalarAmpliacion();
+instalarIPOM();
 const h = location.hash.slice(1); if (h) TAB = h;
 try {   // ?r=días (0 = todo) o ?desde=AAAA-MM-DD&hasta=AAAA-MM-DD
   const q = new URLSearchParams(location.search);
