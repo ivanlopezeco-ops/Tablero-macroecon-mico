@@ -1,13 +1,17 @@
 'use strict';
 const I=k=>'ipom_'+k;
 const iser=(k,nombre,color='azul',extra={})=>({v:I(k),nombre,color,...extra});
+function icorte(series,mensual) {
+  const fecha=mensual?mesCorto:fechaCorta;
+  const fechas=series.map(s=>ult(s.v)[0]);
+  return new Set(fechas).size===1?'Hasta '+fecha(fechas[0]):series.map((s,i)=>s.nombre+': '+fecha(fechas[i])).join(' · ');
+}
 function icard(g,titulo,bajada,series,opts={}) {
   if(series.some(s=>!S(s.v).length)){ampNota(g,'No hay datos disponibles para '+titulo+'. Revisá el estado de las fuentes al pie.');return null;}
   const key=series[0].v, m=meta(key), mensual=opts.mensual!==false;
   MIDE[key]=opts.explicacion||m.metodologia;
-  const f=ult(key)[0];
   const fuentes=[...new Map(series.map(s=>[meta(s.v).url,meta(s.v)])).values()];
-  const card=tarjeta(g,{titulo,bajada:bajada+' · Hasta '+(mensual?mesCorto(f):fechaCorta(f)),series,mensual,leyenda:true,dec:1,decEje:opts.dec===2?2:1,mide:key,
+  const card=tarjeta(g,{titulo,bajada:()=>bajada+' · '+icorte(series,mensual),series,mensual,leyenda:true,dec:1,decEje:opts.dec===2?2:1,mide:key,
     fuente:'Fuente: '+fuentes.map(s=>`<a href="${s.url}" target="_blank" rel="noopener">${s.f}</a>`).join(' · ')+'.',...opts});
   card.classList.add('ipom-card');return card;
 }

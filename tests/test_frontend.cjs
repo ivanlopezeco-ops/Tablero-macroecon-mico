@@ -4,6 +4,17 @@ const vm = require('node:vm');
 const fs = require('node:fs');
 const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname, '../site/app.js'), 'utf8');
+const ipomSource = fs.readFileSync(path.join(__dirname, '../site/ipom.js'), 'utf8');
+
+test('las fechas de fuentes con distintos rezagos se muestran por separado', () => {
+  const dates={ibc:'2026-09-01',manufactura:'2026-08-01'};
+  const c=vm.createContext({ult:k=>[dates[k],100],mesCorto:f=>f.slice(0,7),fechaCorta:f=>f});
+  vm.runInContext(ipomSource.slice(ipomSource.indexOf('function icorte'),ipomSource.indexOf('function icard')),c);
+  const expr="icorte([{v:'ibc',nombre:'Actividad'},{v:'manufactura',nombre:'Manufactura'}],true)";
+  assert.equal(vm.runInContext(expr,c),'Actividad: 2026-09 · Manufactura: 2026-08');
+  dates.manufactura=dates.ibc;
+  assert.equal(vm.runInContext(expr,c),'Hasta 2026-09');
+});
 
 function entorno(fetch, hash = '') {
   const elements = new Map();
