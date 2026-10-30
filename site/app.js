@@ -405,6 +405,34 @@ const FILAS_RES = [["Reservas brutas", "reservas_brutas", 1], ["Encajes", "res_e
   ["Bopreal a 1 año", "res_bopreal_1a", -1, "2026-09-30"], ["Depósitos USD del Tesoro", "res_dep_tesoro", -1], ["Súper netas", "reservas_super_netas", 0]];
 const RES_SEL = { a: null, b: null };   // fechas elegidas, compartidas entre Resumen y Reservas
 
+function escenariosBopreal(fecha) {
+  const m = D.bopreal_reservas;
+  if (!m || !m.desde || fecha < m.desde) return "";
+  const stockFecha = (m.stocks || [m.stock_fecha]).filter((f) => f <= fecha).at(-1);
+  const central = valEn("res_bopreal_1a", fecha), sn = valEn("reservas_super_netas", fecha);
+  const filas = m.escenarios.map((e) => {
+    // Exigir la fecha exacta: nunca presentar un escenario viejo como recalculado.
+    const punto = S(`res_bopreal_esc_${e.porcentaje}`).find((p) => p[0] === fecha);
+    if (!punto) return "";
+    const bop = punto[1], superN = sn == null || central == null ? null : sn + central - bop;
+    return `<tr class="${e.central ? "total" : ""}"><th scope="row">${e.porcentaje}%${e.central ? " · Central" : ""}</th><td>${fmt(bop)}</td><td>${fmt(superN)}</td></tr>`;
+  }).join("");
+  if (!filas) return "";
+  return `<section class="bop-escenarios" aria-label="Escenarios de BOPREAL">
+    <h3>BOPREAL: tres escenarios de uso tributario</h3>
+    <p>Al ${fechaCorta(fecha)} · Millones de USD. La tabla principal usa el escenario del 50%.</p>
+    <div class="tw"><table class="tabla"><thead><tr><th scope="col">Uso para impuestos</th><th scope="col">BOPREAL a un año</th><th scope="col">Súper netas</th></tr></thead><tbody>${filas}</tbody></table></div>
+    <p>Cuanto mayor sea el uso para impuestos y la cancelación posterior, menor sería el pago en dólares y mayores las reservas súper netas. Son escenarios propios, no porcentajes observados.</p>
+    <details><summary>Supuestos y fuentes del cálculo</summary>
+      <p>Capital e intereses de los próximos doce meses. Se aplica el 30%, 50% o 70% sólo al capital con posibilidad de uso tributario antes de su vencimiento. Para la cuota de abril de 2027, el ajuste futuro corresponde a la serie B. La primera cuota de C se cuenta completa; su ventana tributaria comienza el día de esa cuota. D y 4B no tienen ajuste tributario; 4A sólo puede afectarlo desde su ventana de 2028.</p>
+      <p>Se supone que los bonos utilizados para impuestos se cancelan antes del pago de capital. Se mantienen los intereses contractuales completos. No se agrega un descuento por tenencias del Tesoro sin verificar; las bajas ya incluidas en el stock no se descuentan otra vez.</p>
+      <p>Stock de referencia: ${fechaCorta(stockFecha)} (BYMA). Los nominales requieren actualización manual; el horizonte de vencimientos se recalcula con cada fecha. Las cancelaciones supuestas no se convierten en datos observados.</p>
+      <p>Desde ${fechaCorta(m.desde)} se usa este supuesto propio. El cambio de metodología también afecta las variaciones de súper netas que cruzan esa fecha.</p>
+      <p><a href="https://www.bcra.gob.ar/archivos/Pdfs/comytexord/B12695.pdf" target="_blank" rel="noopener">Condiciones de la serie 1 · BCRA</a> · <a href="https://arca.gob.ar/comoPagarImpuestos/bopreal/asignacion-cancelacion-obligaciones.asp" target="_blank" rel="noopener">Ventanas tributarias · ARCA</a></p>
+    </details>
+  </section>`;
+}
+
 function tablaReservas(el) {
   const fechas = S("reservas_netas").map((p) => p[0]);
   el.style.height = "auto";
@@ -419,7 +447,7 @@ function tablaReservas(el) {
       <label>Fecha <input type="date" data-k="a" min="${fechas[0]}" max="${ultima}"></label>
       <label>Contra <input type="date" data-k="b" min="${fechas[0]}" max="${ultima}"></label>
       <span><button data-c="dia">Día anterior</button> <button data-c="mes">Fin de mes anterior</button> <button data-c="anio">Fin de año anterior</button></span>
-    </div><div class="tw"></div>`;
+    </div><div class="tw res-composicion"></div><div class="res-escenarios"></div>`;
   const val = (v, f) => { const s = S(v); for (let i = s.length - 1; i >= 0; i--) if (s[i][0] <= f) return s[i][1]; return null; };
   const dibujar = () => {
     const a = snap(RES_SEL.a), b = snap(RES_SEL.b);
@@ -432,8 +460,12 @@ function tablaReservas(el) {
       const cls = d == null || Math.abs(d) < 0.5 ? "" : d > 0 ? "dif-pos" : "dif-neg";
       return `<tr class="${sg === 0 ? "total" : ""}"><td>${n}</td><td>${fmt(vb)}${est(b)}</td><td>${fmt(va)}${est(a)}</td><td class="${cls}">${d == null ? "" : (d > 0 ? "+" : "") + fmt(d)}</td></tr>`;
     }).join("");
-    el.querySelector(".tw").innerHTML = `<table class="tabla"><tr><th>Millones de USD</th><th>${fechaCorta(b)}</th><th>${fechaCorta(a)}</th><th>Dif.</th></tr>${celdas}</table>` +
+    el.querySelector(".res-composicion").innerHTML = `<table class="tabla"><tr><th>Millones de USD</th><th>${fechaCorta(b)}</th><th>${fechaCorta(a)}</th><th>Dif.</th></tr>${celdas}</table>` +
       (hayEst ? '<p class="fuente">*Estimado por calibración contra el gráfico de F. Machado.</p>' : "");
+    const desde = D.bopreal_reservas?.desde;
+    el.querySelector(".res-escenarios").innerHTML =
+      (desde && Math.min(Date.parse(a), Date.parse(b)) < Date.parse(desde) && Math.max(Date.parse(a), Date.parse(b)) >= Date.parse(desde)
+        ? `<p class="bop-cambio">La diferencia de súper netas incluye el cambio al supuesto propio de BOPREAL desde ${fechaCorta(desde)}.</p>` : "") + escenariosBopreal(a);
   };
   el.querySelectorAll("input").forEach((i) => i.onchange = () => { if (i.value) { RES_SEL[i.dataset.k] = i.value; dibujar(); } });
   el.querySelectorAll("button").forEach((btn) => btn.onclick = () => {
@@ -588,7 +620,7 @@ function resumen(main) {
   ].forEach((x) => kpi(k, x));
   const g = grilla(main);
   tarjeta(g, { mide: "reservas_netas", titulo: () => `Las reservas netas suman USD ${fmt(ult("reservas_netas")[1])} millones`,
-    bajada: "Netas y súper netas · En millones de USD", fuente: F.bcra + " *Tramo estimado por calibración.",
+    bajada: "Netas y súper netas · En millones de USD", fuente: F.bcra + " *Tramo estimado por calibración. Desde el 20/10/26, BOPREAL usa un supuesto propio de uso tributario del 50%; el cambio también afecta la serie de súper netas.",
     cero: true, series: [{ v: "reservas_netas", nombre: "Netas", estimadoAntes: "2026-07-01" },
       { v: "reservas_super_netas", nombre: "Súper netas", estimadoAntes: "2026-09-30", color: "celeste" }] });
   tarjeta(g, CARD_TABLA_RES);
@@ -694,7 +726,7 @@ function futurosBanda(el, cs, fx) {
 function reservas(main) {
   const g = grilla(main);
   tarjeta(g, { mide: "reservas_netas", ancha: true, titulo: () => `Las reservas netas suman USD ${fmt(ult("reservas_netas")[1])} millones y las súper netas USD ${fmt(ult("reservas_super_netas")[1])} millones`,
-    bajada: "Brutas menos pasivos de corto plazo · En millones de USD", fuente: F.bcra + " *Tramo discontinuo: BIS, repos y Bopreal estimados por calibración contra el gráfico de F. Machado. El BCRA publica las reservas con dos o tres días hábiles de rezago.",
+    bajada: "Brutas menos pasivos de corto plazo · En millones de USD", fuente: F.bcra + " *Tramo discontinuo: BIS, repos y Bopreal estimados por calibración contra el gráfico de F. Machado. Desde el 20/10/26, BOPREAL usa un supuesto propio de uso tributario del 50%; el cambio también afecta la serie de súper netas. El BCRA publica las reservas con dos o tres días hábiles de rezago.",
     cero: true, series: [{ v: "reservas_netas", nombre: "Netas", estimadoAntes: "2026-07-01" },
       { v: "reservas_super_netas", nombre: "Súper netas", estimadoAntes: "2026-09-30", color: "celeste" }] });
   tarjeta(g, CARD_TABLA_RES);

@@ -54,6 +54,7 @@ jobs:
           cache-dependency-path: requirements.txt
       - run: pip install -r requirements.txt
       - run: python -m unittest discover -s tests -p "test_regresiones.py"
+      - run: python -m unittest discover -s tests -p "test_bopreal_reservas.py"
       - run: python -m unittest discover -s tests -p "test_ampliacion.py"
       - run: python -m unittest discover -s tests -p "test_ipom.py"
       - run: node --test tests/test_frontend.cjs

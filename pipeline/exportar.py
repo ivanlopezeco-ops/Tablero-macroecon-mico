@@ -11,6 +11,7 @@ import json
 import pathlib
 
 import pandas as pd
+import bopreal_reservas as BR
 
 BASE = pathlib.Path(__file__).resolve().parents[1]
 EPOCA = pd.Timestamp("1970-01-01")
@@ -26,6 +27,7 @@ def _redondear(v):
 
 def exportar():
     df = pd.read_csv(BASE / "data" / "series.csv", parse_dates=["fecha"])
+    bopreal_meta = BR.metadata(df)
     df = df[~df["variable"].str.startswith("futuro_DLR")]
     df = df[~df["variable"].str.match(r"caucion_pesos_\d+d$")]  # foto BYMA de una rueda: la reemplaza A3
     out = {}
@@ -57,7 +59,8 @@ def exportar():
     lic_path = BASE / "data" / "licitaciones.json"
     licitaciones = json.loads(lic_path.read_text(encoding="utf-8")) if lic_path.exists() else []
     texto = json.dumps({"generado": dt.datetime.utcnow().isoformat() + "Z", "estado": estado, "series": out, "calendario": calendario,
-                        "servicio_deuda": servicio_deuda, "licitaciones": licitaciones, "curva_fx": curva_fx, "ampliacion": amp_meta, "ipom": ipom_meta},
+                        "servicio_deuda": servicio_deuda, "licitaciones": licitaciones, "curva_fx": curva_fx, "ampliacion": amp_meta, "ipom": ipom_meta,
+                        "bopreal_reservas": bopreal_meta},
                        ensure_ascii=False, separators=(",", ":"))
     (site / "data.json").write_text(texto, encoding="utf-8")
     print("data.json:", len(out), "variables,", round(len(texto) / 1e6, 2), "MB")
@@ -72,7 +75,7 @@ def exportar():
         if k < len(dias):
             chico[var] = {**s, "t": [dias[k]] + s["t"][k + 1:], "v": s["v"][k:]}
     texto = json.dumps({"generado": dt.datetime.utcnow().isoformat() + "Z", "estado": estado, "series": chico, "calendario": calendario,
-                        "licitaciones": licitaciones[-3:], "parcial": True}, ensure_ascii=False, separators=(",", ":"))
+                        "licitaciones": licitaciones[-3:], "bopreal_reservas": bopreal_meta, "parcial": True}, ensure_ascii=False, separators=(",", ":"))
     (site / "data_resumen.json").write_text(texto, encoding="utf-8")
     print("data_resumen.json:", len(chico), "variables,", round(len(texto) / 1e6, 2), "MB")
 
@@ -81,7 +84,7 @@ DIAS_RESUMEN = 800
 # Series que usan la pestaña Resumen y el bloque de Novedades (más los riesgos país, para el promedio regional)
 VARS_RESUMEN = {"tc_mayorista_a3500", "distancia_techo_banda", "ccl", "mep", "ccl_largo", "mep_largo", "brecha_ccl", "canje_ccl_mep",
                 "reservas_brutas", "reservas_netas", "reservas_super_netas", "res_encajes", "res_swap_china", "res_bis", "res_repos",
-                "res_bopreal_1a", "res_dep_tesoro", "compras_bcra_mlc", "compras_bcra_acum_anio", "tamar", "caucion_a3_pesos_1d",
+                "res_bopreal_1a", "res_bopreal_esc_30", "res_bopreal_esc_50", "res_bopreal_esc_70", "res_dep_tesoro", "compras_bcra_mlc", "compras_bcra_acum_anio", "tamar", "caucion_a3_pesos_1d",
                 "tasa_real_ex_ante_tamar", "ipc_nivel_general", "ipc_nucleo", "rem_inflacion_12m", "tcrm", "dxy", "brl_usd", "brent",
                 "soja_cbot", "oro", "vix", "sp500", "ust_10y", "merval_usd", "bc_cuenta_corriente", "bc_cuenta_financiera",
                 "mc_personas_humanas", "banda_techo"}

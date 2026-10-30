@@ -1,0 +1,19 @@
+{
+  "desde": "2026-10-20",
+  "central": 0.5,
+  "escenarios": [0.3, 0.5, 0.7],
+  "stocks": [
+    {
+      "fecha": "2026-10-20",
+      "fuente": "Fichas BYMA verificadas el 20/10/2026; nominal original vigente, incluye sector público. Copia trazable de config/bonos_flujos.json.",
+      "montos": {"BPOA7": 115439794, "BPOB7": 941046006, "BPOC7": 1494011529, "BPOD7": 1494011529, "BPOA8": 281725850, "BPOB8": 563451700}
+    }
+  ],
+  "ventanas_impuestos": {
+    "BPOA7": ["2025-04-30", "2026-04-29"],
+    "BPOB7": ["2026-04-30", "2027-04-29"],
+    "BPOC7": ["2027-04-30", "2027-10-31"],
+    "BPOA8": ["2028-04-30", "2028-10-31"]
+  },
+  "nota": "Supuesto propio aprobado el 30/10/2026. Escenarios de uso tributario del capital elegible, con cancelación antes del pago. Intereses contractuales completos. Se proyecta desde la fecha del stock: no se transforma una cancelación supuesta en una observada. Stocks fechados en este archivo; cronogramas en config/bonos_flujos.json; actualización de nominales manual. No se vuelve a descontar el rescate de agosto ya incorporado en el stock. Tenencias adicionales del Tesoro pendientes de rescate no verificadas: sin descuento adicional."
+}

@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 
 import bonos as B
+import bopreal_reservas as BR
 import fuentes as F
 from salud import normalizar
 
@@ -286,7 +287,7 @@ def derivadas(df):
     except Exception:  # noqa: BLE001
         notas["carry"] = "ERROR: " + traceback.format_exc()[-300:]
 
-    return pd.concat(out, ignore_index=True), notas
+    return BR.aplicar(pd.concat(out, ignore_index=True)), notas
 
 
 # ---------------------------------------------------------------- validación

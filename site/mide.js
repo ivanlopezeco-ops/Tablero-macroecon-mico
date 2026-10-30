@@ -13,7 +13,7 @@ const MIDE = {
   ],
   tabla_reservas: [
     "Muestra cómo se pasa de reservas brutas a netas y súper netas en dos fechas a elección. Cada componente se resta con su signo negativo y la última columna da la diferencia entre ambas fechas.",
-    "Los asteriscos marcan valores estimados por calibración contra el gráfico de Machado: BIS y repos antes de julio de 2026, y Bopreal a un año antes del 30 de septiembre de 2026.",
+    "Los asteriscos marcan valores estimados por calibración contra el gráfico de Machado: BIS y repos antes de julio de 2026, y Bopreal antes del 30 de septiembre de 2026. Desde el 20 de octubre de 2026, BOPREAL se estima con un supuesto propio: 50% de uso tributario sobre capital elegible y posterior cancelación antes del vencimiento, con intereses completos. Debajo se comparan los escenarios del 30%, 50% y 70% y se informa la fecha del stock de referencia.",
   ],
   reservas_brutas: "Stock de reservas internacionales brutas del BCRA al cierre de cada día, en millones de USD. El BCRA las publica con dos o tres días hábiles de rezago y ningún canal público las tiene antes.",
   compras: "Compras (positivo) y ventas (negativo) del BCRA en el mercado de cambios, por día y en millones de USD. El BCRA publica este dato con unos cuatro días hábiles de rezago. Cuando el período supera dos años, las barras se suman por mes.",

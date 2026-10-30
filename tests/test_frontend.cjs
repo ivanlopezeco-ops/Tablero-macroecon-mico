@@ -6,6 +6,21 @@ const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname, '../site/app.js'), 'utf8');
 const ipomSource = fs.readFileSync(path.join(__dirname, '../site/ipom.js'), 'utf8');
 
+test('BOPREAL: escenarios consistentes con súper netas y sin arrastre de fechas faltantes', () => {
+  const fecha='2026-10-28';
+  const series={res_bopreal_esc_30:[[fecha,2108.68]],res_bopreal_esc_50:[[fecha,2014.57]],res_bopreal_esc_70:[[fecha,1920.47]]};
+  const c=vm.createContext({D:{bopreal_reservas:{desde:'2026-10-20',stock_fecha:'2026-10-20',escenarios:[{porcentaje:30},{porcentaje:50,central:true},{porcentaje:70}]}},
+    S:k=>series[k]||[],valEn:k=>k==='res_bopreal_1a'?2014.57:8690.51,fmt:n=>n.toFixed(2),fechaCorta:f=>f});
+  vm.runInContext(source.slice(source.indexOf('function escenariosBopreal('),source.indexOf('function tablaReservas(')),c);
+  const html=vm.runInContext(`escenariosBopreal('${fecha}')`,c);
+  assert.match(html,/50% · Central/);
+  assert.match(html,/8596\.40/);
+  assert.match(html,/8784\.61/);
+  assert.match(html,/Son escenarios propios/);
+  assert.equal(vm.runInContext("escenariosBopreal('2026-10-19')",c),'');
+  assert.equal(vm.runInContext("escenariosBopreal('2026-10-29')",c),'');
+});
+
 test('las fechas de fuentes con distintos rezagos se muestran por separado', () => {
   const dates={ibc:'2026-09-01',manufactura:'2026-08-01'};
   const c=vm.createContext({ult:k=>[dates[k],100],mesCorto:f=>f.slice(0,7),fechaCorta:f=>f});

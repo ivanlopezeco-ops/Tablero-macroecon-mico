@@ -30,6 +30,17 @@
 }
 
 * { box-sizing: border-box; }
+.bop-escenarios { border-top: 1px solid var(--borde); margin-top: 24px; padding-top: 18px; color: var(--texto2); }
+.bop-escenarios h3 { color: var(--tinta); font-size: 14px; margin: 0 0 8px; }
+.bop-escenarios p, .bop-cambio { font-size: 12px; line-height: 1.6; max-width: 75ch; }
+.bop-cambio { color: var(--texto2); }
+.bop-escenarios summary { cursor: pointer; color: var(--azul); font-size: 12px; margin-top: 14px; }
+.bop-escenarios a { color: var(--azul); text-underline-offset: 3px; }
+.bop-escenarios summary:focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
+.bop-escenarios .tabla th:first-child { text-align: left; }
+.bop-escenarios .tabla th { white-space: normal; }
+.bop-escenarios .tabla tbody th { font-weight: 400; }
+.bop-escenarios .tabla .total th { font-weight: 600; }
 body {
   margin: 0; background: var(--bg); color: var(--tinta);
   font-family: Poppins, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; line-height: 1.45;
