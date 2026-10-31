@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-32">
+    <link rel="apple-touch-icon" sizes="60x60" href="/SitioWeb/Content/assets/images/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/SitioWeb/Content/assets/images/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/SitioWeb/Content/assets/images/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/SitioWeb/Content/assets/images/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/SitioWeb/Content/assets/images/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/SitioWeb/Content/assets/images/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/SitioWeb/Content/assets/images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/SitioWeb/Content/assets/images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/SitioWeb/Content/assets/images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/SitioWeb/Content/assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/SitioWeb/Content/assets/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/SitioWeb/Content/assets/images/favicon-16x16.png">
+    <link rel="icon" href="https://www.cnv.gov.ar/favicon.ico?v= 639290016000000000" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="manifest" href="/SitioWeb/Content/assets/images/manifest.json">
+
+    
+
+    <title>CNV</title>
+    <!-- Bootstrap Core CSS -->
+    <link type="text/css" href="/SitioWeb/Content/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="/SitioWeb/Content/assets/css/NewColorsSiteWeb.css" rel="stylesheet">
+
+    <!-- OTHERS CSS -->
+    
+    <link type="text/css" href="/SitioWeb/Content/assets/css/animate.min.css" rel="stylesheet" />
+    <link type="text/css" href="/SitioWeb/Content/assets/css/normalize.css" rel="stylesheet" />
+    <link href="/SitioWeb/Content/assets/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/SitioWeb/Content/assets/js/fancybox/css/jquery.fancybox.min.css" />
+    <link rel="stylesheet" type="text/css" href="/SitioWeb/Content/assets/js/DataTables/datatables.min.css" />
+    <link rel="stylesheet" type="text/css" href="/SitioWeb/Content/assets/css/spin.css" />
+    <!-- Custom CSS -->
+
+    <link type="text/css" href="/SitioWeb/Content/assets/css/style.css?v=86df6da2-0877-47fd-ad56-48a275ddd070" rel="stylesheet">
+    <link type="text/css" href="/SitioWeb/Content/assets/css/institucional.css" rel="stylesheet">
+
+
+    <!--Iconos-->
+    <link href="/SitioWeb/wwwroot/lib/fontawesome/css/fontawesome.min.css" rel="stylesheet" />
+    <link href="/SitioWeb/wwwroot/lib/fontawesome/css/brands.min.css" rel="stylesheet" />
+    <link href="/SitioWeb/wwwroot/lib/fontawesome/css/solid.min.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- jQuery -->
+    <script type="text/javascript">
+        var config = {
+            contextPath: document.URL.split('://')[0] + "://" + window.location.host + '/SitioWeb/'
+        };
+    </script>
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/jquery.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/bootstrap.min.js"></script>
+    <!-- Other JavaScript -->
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/jquery.easing.min.js"></script>
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/scrolling-nav.js"></script>
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/wow.min.js"></script>
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/parallax.js"></script>
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/moment-with-locales.js"></script>
+    <script src="/SitioWeb/Content/assets/js/fancybox/js/jquery.fancybox.min.js"></script>
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/DataTables/datatables.min.js"></script>
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/jQuery.print.min.js"></script>
+    <script type="text/javascript" src="/SitioWeb/Scripts/qrcode.min.js"></script>
+    <!-- CUSTOM JavaScript -->
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/main.js"></script>
+    <script type="text/javascript" src="/SitioWeb/Content/assets/js/institucional.js?v=cbc2d646-a0c1-4ca2-86a6-428c5cd9cb39"></script>
+    <script type="text/javascript" src="/SitioWeb/AdminLTE/plugins/jquery-ui/js/jquery-ui.js"></script>
+    <!-- Spinner -->
+    
+    <!-- Google Analitycs -->
+    <script type="text/javascript" src="/SitioWeb/Scripts/ga.js"></script>
+    
+    <script type="text/javascript">
+
+        jQuery(document).ready(function ($) {
+        });
+
+        function Initialize() {
+            google.maps.visualRefresh = true;
+            var uluru = { lat: -34.605757, lng: -58.370815 };
+            var map2 = new google.maps.Map(document.getElementById('map_canvas_l'),
+                {
+                    zoom: 15,
+                    center: uluru
+                });
+            var marker2 = new google.maps.Marker({
+                position: uluru,
+                map: map2,
+                url: 'https://maps.google.com/?q=25 de Mayo 175 Capital Federal'
+            });
+
+            google.maps.event.addListener(marker2,
+                'click',
+                function () {
+                    window.open(marker2.url);
+                });
+
+            marker2.setIcon('https://maps.google.com/mapfiles/ms/icons/blue-dot.png')
+
+        }
+
+// our code will go in here...
+    </script>
+</head>
+<!-- The #page-top ID is part of the scrolling feature - the data-spy and data-target are part of the built-in Bootstrap scrollspy function -->
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top fondoArgGob" role="navigation">
+    <div class="container">
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse ">
+            <ul class="nav navbar-nav">
+                <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+
+                <li style="width: 12rem"> <a href="/SitioWeb/Institucional">Institucional</a> </li>
+                <li style="width: 14rem"> <a href="/SitioWeb/MarcoRegulatorio">Marco Regulatorio</a> </li>
+                <li style="width: 20rem"> <a href="/SitioWeb/ResolucionesDisciplinarias">Resoluciones Disciplinarias</a> </li>
+                <li style="width: 13rem"> <a href="/SitioWeb/Informes">Informes</a> </li>
+                <li style="width: 13rem">
+                    <a class="nav-link" href="https://www.argentina.gob.ar/cnv/noticias">
+                        Prensa
+                    </a>
+                </li>
+
+                <li style="width: 17rem"> <a href="/SitioWeb/Home/AIF" class="invert"><img src="/SitioWeb/Content/assets/img/autopista.png">Acceso AIF</a> </li>
+
+                    <!-- <script>console.log("Debug=false")</script> -->
+
+                <li style="width: 19rem;"> <a href="/SitioWeb/BuscadorGlobal" class=""><img src="/SitioWeb/Content/assets/img/search_navbar.png">Empresas y Personas</a></li>
+
+                <!--  -->
+
+                <li class="hidden"> <a class="page-scroll" href="#page-top"></a> </li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- /.navbar-collapse -->
+    <!-- /.container -->
+</nav>
+
+    <section id="intro-int">
+        <div class="container">
+            <div class="col-md-8 col-sm-6 col-xs-6 no-padding">
+                <a href="/SitioWeb/">
+                    <img src="/SitioWeb/wwwroot/img/Logo-para-firma.png" height="100" alt="logo-header" style="padding-left: 10px">
+                </a>
+            </div>
+            <div class="col-md-4 col-sm-12 col-xs-12">
+                <ul class="nav-intro">
+                    <li><a target="_blank" href="https://www.linkedin.com/company/558258/"> <i class="fa-brands fa-linkedin-in"></i></a></li>
+
+                    <li><a target="_blank" href="http://youtube.com/user/CNVArgentina"> <i class="fa-brands fa-youtube"></i></a></li>
+                    <li><a target="_blank" href="http://twitter.com/CNVArgentina"> <i class="fa-brands fa-twitter"></i></a></li>
+                    <li><a target="_blank" href="http://flickr.com/photos/fotografiacnv"> <i class="fa-brands fa-flickr"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+
+
+    
+<link type="text/css" href="/SitioWeb/Content/assets/css/informes.css?v=2026373102" rel="stylesheet">
+<script src="/SitioWeb/Content/assets/js/Informes.js?v=2026373102"></script>
+<section id="title-int" class="informes linea-Delgada-Amarilla">
+    <div class="Exterior">
+        <div class="container-fluid no-padding Medio">
+            <h1 class="Interior">Informes del Mercado de Capitales</h1>
+            
+        </div>
+    </div>
+</section>
+
+
+
+<section id="content">
+    <div class="container-fluid bg-informes">
+        <div class="container">
+            <div class="col-lg-12">
+                <div id="exTab1">
+                    <ul class="nav nav-pills">
+                        <li class="active">
+                            <a href="#1a" data-toggle="tab">EVOLUCIÓN DEL FINANCIAMIENTO - MENSUAL </a>
+                        </li>
+                        <li>
+                            <a href="#2a" data-toggle="tab">
+                                FINANCIAMIENTO PYME
+                                -TRIMESTRAL
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#3a" data-toggle="tab">
+                                OTROS INFORMES
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#4a" data-toggle="tab">
+                                SERIES ESTADÍSTICAS
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content clearfix">
+                        <div class="tab-pane active" id="1a">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th width="300px" align="center" class="align-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                            <tr>
+                                                <td class="fontSizetd"> Octubre 2022</td>
+                                                <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/c558837a-d83c-4763-8217-8ad34b9838a3"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fontSizetd"> Sept. 2022</td>
+                                                <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/1a8f67b1-d434-444d-8c08-aa20d1c5b4d4"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fontSizetd"> Agosto 2022</td>
+                                                <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/155a5f81-9079-4352-9412-72ac31f2295a"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fontSizetd"> Julio 2022</td>
+                                                <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/3c04b4fb-4e8f-427d-8519-d0f8017d2973"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fontSizetd"> Junio 2022</td>
+                                                <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/f8cbc3f7-a3b5-49f8-8267-e7b32d64d8c0"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                            </tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="tab-pane" id="2a">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>TRIMESTRE</th>
+                                        <th width="300px" align="center" class="align-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                            <tr>
+                                                <td class="fontSizetd">Segundo Trimestre 2020</td>
+                                                <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/4c20fb52-41aa-4ceb-81f9-c35a7e41b909"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fontSizetd">Primer Trimestre 2020</td>
+                                                <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/f9dc8189-1256-48e3-ac8c-67275edb9c64"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fontSizetd">Cuarto Trimestre 2019</td>
+                                                <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/796db927-c50e-4c3a-83bd-1aa3e2a1fdd3"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fontSizetd">Tercer Trimestre 2019</td>
+                                                <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/50092a2b-4943-4a9e-bb24-bfe02738f0af"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fontSizetd">Segundo Trimestre 2019</td>
+                                                <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/c96cf683-d000-4640-9dd8-0d7a1f54d226"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                            </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="tab-pane" id="3a">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>MES</th>
+                                    <th width="300px" align="center" class="align-center"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td class="fontSizetd">Informe de gestión Trimestral - Junio 2022</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/afc2184e-6891-4075-b315-934970cb85af"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Informe RSI 2021-2022 - Abril 2022</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/36e5a29a-7d9d-4ec9-a542-3a8e64eefc71"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Informe de Gestión Trimestral  - Marzo 2022</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/3e10f287-3aa2-4c88-b508-e4d96ee64afa"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Informe de Gestión Trimestral  - Diciembre 2021</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/f39a743e-f312-4eca-8552-49ca74bba6db"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Informe de Gestión Trimestral  - Septiembre 2021</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/a534c71a-ab0e-4356-8384-0ba594f77636"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="4a">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th width="300px" align="center" class="align-center"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td class="fontSizetd">Emisiones de Acciones</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/421ab49f-1053-4a32-b6f5-32eff42d118b"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Emisiones de Obligaciones Negociables</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/c6ebb498-5ea9-4b17-8250-04a4191fc92d"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Emisiones de Fideicomisos Financieros</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/f73c19e6-183f-4d12-82ed-06e57603b116"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Emisiones de Fondos Comunes de Inversión Cerrados</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/7606c3d0-6ad8-4cd1-979e-298d3ef13ebc"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Negociación de Cheques de Pago Diferido</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/aeeca24d-5b9f-48c5-9884-a98b1804aac5"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Negociación de Pagarés</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/08fef0e7-2389-4471-bc9e-a79a5add432b"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Financiamiento PyME por instrumento</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/a516e7cb-7ca6-4d8c-9a55-192bb68c6e7d"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fontSizetd">Negociación de Facturas de Crédito Electrónicas</td>
+                                            <td align="center"><a href="https://www.cnv.gov.ar/descargas/informes/blob/672664c9-6850-42b7-bcea-ab243987e4aa"><i class="fa-solid fa-download fontSizetd"></i></a></td>
+                                        </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container-fluid bg-busqueda">
+        <div class="container">
+            <h1>Búsqueda de informes</h1>
+            <p>Para ver más informes utilizá nuestro buscador</p>
+<form action="/SitioWeb/Informes/Busqueda" enctype="multipart/form-data" id="InformesBuscar" method="post" name="InformesBuscar">                <div class="col-lg-10 col-lg-offset-1">
+                    <div class="form-group">
+                        <select class="form-control" id="tipo">
+                            <option value="-1">Seleccioná tipo de informe</option>
+                            
+                                <option value="1">EVOLUCIÓN DEL FINANCIAMIENTO EN MC</option>
+                                <option value="2">FINANCIAMIENTO PYME</option>
+                                <option value="3">INFORME MENSUAL DE FIDEICOMISO</option>
+                                <option value="4">Informe Diario de Monitoreo</option>
+                                <option value="5">Informe Diario de Futuro Agropecuario</option>
+                                <option value="6">OTROS INFORMES</option>
+                                <option value="7">Emisiones de Acciones</option>
+                                <option value="8">Emisiones de Obligaciones Negociables</option>
+                                <option value="9">Emisiones de Fideicomisos Financieros</option>
+                                <option value="10">Emisiones de Fondos Comunes de Inversión Cerrados</option>
+                                <option value="11">Negociación de Cheques de Pago Diferido</option>
+                                <option value="12">Negociación de Pagarés Avalados</option>
+                                <option value="13">Financiamiento PyME por instrumento</option>
+                                <option value="14">Negociación de Facturas de Crédito Electrónicas</option>
+                            <option value="0" class="all">BUSCAR TODOS LOS INFORMES</option>
+                        </select>
+                        <div class="select_arrow"> </div>
+                        <input type="hidden" name="idTipo" id="idTipo" value="">
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" id="dropanio">
+                            <option value="-1">Seleccioná AÑO</option>
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                        </select> <div class="select_arrow"> </div>
+                        <input type="hidden" name="anio" id="anio" value="">
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" id="dropmes">
+                            <option value="-1">Seleccioná MES</option>
+                            <option value="12">DICIEMBRE</option>
+                            <option value="11">NOVIEMBRE</option>
+                            <option value="10">OCTUBRE</option>
+                            <option value="9">SEPTIEMBRE</option>
+                            <option value="8">AGOSTO</option>
+                            <option value="7">JULIO</option>
+                            <option value="6">JUNIO</option>
+                            <option value="5">MAYO</option>
+                            <option value="4">ABRIL</option>
+                            <option value="3">MARZO</option>
+                            <option value="2">FEBRERO</option>
+                            <option value="1">ENERO</option>
+                            <option value="0">TODOS</option>
+                        </select> <div class="select_arrow">
+                            <input type="hidden" name="mes" id="mes" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn-blue">BUSCAR</button>
+                    </div>
+                </div>
+</form>                    </div>
+    </div>
+</section>
+<script>
+
+    jQuery("#tipo").on('change', function () {
+        jQuery("#idTipo").val(jQuery('#tipo').val());
+    });
+
+    jQuery("#dropmes").on('change', function () {
+        jQuery("#mes").val(jQuery('#dropmes').val());
+    });
+
+    jQuery("#dropanio").on('change', function () {
+        jQuery("#anio").val(jQuery('#dropanio').val());
+    });
+
+    jQuery("#tipo option[value='" +  + "']").attr("selected", "selected");
+    jQuery("#idTipo").val();
+    jQuery("#dropanio option[value='" +  + "']").attr("selected", "selected");
+    jQuery("#anio").val();
+
+    jQuery("#dropmes option[value='" +  + "']").attr("selected", "selected");
+    jQuery("#mes").val();
+
+
+
+</script>
+
+
+
+
+
+    
+
+    
+    
+    
+
+</body>
+</html>
