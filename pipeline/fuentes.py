@@ -180,6 +180,21 @@ def argentinadatos():
 BYMA = "https://open.bymadata.com.ar/vanoms-be-core/rest/api/bymadata/free"
 BYMA_H = {**UA, "Content-Type": "application/json", "Origin": "https://open.bymadata.com.ar",
           "Referer": "https://open.bymadata.com.ar/"}
+BYMA_CAIDO = None  # None: sin probar en esta corrida; True: no acepta conexiones y las fuentes de BYMA se saltean
+
+
+def _byma():
+    """Corta en el acto si BYMA Open Data no responde. Sin esto, cada símbolo agota tres esperas de 90 s
+    y la corrida entera supera el límite del workflow (pasó del 16 al 19/11/26, con el sitio caído)."""
+    global BYMA_CAIDO
+    if BYMA_CAIDO is None:
+        try:
+            requests.get("https://open.bymadata.com.ar/", headers=UA, verify=False, timeout=(15, 45))
+            BYMA_CAIDO = False
+        except (requests.ConnectionError, requests.Timeout):
+            BYMA_CAIDO = True
+    if BYMA_CAIDO:
+        raise RuntimeError("BYMA Open Data no responde; se reintenta en la próxima corrida")
 BYMA_SIMBOLOS = {"AL30 24HS": ("al30_ars", "ARS"), "AL30D 24HS": ("al30_usd_mep", "USD"),
                  "AL30C 24HS": ("al30_usd_ccl", "USD"), "GD30 24HS": ("gd30_ars", "ARS"),
                  "GD30C 24HS": ("gd30_usd_ccl", "USD"), "GD35C 24HS": ("gd35_usd_ccl", "USD")}
@@ -210,18 +225,26 @@ def _byma_historia(simbolos, dias=800):
     """Cierre diario de cada símbolo (BYMA, 24HS). Un símbolo que falla no frena al resto."""
     t0 = int(dt.datetime.combine(desde(HOY - dt.timedelta(days=dias)), dt.time()).timestamp())
     hasta = int(dt.datetime.now().timestamp())
-    filas, errores = [], []
+    global BYMA_CAIDO
+    _byma()
+    filas, errores, seguidas = [], [], 0
     for sym, (var, uni) in simbolos.items():
         try:
             # Este endpoint también devuelve HTTP 400 de forma intermitente para
             # consultas válidas. Repetir la misma consulta; nunca cambiar especie o plazo.
-            j = _get(f"{BYMA}/chart/historical-series/history", verify=False, reintentar_status=(400,),
+            j = _get(f"{BYMA}/chart/historical-series/history", verify=False, reintentar_status=(400,), timeout=(15, 90),
                      params={"symbol": sym, "resolution": "D", "from": t0, "to": hasta}).json()
+            seguidas = 0
             for t, c in zip(j.get("t", []), j.get("c", [])):
                 fecha = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
                 filas.append((fecha, var, c, uni, f"BYMA ({sym})"))
         except Exception as e:  # noqa: BLE001
             errores.append(f"{sym}: {e}"[:100])
+            seguidas = seguidas + 1 if isinstance(e, (requests.ConnectionError, requests.Timeout)) else 0
+            if seguidas >= 3:  # tres símbolos seguidos sin conexión: BYMA se cayó en medio de la corrida
+                BYMA_CAIDO = True
+                errores.append("BYMA dejó de responder; se cortó la descarga del resto")
+                break
     if not filas:
         raise RuntimeError("; ".join(errores[:3]))
     df = _df(filas)
@@ -241,6 +264,7 @@ def byma_historicos():
 
 def byma_snapshots():
     """Cauciones y letras: solo foto del día. La historia se acumula corrida a corrida."""
+    _byma()
     filas, crudos = [], {}
     r = requests.post(f"{BYMA}/cauciones", json={"excludeZeroPxAndQty": True, "T2": True, "T1": False,
                       "T0": False}, headers=BYMA_H, verify=False, timeout=90)
@@ -348,6 +372,7 @@ MERVAL_MSCI_SEMILLA = {dt.date(2026, 10, 16): 100000.0, dt.date(2026, 10, 19): 9
 
 def byma_indices():
     """MSCI MERVAL del panel de índices de BYMA: cierre si ya está, si no último valor (provisorio)."""
+    _byma()
     r = requests.post(f"{BYMA}/index-price", json={}, headers=BYMA_H, verify=False, timeout=60)
     r.raise_for_status()
     filas = [(f, "merval_msci", v, "puntos", "MSCI MERVAL (Rava, base 16/10/26 = 100.000)") for f, v in MERVAL_MSCI_SEMILLA.items()]
@@ -811,6 +836,7 @@ def byma_intradia():
     BYMA no lista los Globales en este endpoint; esos precios en pesos salen de A3/MAE."""
     if not en_rueda():
         return _df([])
+    _byma()
     # Un símbolo puede alimentar dos variables (la serie propia del MEP/CCL y la del panel de bonos).
     simbolos = {}
     for tabla in (BYMA_SIMBOLOS, BYMA_BONOS):
@@ -1002,6 +1028,7 @@ FICHAS = None  # caché en memoria; se persiste en data/raw/lecap_fichas.json de
 
 
 def _ficha(sym):
+    _byma()
     r = requests.post(f"{BYMA}/bnown/fichatecnica/especies/general",
                       json={"symbol": sym, "Content-Type": "application/json"},
                       headers=BYMA_H, verify=False, timeout=60)
@@ -1060,6 +1087,7 @@ def fichas_desde_licitaciones(lic):
 
 def lecaps(fichas, tem_lic=None, historicas=()):
     """TEM de mercado de cada LECAP/BONCAP: pago final (100 capitalizado a la TEM de emisión) vs precio."""
+    _byma()
     r = requests.post(f"{BYMA}/lebacs", json={"excludeZeroPxAndQty": False, "T1": True, "T0": False,
                       "page_number": 1, "page_size": 500}, headers=BYMA_H, verify=False, timeout=90)
     syms = {x["symbol"] for x in r.json().get("data", [])
@@ -1114,6 +1142,7 @@ def lecaps(fichas, tem_lic=None, historicas=()):
 def cer_bonos(fichas):
     """Precio diario (BYMA, 24 hs) de los Boncer cero cupón (TZX...) y las letras CER (X...) que lista A3.
     La ficha da la fecha de emisión y de vencimiento; el pipeline calcula después la tasa real implícita."""
+    _byma()
     syms = set()
     for x in _get(MAE + "mercado/datos/RF", headers=MAE_H).json():
         t = str(x.get("ticker", "")).split("/")[0]
@@ -1157,24 +1186,42 @@ def _mae(ruta, ini, fin):
 
 def a3_mae():
     """Volumen del mercado de cambios (FOREX MAE) y tasas de caución y repo a 1 día, por ventanas de 30 días."""
-    filas = []
+    def volumen(d):
+        yield d["fecha"][:10], "volumen_mlc", d["cant_Millones"], "USD M", "A3/MAE FOREX (volumen operado)"
+
+    def cauciones(d):
+        for x in d.get("details", []):
+            if x.get("plazo") == "001" and x.get("ticker") in ("CAARS", "CAUSD") and x.get("tasaPP"):
+                var = "caucion_a3_pesos_1d" if x["ticker"] == "CAARS" else "caucion_a3_usd_1d"
+                yield x["fecha"][:10], var, x["tasaPP"], "% TNA", f"A3/MAE cauciones ({x['ticker']})"
+
+    def repo(d):
+        for x in d.get("details", []):
+            if x.get("plazo") == "001" and x.get("rueda") == "REPO" and x.get("moneda") == "$" and x.get("tasaPP"):
+                yield x["fecha"][:10], "repo_a3_pesos_1d", x["tasaPP"], "% TNA", "A3/MAE repo (rueda REPO)"
+
+    # Cada consulta falla por su cuenta: el 19/11/26 la de cauciones daba error del servidor de A3
+    # y se llevaba puestos el volumen del MLC y el repo.
+    consultas = {"mercado/titulo/historicoforex/volumenoperado": volumen,
+                 "mercado/titulo/historicocauciones": cauciones, "mercado/titulo/historicorepo": repo}
+    filas, errores = [], {}
     tope = desde(dt.date(2016, 1, 1))  # volumen y repo desde 2016; cauciones desde 2023
     fin = HOY
-    while fin >= tope:  # ventanas completas de 30 días hacia atrás (una ventana de 1 día devuelve otro agregado)
+    while fin >= tope and len(errores) < len(consultas):  # ventanas de 30 días hacia atrás (una de 1 día devuelve otro agregado)
         ini = fin - dt.timedelta(days=29)
-        for d in _mae("mercado/titulo/historicoforex/volumenoperado", ini, fin) or []:
-            filas.append((d["fecha"][:10], "volumen_mlc", d["cant_Millones"], "USD M", "A3/MAE FOREX (volumen operado)"))
-        for d in _mae("mercado/titulo/historicocauciones", ini, fin) or []:
-            for x in d.get("details", []):
-                if x.get("plazo") == "001" and x.get("ticker") in ("CAARS", "CAUSD") and x.get("tasaPP"):
-                    var = "caucion_a3_pesos_1d" if x["ticker"] == "CAARS" else "caucion_a3_usd_1d"
-                    filas.append((x["fecha"][:10], var, x["tasaPP"], "% TNA", f"A3/MAE cauciones ({x['ticker']})"))
-        for d in _mae("mercado/titulo/historicorepo", ini, fin) or []:
-            for x in d.get("details", []):
-                if x.get("plazo") == "001" and x.get("rueda") == "REPO" and x.get("moneda") == "$" and x.get("tasaPP"):
-                    filas.append((x["fecha"][:10], "repo_a3_pesos_1d", x["tasaPP"], "% TNA", "A3/MAE repo (rueda REPO)"))
+        for ruta, leer in consultas.items():
+            if ruta in errores:
+                continue
+            try:
+                for d in _mae(ruta, ini, fin) or []:
+                    filas.extend(leer(d))
+            except Exception as e:  # noqa: BLE001
+                errores[ruta] = f"{ruta.rsplit('/', 1)[-1]}: {e}"[:160]
         fin = ini - dt.timedelta(days=1)
+    if not filas:
+        raise RuntimeError(" | ".join(errores.values()))
     df = _df(filas).drop_duplicates(["fecha", "variable"], keep="first")
+    df.attrs["errores"] = list(errores.values())
     # Control: una ventana de varios días a veces devuelve el último día multiplicado (visto el 14/10/26:
     # 4 x 588). Los últimos días se vuelven a pedir de a uno, que da el valor correcto.
     for f in sorted(df.loc[df["variable"] == "volumen_mlc", "fecha"].unique())[-5:]:

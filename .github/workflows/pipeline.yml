@@ -60,7 +60,7 @@ jobs:
       - run: python -m unittest discover -s tests -p "test_balance.py"
       - run: node --test tests/test_frontend.cjs
       - id: corrida
-        run: python pipeline/run.py
+        run: python -u pipeline/run.py
       - name: Validar fuentes nuevas antes de publicar
         run: python pipeline/ipom.py --verificar site/data.json
       - name: Conciliar balance y comprobar informe PDF

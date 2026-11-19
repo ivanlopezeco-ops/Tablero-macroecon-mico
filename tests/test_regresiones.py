@@ -15,6 +15,10 @@ import forwards
 from salud import normalizar
 
 
+def setUpModule():
+    fuentes.BYMA_CAIDO = False  # las pruebas no salen a internet a verificar si BYMA responde
+
+
 class EstadoFuentes(unittest.TestCase):
     def test_parcial_persistente_no_reinicia_reloj(self):
         actual = {"x": {"estado": "ok", "filas": 5, "error": "falla"}}
@@ -95,6 +99,27 @@ class IndiceByma(unittest.TestCase):
 
 
 class Descargas(unittest.TestCase):
+    def tearDown(self):
+        fuentes.BYMA_CAIDO = False
+
+    def test_byma_caido_corta_sin_recorrer_simbolos(self):
+        fuentes.BYMA_CAIDO = None
+        caida = fuentes.requests.ConnectTimeout("sin conexión")
+        with patch.object(fuentes.requests, "get", side_effect=caida) as get, patch("time.sleep"):
+            for fn in (fuentes.bonos_historicos, fuentes.byma_historicos, fuentes.byma_indices):
+                with self.assertRaisesRegex(RuntimeError, "BYMA Open Data no responde"):
+                    fn()
+        self.assertEqual(get.call_count, 1)
+
+    def test_byma_que_se_cae_en_la_corrida_corta_a_los_tres_simbolos(self):
+        caida = fuentes.requests.ConnectTimeout("sin conexión")
+        simbolos = {f"S{i} 24HS": (f"s{i}", "ARS") for i in range(10)}
+        with patch.object(fuentes.requests, "get", side_effect=caida) as get, patch("time.sleep"):
+            with self.assertRaises(RuntimeError):
+                fuentes._byma_historia(simbolos)
+        self.assertEqual(get.call_count, 9)  # tres símbolos con tres intentos cada uno
+        self.assertTrue(fuentes.BYMA_CAIDO)
+
     def respuesta(self, status=200):
         r = Mock(status_code=status)
         if status >= 400:
