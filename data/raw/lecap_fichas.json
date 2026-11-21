@@ -1,0 +1,332 @@
+{
+ "S13N6": {
+  "tem": 0.021,
+  "emision": "2026-06-30",
+  "vencimiento": "2026-11-13",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 13 DE NOVIEMBRE DE 2026 (nueva)",
+  "origen": "licitación del 2026-06-26"
+ },
+ "S16O6": {
+  "tem": 0.020499999999999997,
+  "emision": "2026-07-31",
+  "vencimiento": "2026-10-16",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 16 DE OCTUBRE DE 2026"
+ },
+ "S29E7": {
+  "tem": 0.0225,
+  "emision": "2026-08-31",
+  "vencimiento": "2027-01-29",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 29 DE ENERO DE 2027 (nueva)",
+  "origen": "licitación del 2026-08-27"
+ },
+ "S30N6": {
+  "tem": 0.023,
+  "emision": "2025-12-15",
+  "vencimiento": "2026-11-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE NOVIEMBRE DE 2026"
+ },
+ "S30O6": {
+  "tem": 0.0255,
+  "emision": "2025-10-31",
+  "vencimiento": "2026-10-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE OCTUBRE DE 2026"
+ },
+ "T15E7": {
+  "tem": 0.020499999999999997,
+  "emision": "2025-01-31",
+  "vencimiento": "2027-01-15",
+  "denominacion": "BONO DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 15 DE ENERO DE 2027",
+  "interes": "Tasa efectiva mensual: 2,05%\nIntereses: Pagarán una tasa efectiva mensual capitalizable mensualmente hasta el vencimiento del instrumento.",
+  "crudo": null
+ },
+ "T30A7": {
+  "tem": 0.0255,
+  "emision": "2025-10-31",
+  "vencimiento": "2027-04-30",
+  "denominacion": "BONO DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE ABRIL DE 2027",
+  "interes": "Pagarán una tasa efectiva mensual capitalizable mensualmente hasta el vencimiento del instrumento.\nTasa efectiva mensual: 2,55 % .",
+  "crudo": null
+ },
+ "T30J7": {
+  "tem": 0.0258,
+  "emision": "2026-01-16",
+  "vencimiento": "2027-06-30",
+  "denominacion": "BONO DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE JUNIO 2027",
+  "interes": "2,58%",
+  "crudo": null
+ },
+ "T31Y7": {
+  "tem": 0.024,
+  "emision": "2025-12-15",
+  "vencimiento": "2027-05-31",
+  "denominacion": "BONO DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 31 DE MAYO DE 2027",
+  "interes": "Pagarán una tasa efectiva mensual capitalizable mensualmente hasta el vencimiento del instrumento.\nTasa efectiva mensual: 2,40 %.",
+  "crudo": null
+ },
+ "S31E5": {
+  "tem": 0.055,
+  "emision": "2024-03-25",
+  "vencimiento": "2025-01-31",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 31 DE ENERO DE 2025 (S31E5 - nueva)",
+  "origen": "licitación del 2024-03-21"
+ },
+ "S14O4": {
+  "tem": 0.0475,
+  "emision": "2024-04-15",
+  "vencimiento": "2024-10-14",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 14 DE OCTUBRE DE 2024 (S14O4 - nueva);",
+  "origen": "licitación del 2024-04-11"
+ },
+ "S28F5": {
+  "tem": 0.045,
+  "emision": "2024-04-15",
+  "vencimiento": "2025-02-28",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 28 DE FEBRERO DE 2025 (S28F5 - nueva);",
+  "origen": "licitación del 2024-04-11"
+ },
+ "S14J4": {
+  "tem": 0.042,
+  "emision": "2024-05-20",
+  "vencimiento": "2024-06-14",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 14 DE JUNIO DE 2024 (S14J4 - nueva)",
+  "origen": "licitación del 2024-05-16"
+ },
+ "S01L4": {
+  "tem": 0.040999999999999995,
+  "emision": "2024-05-20",
+  "vencimiento": "2024-07-01",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 1 DE JULIO DE 2024 (S01L4 - nueva)",
+  "origen": "licitación del 2024-05-16"
+ },
+ "S26L4": {
+  "tem": 0.04,
+  "emision": "2024-05-20",
+  "vencimiento": "2024-07-26",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 26 DE JULIO DE 2024 (S26L4 - nueva)",
+  "origen": "licitación del 2024-05-16"
+ },
+ "S30G4": {
+  "tem": 0.038,
+  "emision": "2024-05-20",
+  "vencimiento": "2024-08-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE AGOSTO DE 2024 (S30G4 - nueva)",
+  "origen": "licitación del 2024-05-16"
+ },
+ "S12L4": {
+  "tem": 0.035699999999999996,
+  "emision": "2024-05-31",
+  "vencimiento": "2024-07-12",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 12 DE JULIO DE 2024 (S12L4 - nueva)",
+  "origen": "licitación del 2024-05-29"
+ },
+ "S16G4": {
+  "tem": 0.0359,
+  "emision": "2024-05-31",
+  "vencimiento": "2024-08-16",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 16 DE AGOSTO DE 2024 (S16G4 - nueva)",
+  "origen": "licitación del 2024-05-29"
+ },
+ "S13S4": {
+  "tem": 0.0425,
+  "emision": "2024-06-14",
+  "vencimiento": "2024-09-13",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 13 DE SEPTIEMBRE DE 2024 (S13S4 – nueva) (***)",
+  "origen": "licitación del 2024-06-12"
+ },
+ "S30S4": {
+  "tem": 0.0425,
+  "emision": "2024-06-28",
+  "vencimiento": "2024-09-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE SEPTIEMBRE DE 2024 (S30S4 – nueva)",
+  "origen": "licitación del 2024-06-26"
+ },
+ "S13D4": {
+  "tem": 0.045,
+  "emision": "2024-06-28",
+  "vencimiento": "2024-12-13",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 13 DE DICIEMBRE DE 2024 (S13D4 – nueva)",
+  "origen": "licitación del 2024-06-26"
+ },
+ "S17E5": {
+  "tem": 0.045,
+  "emision": "2024-07-12",
+  "vencimiento": "2025-01-17",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 17 DE ENERO DE 2025 (S17E5 – nueva)",
+  "origen": "licitación del 2024-07-10"
+ },
+ "S11N4": {
+  "tem": 0.0375,
+  "emision": "2024-08-30",
+  "vencimiento": "2024-11-11",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 11 DE NOVIEMBRE DE 2024 (S11N4 - nueva)",
+  "origen": "licitación del 2024-08-28"
+ },
+ "S14F5": {
+  "tem": 0.039,
+  "emision": "2024-09-13",
+  "vencimiento": "2025-02-14",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 14 DE FEBRERO DE 2025 (S14F5 - nueva)",
+  "origen": "licitación del 2024-09-11"
+ },
+ "S30J5": {
+  "tem": 0.039,
+  "emision": "2024-08-30",
+  "vencimiento": "2025-06-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE JUNIO DE 2025 (S30J5 – nueva)",
+  "origen": "licitación del 2024-08-28"
+ },
+ "S29G5": {
+  "tem": 0.0388,
+  "emision": "2024-08-30",
+  "vencimiento": "2025-08-29",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 29 DE AGOSTO DE 2025 (S29G5 – nueva)",
+  "origen": "licitación del 2024-08-28"
+ },
+ "S14M5": {
+  "tem": 0.039,
+  "emision": "2024-09-13",
+  "vencimiento": "2025-03-14",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 14 DE MARZO DE 2025 (S14M5 - nueva);",
+  "origen": "licitación del 2024-09-11"
+ },
+ "S16A5": {
+  "tem": 0.039,
+  "emision": "2024-09-13",
+  "vencimiento": "2025-04-16",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 16 DE ABRIL DE 2025 (S16A5 - nueva)",
+  "origen": "licitación del 2024-09-11"
+ },
+ "S16Y5": {
+  "tem": 0.0395,
+  "emision": "2024-09-13",
+  "vencimiento": "2025-05-16",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 16 DE MAYO DE 2025 (S16Y5 - nueva)",
+  "origen": "licitación del 2024-09-11"
+ },
+ "S12S5": {
+  "tem": 0.0395,
+  "emision": "2024-09-13",
+  "vencimiento": "2025-09-12",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 12 DE SEPTIEMBRE DE 2025 (S12S5 – nueva)",
+  "origen": "licitación del 2024-09-11"
+ },
+ "S31O4": {
+  "tem": 0.0375,
+  "emision": "2024-09-30",
+  "vencimiento": "2024-10-31",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 31 DE OCTUBRE DE 2024 (S31O4 - nueva) (5)",
+  "origen": "licitación del 2024-09-26"
+ },
+ "S28A5": {
+  "tem": 0.0395,
+  "emision": "2024-09-30",
+  "vencimiento": "2025-04-28",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 28 DE ABRIL DE 2025 (S28A5 - nueva)",
+  "origen": "licitación del 2024-09-26"
+ },
+ "S30Y5": {
+  "tem": 0.0395,
+  "emision": "2024-09-30",
+  "vencimiento": "2025-05-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE MAYO DE 2025 (S30Y5 - nueva)",
+  "origen": "licitación del 2024-09-26"
+ },
+ "S31L5": {
+  "tem": 0.0398,
+  "emision": "2024-09-30",
+  "vencimiento": "2025-07-31",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 31 DE JULIO DE 2025 (S31L5 - nueva)",
+  "origen": "licitación del 2024-09-26"
+ },
+ "S30S5": {
+  "tem": 0.0398,
+  "emision": "2024-09-30",
+  "vencimiento": "2025-09-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE SEPTIEMBRE DE 2025 (S30S5 - nueva)",
+  "origen": "licitación del 2024-09-26"
+ },
+ "S15G5": {
+  "tem": 0.039,
+  "emision": "2024-10-11",
+  "vencimiento": "2025-08-15",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 15 DE AGOSTO DE 2025 (S15G5 - nueva);",
+  "origen": "licitación del 2024-10-09"
+ },
+ "T17O5": {
+  "tem": 0.039,
+  "emision": "2024-10-11",
+  "vencimiento": "2025-10-17",
+  "denominacion": "BONO DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 17 DE OCTUBRE DE 2025 (T17O5 - nueva);",
+  "origen": "licitación del 2024-10-09"
+ },
+ "S29Y6": {
+  "tem": 0.0235,
+  "emision": "2025-05-30",
+  "vencimiento": "2026-05-29",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 29 DE MAYO DE 2026 (S29Y6 – nueva) (6)",
+  "origen": "licitación del 2025-05-28"
+ },
+ "S10L5": {
+  "tem": 0.0258,
+  "emision": "2025-06-17",
+  "vencimiento": "2025-07-10",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 10 DE JULIO DE 2025 (S10L5 - nueva)",
+  "origen": "licitación del 2025-06-13"
+ },
+ "S16E6": {
+  "tem": 0.036000000000000004,
+  "emision": "2025-08-15",
+  "vencimiento": "2026-01-16",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 16 DE ENERO DE 2026 (S16E6 - nueva)",
+  "origen": "licitación del 2025-08-13"
+ },
+ "S17A6": {
+  "tem": 0.024,
+  "emision": "2025-12-15",
+  "vencimiento": "2026-04-17",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 17 DE ABRIL DE 2026 (S17A6 - nueva)",
+  "origen": "licitación del 2025-12-11"
+ },
+ "S16M6": {
+  "tem": 0.029900000000000003,
+  "emision": "2026-01-30",
+  "vencimiento": "2026-03-16",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 16 DE MARZO DE 2026 (S16M6 - nueva);",
+  "origen": "licitación del 2026-01-28"
+ },
+ "S31L6": {
+  "tem": 0.0275,
+  "emision": "2026-01-30",
+  "vencimiento": "2026-07-31",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 31 DE JULIO DE 2026 (S31L6 - nueva);",
+  "origen": "licitación del 2026-01-28"
+ },
+ "S12J6": {
+  "tem": 0.021,
+  "emision": "2026-04-30",
+  "vencimiento": "2026-06-12",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 12 DE JUNIO DE 2026 (S12J6 - nueva)",
+  "origen": "licitación del 2026-04-28"
+ },
+ "S30S6": {
+  "tem": 0.0253,
+  "emision": "2026-03-16",
+  "vencimiento": "2026-09-30",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 30 DE SEPTIEMBRE DE 2026 (nueva)",
+  "origen": "licitación del 2026-03-12"
+ },
+ "S15S6": {
+  "tem": 0.0199,
+  "emision": "2026-05-29",
+  "vencimiento": "2026-09-15",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 15 DE SEPTIEMBRE DE 2026 (S15S6 - nueva);",
+  "origen": "licitación del 2026-05-27"
+ },
+ "S26F7": {
+  "tem": 0.021,
+  "emision": "2026-10-30",
+  "vencimiento": "2027-02-26",
+  "denominacion": "LETRA DEL TESORO NACIONAL CAPITALIZABLE EN PESOS CON VENCIMIENTO 26 DE FEBRERO DE 2027 (S26F7 - nueva)",
+  "origen": "licitación del 2026-10-28"
+ }
+}
