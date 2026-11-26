@@ -10,6 +10,7 @@ from unittest.mock import Mock, patch
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "pipeline"))
 import alerta
 import bonos
+import byma_iamc as iamc
 import fuentes
 import forwards
 from salud import normalizar
@@ -96,6 +97,36 @@ class IndiceByma(unittest.TestCase):
         respuesta = Mock(); respuesta.raise_for_status.side_effect = RuntimeError("HTTP 500")
         with patch.object(fuentes.requests, "post", return_value=respuesta), self.assertRaisesRegex(RuntimeError, "500"):
             fuentes.byma_indices()
+
+
+class CierresIamc(unittest.TestCase):
+    def test_usa_precio_negociado_y_fecha_de_la_rueda(self):
+        tp = {"fecha": "2026-11-13", "rows": [{"tk": "AL30", "pxa": 81290, "px": 51, "vn": 100}],
+              "esp": [{"tk": "AL30D", "pxa": 51.55, "vn": 25}, {"tk": "AL30C", "pxa": 48, "vn": 0}]}
+        datos = {"tp": tp, "mer": {"fecha": "2026-11-12", "ult": 123}}
+        pagina = '<script id="payload" type="application/json">' + json.dumps(datos) + '</script>'
+        with patch.object(fuentes, "HOY", dt.date(2026, 11, 24)):
+            rueda = iamc.leer_informe(pagina, dt.date(2026, 11, 13))
+            self.assertEqual(rueda["precios"], {"AL30": 81290, "AL30D": 51.55, "AL30C": 48})
+            self.assertEqual(rueda["sin_volumen"], ["AL30C"])
+            self.assertIsNone(rueda["merval"])
+            with self.assertRaises(ValueError):
+                iamc.leer_informe(pagina, dt.date(2026, 11, 12))
+
+    def test_no_rebaja_un_cierre_y_reintentar_es_idempotente(self):
+        f = dt.date(2026, 11, 13)
+        def dato(precio, fuente):
+            return (f, "al30_ars", precio, "ARS", fuente)
+        primario = dato(81290, "BYMA (AL30 24HS)")
+        intradia = dato(81200, "BYMA intradiario (provisorio)")
+        informe = fuentes._df([dato(81280, iamc.CANAL)])
+        base = iamc.incorporar(fuentes._df([intradia]), informe)
+        self.assertEqual(base.iloc[0]["valor"], 81280)
+        base = iamc.incorporar(base, informe)
+        self.assertEqual(len(base), 1)
+        for filas in ([primario, intradia], [intradia, primario]):
+            base = iamc.incorporar(fuentes._df(filas), informe)
+            self.assertEqual(base.iloc[0]["valor"], 81290)
 
 
 class Descargas(unittest.TestCase):
@@ -210,6 +241,12 @@ class RezagosPublicacion(unittest.TestCase):
     def test_recaudacion_no_exige_un_mes_sin_cerrar(self):
         for hoy in [dt.date(2026, 10, 29), dt.date(2026, 10, 31)]:
             self.assertFalse(self.pipeline.rezago_de("recaudacion_total", dt.date(2026, 9, 1), hoy)[3])
+
+    def test_rezago_bancario_cuenta_las_publicaciones_posibles(self):
+        ultima = dt.date(2026, 11, 19)
+        self.assertEqual(self.pipeline.rezago_de("compras_bcra_mlc", ultima, dt.date(2026, 11, 26)), (4, "h", 4, False))
+        self.assertTrue(self.pipeline.rezago_de("compras_bcra_mlc", ultima, dt.date(2026, 11, 27))[3])
+        self.assertEqual(self.pipeline.rezago_de("ust_10y", ultima, dt.date(2026, 11, 26))[0], 5)
 
     def test_alerta_despues_de_cinco_habiles(self):
         fecha = dt.date(2026, 9, 1)

@@ -32,7 +32,7 @@ const S = (v) => (D.series[v] ? D.series[v].d : []);
 const meta = (v) => D.series[v] || { u: "", f: "" };
 const ult = (v) => { const s = S(v); return s.length ? s[s.length - 1] : [null, null]; };
 const prev = (v) => { const s = S(v); return s.length > 1 ? s[s.length - 2] : [null, null]; };
-const esProv = (v) => { const p = meta(v).p; const f = ult(v)[0]; return !!(p && f && f >= p); };
+const esProv = (v) => /provisorio/i.test(meta(v).f);
 const valEn = (v, f) => { const s = S(v); for (let i = s.length - 1; i >= 0; i--) if (s[i][0] <= f) return s[i][1]; return null; };
 const iso = (t) => new Date(t).toISOString().slice(0, 10);
 const hoy = () => new Date().toLocaleDateString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" });   // fecha de Argentina, no UTC
@@ -371,7 +371,7 @@ function tarjeta(cont, cfg) {
     if (cfg.series && cfg.series[0].v) {   // aviso si la serie principal dejó de actualizarse, o si el último dato es del día
       const v0 = cfg.series[0].v; const f = ult(v0)[0]; const dias = f ? (Date.now() - Date.parse(f)) / 864e5 : 0;
       if (f && dias > (cfg.mensual ? 110 : 10)) baj.insertAdjacentHTML("beforeend", ` · <span class="viejo">último dato: ${cfg.mensual ? mesCorto(f) : fechaCorta(f)}</span>`);
-      if (esProv(v0)) baj.insertAdjacentHTML("beforeend", ` · <span class="prov" title="${meta(v0).f}">dato del día, provisorio</span>`);
+      if (esProv(v0)) baj.insertAdjacentHTML("beforeend", ` · <span class="prov" title="${meta(v0).f}">dato provisorio del ${fechaCorta(ult(v0)[0])}</span>`);
     }
   };
   card._redibujar();
@@ -389,7 +389,7 @@ function kpi(cont, k) {
   const viejo = f && (D.estado?.atrasadas || []).includes(k.v);
   const pv = esProv(k.v);
   el.innerHTML = `<div class="lbl">${k.lbl}</div><div class="val">${val}<small>${k.u || ""}</small></div>
-    <div class="meta"><span>${dt}</span><span class="${viejo ? "viejo" : pv ? "prov" : ""}" title="${viejo ? `Último dato hace ${atraso} días` : pv ? "Dato del día, provisorio" : ""}">${f ? (k.mensual ? mesCorto(f) : fechaCorta(f)) + (pv ? " ·prov." : "") : ""}</span></div><div class="spark"></div>`;
+    <div class="meta"><span>${dt}</span><span class="${viejo ? "viejo" : pv ? "prov" : ""}" title="${viejo ? `Último dato hace ${atraso} días` : pv ? "Último dato provisorio" : ""}">${f ? (k.mensual ? mesCorto(f) : fechaCorta(f)) + (pv ? " ·prov." : "") : ""}</span></div><div class="spark"></div>`;
   cont.appendChild(el);
   const s = S(k.v).slice(-(k.n || 90)); const c = COL();
   const ch = echarts.init(el.querySelector(".spark")); charts.push(ch);
@@ -537,8 +537,8 @@ function novedades() {
   }
   const [fC, ccl] = ult("ccl");
   if (ccl) {
-    const pv = esProv("ccl") ? " (precios del día, con 20 minutos de demora)" : "";
-    L.push(`El <b>contado con liqui</b> cotiza a $${fmt(ccl, 0)} y el MEP a $${fmt(ult("mep")[1], 0)}${pv}. La brecha con el mayorista es de ${fmt(ult("brecha_ccl")[1], 1)}% y el canje, de ${fmt(ult("canje_ccl_mep")[1], 1)}%.`);
+    const [fMep, mep] = ult("mep");
+    L.push(`El <b>contado con liqui</b> del ${fechaCorta(fC)} fue de $${fmt(ccl, 0)}${esProv("ccl") ? " (provisorio)" : ""} y el MEP${fMep && fMep !== fC ? " del " + fechaCorta(fMep) : ""}, de $${fmt(mep, 0)}${esProv("mep") ? " (provisorio)" : ""}. La brecha con el mayorista es de ${fmt(ult("brecha_ccl")[1], 1)}% y el canje, de ${fmt(ult("canje_ccl_mep")[1], 1)}%.`);
   }
   const [fR, rp] = ult("riesgo_pais_argentina");
   if (rp) {
@@ -546,7 +546,7 @@ function novedades() {
     const d30 = difVar("riesgo_pais_argentina", iso(Date.parse(fR) - 30 * 864e5));
     const e = extremoDesde("riesgo_pais_argentina");
     const gl = promedioGrupo("latam"); const g30 = difVar(gl, iso(Date.parse(fR) - 30 * 864e5));
-    L.push(`El <b>riesgo país</b> marca ${fmt(rp)} puntos${esProv("riesgo_pais_argentina") ? " (dato del día de Ámbito)" : ""}, ${fmtS(d1)} contra la rueda anterior y ${fmtS(d30)} en 30 días. En el mismo lapso, el promedio de la región sin Venezuela ni Argentina varió ${fmtS(g30)} puntos.${e ? ` Es el nivel más ${e.tipo} ${desdeTxt(e)}.` : ""}`);
+    L.push(`El <b>riesgo país</b> al ${fechaCorta(fR)} fue de ${fmt(rp)} puntos${esProv("riesgo_pais_argentina") ? " (Ámbito, provisorio)" : ""}, ${fmtS(d1)} contra la rueda anterior y ${fmtS(d30)} en 30 días. En el mismo lapso, el promedio de la región sin Venezuela ni Argentina varió ${fmtS(g30)} puntos.${e ? ` Es el nivel más ${e.tipo} ${desdeTxt(e)}.` : ""}`);
   }
   const [fB, brutas] = ult("reservas_brutas");
   if (brutas) {
@@ -574,7 +574,7 @@ function novedades() {
   if (ust != null && Math.abs(ust) >= 0.08) partes.push(`la tasa del Tesoro a 10 años ${ust > 0 ? "sube" : "baja"} ${fmt(Math.abs(ust) * 100)} puntos básicos`);
   L.push(partes.length ? `En los <b>mercados internacionales</b>, ${partes.join(", ").replace(/, ([^,]*)$/, " y $1")} en la última rueda.` : "Los <b>mercados internacionales</b> se movieron poco en la última rueda.");
   const [fMv, mv] = ult("merval_usd");
-  if (mv) L.push(`El <b>Merval</b> vale USD ${fmt(mv)} al contado con liqui${esProv("merval_usd") ? " (dato del día)" : ""}, ${fmtS(pctVar("merval_usd", prev("merval_usd")[0]), 1)}% en el día y ${fmtS(pctVar("merval_usd", iso(Date.parse(fMv) - 30 * 864e5)), 1)}% en 30 días.`);
+  if (mv) L.push(`El <b>Merval</b> al ${fechaCorta(fMv)} valía USD ${fmt(mv)} al contado con liqui${esProv("merval_usd") ? " (provisorio)" : ""}, ${fmtS(pctVar("merval_usd", prev("merval_usd")[0]), 1)}% en el día y ${fmtS(pctVar("merval_usd", iso(Date.parse(fMv) - 30 * 864e5)), 1)}% en 30 días.`);
   const lic = (D.licitaciones || []).at(-1);
   if (lic && (Date.now() - Date.parse(lic.f)) / 864e5 < 20) L.push(`En la <b>licitación del Tesoro</b> del ${fechaCorta(lic.f)} se adjudicaron $${fmt(lic.adjudicado / 1e6, 2)} billones${lic.ofertado ? ` sobre ofertas por $${fmt(lic.ofertado / 1e6, 2)} billones` : ""}.`);
   const [fbc, cc] = ult("bc_cuenta_corriente");
@@ -788,7 +788,11 @@ function tasas(main) {
     } });
   if (!hayInfl) return;
   tarjeta(g, { mide: "inflacion_implicita", titulo: () => `El mercado descuenta ${fmt(ult("inflacion_implicita_6m")[1], 1)}% de inflación mensual a seis meses`,
-    bajada: "Bonos CER contra LECAP y BONCAP a igual plazo, a 2, 4 y 6 meses, y REM del mes siguiente · En % mensual", fuente: F.byma + " Tasas reales de los Boncer cero cupón (TZX) y letras CER; CER del BCRA.", dec: 2, decEje: 1, leyenda: true,
+    bajada: () => {
+      const f2 = ult("inflacion_implicita_2m")[0], f6 = ult("inflacion_implicita_6m")[0];
+      const hasta = f2 && f6 && f2 < f6 ? ` · Dos meses: último dato del ${fechaCorta(f2)}. El cálculo requiere vencimientos que cubran los 60 días.` : "";
+      return "Bonos CER contra LECAP y BONCAP a igual plazo, a 2, 4 y 6 meses, y REM del mes siguiente · En % mensual" + hasta;
+    }, fuente: F.byma + " Tasas reales de los Boncer cero cupón (TZX) y letras CER; CER del BCRA.", dec: 2, decEje: 1, leyenda: true,
     series: [{ v: "inflacion_implicita_2m", nombre: "A 2 meses" }, { v: "inflacion_implicita_4m", nombre: "A 4 meses", color: "celeste" }, { v: "inflacion_implicita_6m", nombre: "A 6 meses", color: "naranja" },
       { v: "rem_inflacion_mes_siguiente", nombre: "REM mes siguiente", color: "gris" }] });
   tarjeta(g, { mide: "curva_inflacion", titulo: "Inflación implícita por vencimiento", sinRango: true, alto: 320,
@@ -849,14 +853,15 @@ function tablaBonos(el, card) {
       const prov = esProv(v); if (prov) hayProv = true;
       const tir = ult(bonoM("bono_tir", t))[1], md = ult(bonoM("bono_md", t))[1];
       const rescate = BONOS_RESCATE[t] ? ` <span class="est" title="Opción de rescate del tenedor desde el ${BONOS_RESCATE[t]}, en pesos al A3500. La TIR no la incluye.">†</span>` : "";
-      filas.push(`<tr><td>${t}${rescate}</td><td>${fmt(x, mon === "ars" ? 0 : 2)}</td>${cel(xp ? (x / xp - 1) * 100 : null)}${cel(desde(7))}${cel(desde(30))}` +
+      const sinVolumen = meta(v).f.includes("rueda sin volumen");
+      filas.push(`<tr><td>${t}${rescate}</td><td>${fmt(x, mon === "ars" ? 0 : 2)}${sinVolumen ? " (sin volumen)" : ""}</td>${cel(xp ? (x / xp - 1) * 100 : null)}${cel(desde(7))}${cel(desde(30))}` +
         `<td>${tir == null ? "" : fmt(tir, 2) + "%"}</td><td>${md == null ? "" : fmt(md, 2)}</td>` +
         `<td class="${prov ? "est" : ""}">${fechaCorta(f)}${prov ? " *" : ""}</td></tr>`);
     });
   });
   const tw = document.createElement("div"); tw.className = "tw";
   tw.innerHTML = `<table class="tabla"><tr><th>Bono</th><th>Precio</th><th>Día</th><th>7 días</th><th>30 días</th><th>TIR</th><th>Duration</th><th>Dato</th></tr>${filas.join("")}</table>` +
-    (hayProv ? '<p class="fuente">*Dato del día, provisorio: último precio operado con 20 minutos de demora, hasta que sale el cierre.</p>' : "") +
+    (hayProv ? '<p class="fuente">* Último precio operado de la fecha indicada, provisorio hasta la publicación del cierre.</p>' : "") +
     '<p class="fuente">† Bopreal Serie 1 con opción de rescate del tenedor, en pesos al tipo de cambio A3500: la TIR no la incluye.</p>';
   el.appendChild(tw);
 }
@@ -1527,7 +1532,10 @@ function estado() {
   if (!aviso.hidden) {
     const detalle = [];
     if (problemas.length) detalle.push(`Fuentes con problemas: ${problemas.map(([k]) => k).join(", ")}`);
-    if (atrasadas.length) detalle.push(`${atrasadas.length} series con demora mayor a la esperada`);
+    const cierre = e.fuentes.byma_cierres_iamc?.ultimo_cierre;
+    if (cierre && problemas.some(([k]) => k.startsWith("byma") || k === "bonos_historicos"))
+      detalle.push(`Último cierre de BYMA disponible en el IAMC: ${fechaCorta(cierre)}`);
+    if (atrasadas.length) detalle.push(`${atrasadas.length} ${atrasadas.length === 1 ? "serie" : "series"} con demora mayor a la esperada`);
     aviso.append(document.createTextNode(detalle.join(". ") + ". "));
     const enlace = document.createElement("a"); enlace.href = "#estado"; enlace.textContent = "Ver estado y fechas";
     enlace.onclick = () => { document.getElementById("estado").closest("details").open = true; };

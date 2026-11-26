@@ -6,6 +6,16 @@ const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname, '../site/app.js'), 'utf8');
 const ipomSource = fs.readFileSync(path.join(__dirname, '../site/ipom.js'), 'utf8');
 
+test('un provisorio antiguo no convierte el cierre más reciente en dato del día', () => {
+  const c = vm.createContext({ D: { series: {
+    cerrada: { f: 'BYMA vía IAMC', p: '2026-11-13', d: [['2026-11-24', 100]] },
+    abierta: { f: 'BYMA (MSCI MERVAL, portada) (provisorio)', d: [['2026-11-25', 101]] }
+  } } });
+  vm.runInContext(source.slice(source.indexOf('const S ='), source.indexOf('const valEn =')), c);
+  assert.equal(vm.runInContext("esProv('cerrada')", c), false);
+  assert.equal(vm.runInContext("esProv('abierta')", c), true);
+});
+
 test('BOPREAL: escenarios consistentes con súper netas y sin arrastre de fechas faltantes', () => {
   const fecha='2026-10-28';
   const series={res_bopreal_esc_30:[[fecha,2108.68]],res_bopreal_esc_50:[[fecha,2014.57]],res_bopreal_esc_70:[[fecha,1920.47]]};

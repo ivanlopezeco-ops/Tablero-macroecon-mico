@@ -6,6 +6,16 @@ Tablero de seguimiento de la macro argentina con actualización automática diar
 
 La base acumulada (`data/series.csv`, `estado.json`, `validacion.md`, crudos) vive en la rama `datos`, que tiene un único commit y se reemplaza en cada corrida. Así el repositorio no crece con las corridas horarias. Para verla: rama `datos` en GitHub.
 
+## Cierres de BYMA
+
+Desde la interrupción de BYMA Open Data en noviembre de 2026, el tablero completa los cierres con el informe diario del IAMC. Usa el cierre publicado de cada especie en su moneda y en el segmento de prioridad precio-tiempo a 24 horas. Si el informe publica un cierre con volumen cero, la fuente identifica la rueda sin operaciones. El MEP surge de dividir AL30 por AL30D y el CCL, de dividir AL30 por AL30C. Para las letras y los bonos CER aplica las fórmulas y fichas del tablero. El archivo del IAMC también publica el cierre del MSCI MERVAL en pesos. La portada de BYMA aporta el último valor fechado del índice como provisorio hasta que se conoce el cierre. [Informe diario](https://www.iamc.com.ar/) · [Archivo de ruedas](https://www.iamc.com.ar/h/indice.json)
+
+Cada observación lleva la fecha de la rueda. El cierre reemplaza a una cotización provisoria y el histórico directo de BYMA tiene prioridad cuando está disponible. Los cierres del IAMC son precios efectivos de la rueda, por lo que el cálculo de la TIR los usa directamente. Las cotizaciones históricas ajustadas de Open Data requieren deshacer el ajuste por pagos antes de calcular la TIR.
+
+## Rezago de los agregados monetarios
+
+Para los agregados monetarios del BCRA y sus derivados, la demora admitida sigue siendo de cuatro días hábiles. Se cuentan los días posteriores a la observación hasta la fecha de consulta con el calendario bancario publicado para 2026. Los años sin calendario cargado usan los feriados nacionales argentinos. [Feriados bancarios del BCRA](https://www.bcra.gob.ar/consulta-feriados-bancarios-2026/)
+
 ## Instalación y comprobaciones
 
 Python 3.12 y Node.js 20 o posterior:

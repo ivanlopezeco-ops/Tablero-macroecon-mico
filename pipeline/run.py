@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 
 import bonos as B
+import byma_iamc as IAMC
 import bopreal_reservas as BR
 import fuentes as F
 from salud import normalizar
@@ -32,9 +33,9 @@ COLS = F.COLS
 
 # ---------------------------------------------------------------- utilidades
 def serie(df, var):
-    s = df[df["variable"] == var].set_index("fecha")["valor"].sort_index()
+    s = df[df["variable"] == var].set_index("fecha")["valor"]
     s.index = pd.to_datetime(s.index)
-    return s[~s.index.duplicated(keep="last")]
+    return s[~s.index.duplicated(keep="last")].sort_index()
 
 
 def serie_def(df, var):
@@ -100,15 +101,15 @@ def derivadas(df):
     out, notas = [], {}
 
     a3500 = serie(df, "tc_mayorista_a3500")
-    fu = df["fuente"].astype(str)
-    prov_byma = set(df.loc[df["variable"].isin(["al30_ars", "al30_usd_mep", "al30_usd_ccl"]) & fu.str.contains("provisorio"), "fecha"])
-    P = lambda frame: provisorio(frame, prov_byma)  # noqa: E731
+    provis = df[df["fuente"].str.contains("provisorio")]
+    prov_mep = set(provis.loc[provis.variable.isin(["al30_ars", "al30_usd_mep"]), "fecha"])
+    prov_ccl = set(provis.loc[provis.variable.isin(["al30_ars", "al30_usd_ccl"]), "fecha"])
     # MEP y CCL propios con AL30
     al30 = serie(df, "al30_ars")
     mep = al30 / serie(df, "al30_usd_mep")
     ccl = al30 / serie(df, "al30_usd_ccl")
-    out += [P(largo(mep, "mep", "ARS/USD", "Cálculo: AL30/AL30D (BYMA)")),
-            P(largo(ccl, "ccl", "ARS/USD", "Cálculo: AL30/AL30C (BYMA)"))]
+    out += [provisorio(largo(mep, "mep", "ARS/USD", "Cálculo: AL30/AL30D (BYMA)"), prov_mep),
+            provisorio(largo(ccl, "ccl", "ARS/USD", "Cálculo: AL30/AL30C (BYMA)"), prov_ccl)]
     # Riesgo país de Argentina: EMBIGD del BCRD y, para los días que el BCRD todavía no publicó, Ámbito
     rp = serie_def(df, "riesgo_pais_argentina")
     amb = serie(df, "riesgo_pais_argentina_ambito")
@@ -119,11 +120,11 @@ def derivadas(df):
     # Series largas: antes del primer dato propio (BYMA da unos dos años), ArgentinaDatos
     tmp = pd.concat([df, largo(mep, "mep", "", ""), largo(ccl, "ccl", "", "")], ignore_index=True)
     ccl_l, mep_l = empalmar(tmp, "ccl", "ccl_ad"), empalmar(tmp, "mep", "mep_ad")
-    out += [P(largo(ccl_l, "ccl_largo", "ARS/USD", "Cálculo propio (AL30); antes, ArgentinaDatos")),
-            P(largo(mep_l, "mep_largo", "ARS/USD", "Cálculo propio (AL30); antes, ArgentinaDatos"))]
+    out += [provisorio(largo(ccl_l, "ccl_largo", "ARS/USD", "Cálculo propio (AL30); antes, ArgentinaDatos"), prov_ccl),
+            provisorio(largo(mep_l, "mep_largo", "ARS/USD", "Cálculo propio (AL30); antes, ArgentinaDatos"), prov_mep)]
     a3500_ff = a3500.reindex(a3500.index.union(ccl_l.index)).ffill()  # en la rueda, el CCL del día contra el último A3500
-    out.append(P(largo((ccl_l / a3500_ff.reindex(ccl_l.index) - 1) * 100, "brecha_ccl", "%", "Cálculo: CCL/A3500-1")))
-    out.append(P(largo((ccl_l / mep_l - 1) * 100, "canje_ccl_mep", "%", "Cálculo: CCL/MEP-1")))
+    out.append(provisorio(largo((ccl_l / a3500_ff.reindex(ccl_l.index) - 1) * 100, "brecha_ccl", "%", "Cálculo: CCL/A3500-1"), prov_ccl))
+    out.append(provisorio(largo((ccl_l / mep_l - 1) * 100, "canje_ccl_mep", "%", "Cálculo: CCL/MEP-1"), prov_ccl | prov_mep))
     rpl = largo(empalmar(df, "riesgo_pais_argentina", "riesgo_pais_argentina_ad"), "riesgo_pais_argentina_largo", "pb",
                 "BCRD (EMBIGD); antes de 2007, ArgentinaDatos (Ámbito)")
     out.append(provisorio(rpl, set(cola.index.date)))
@@ -135,11 +136,11 @@ def derivadas(df):
         k = sp.get(pd.Timestamp(F.MERVAL_FIN_SP))
         nuevo = msci[msci.index > pd.Timestamp(F.MERVAL_FIN_SP)] * k / F.MERVAL_MSCI_BASE if k else msci.iloc[0:0]
         merval = pd.concat([sp, nuevo])
-        prov_m = set(df.loc[(df["variable"] == "merval_msci") & fu.str.contains("provisorio"), "fecha"]) | prov_byma
+        prov_m = set(df.loc[(df["variable"] == "merval_msci") & df["fuente"].str.contains("provisorio"), "fecha"])
         fu_m = "S&P Merval (Yahoo Finance) hasta el 16/10/26; desde el 19/10/26, MSCI MERVAL (BYMA) empalmado"
         out.append(provisorio(largo(merval, "merval", "puntos", fu_m), prov_m))
         usd = (merval / ccl_l.reindex(merval.index)).dropna()
-        out.append(provisorio(largo(usd, "merval_usd", "USD", "Cálculo: Merval / CCL. " + fu_m), prov_m))
+        out.append(provisorio(largo(usd, "merval_usd", "USD", "Cálculo: Merval / CCL. " + fu_m), prov_m | prov_ccl))
     techo = serie(df, "banda_techo")
     out.append(largo((techo / a3500 - 1) * 100, "distancia_techo_banda", "%", "Cálculo: techo/A3500-1"))
 
@@ -251,7 +252,13 @@ def derivadas(df):
                 if s.empty:
                     continue
                 fe = s.index.values.astype("datetime64[D]")
-                r = B.calcular(flujos[t], fe, B.precio_crudo(flujos[t], fe, s.values))
+                # Solo el histórico descargado de Open Data está ajustado por pagos posteriores.
+                origen = df.loc[df["variable"] == v].set_index("fecha")["fuente"]
+                origen.index = pd.to_datetime(origen.index)
+                ajustada = origen.reindex(s.index).str.startswith("BYMA (").to_numpy(dtype=bool)
+                precios = s.to_numpy(dtype=float, copy=True)
+                precios[ajustada] = B.precio_crudo(flujos[t], fe[ajustada], precios[ajustada])
+                r = B.calcular(flujos[t], fe, precios)
                 prov = set(df.loc[(df["variable"] == v) & df["fuente"].astype(str).str.contains("provisorio"), "fecha"])
                 for k, (pref, uni) in enumerate([("bono_tir", "% TEA"), ("bono_md", "años"), ("bono_cx", "años²")]):
                     ser = pd.Series(r[:, k], index=s.index).dropna()
@@ -413,11 +420,13 @@ def validar(df, notas, estado):
 
 
 # ---------------------------------------------------------------- rezagos esperados
-# (prefijos, unidad, límite). "h" = días hábiles desde la fecha del dato hasta hoy (sin feriados: un feriado
-# suma un día de más). "d" = días corridos desde la fecha del dato. "m" = serie mensual: el límite es la
+# (prefijos, unidad, límite). "h" = días hábiles desde la fecha del dato hasta hoy. Los agregados
+# del BCRA descuentan los feriados bancarios. "d" = días corridos. "m" = serie mensual: el límite es la
 # demora normal de publicación, en días desde el inicio del período; está atrasada solo si el período
 # siguiente ya debería haber salido. Los límites de las mensuales son aproximados: se ajustan con lo observado.
 # "mh": días hábiles argentinos DESPUÉS del cierre del siguiente mes pendiente de publicación.
+AGREGADOS_BCRA = ("reservas_", "res_", "base_monetaria", "m2_", "prestamos_", "depositos_", "encajes_", "lebac_", "compras_bcra")
+CALENDARIO_BANCARIO = json.loads((BASE / "config" / "feriados_bancarios.json").read_text(encoding="utf-8"))
 REZAGO_ESPERADO = [
     (("ipc_", "cpi_eeuu"), "m", 50),
     (("emae_",), "m", 85),
@@ -427,7 +436,7 @@ REZAGO_ESPERADO = [
     (("recaudacion_",), "mh", 5),
     (("bc_", "bcs_", "mc_", "mcc_"), "m", 75),
     (("rem_",), "d", 45),
-    (("reservas_", "res_", "base_monetaria", "m2_", "prestamos_", "depositos_", "encajes_", "lebac_", "compras_bcra"), "h", 4),
+    (AGREGADOS_BCRA, "h", 4),
     (("tcrm", "tcr_brasil", "tcr_eeuu"), "h", 5),
     (("demanda_electrica",), "h", 3),
     (("gd30_",), "h", 2),  # solo histórico de BYMA; el intradiario trae AL30 pero no GD30
@@ -466,6 +475,16 @@ def rezago_de(var, fecha, hoy):
             break
     if unidad == "h":
         rez = int(np.busday_count(fecha, hoy)) if fecha <= hoy else 0
+        if var.startswith(AGREGADOS_BCRA) and fecha < hoy:
+            feriados = []
+            for anio in range(fecha.year, hoy.year + 1):
+                calendario = CALENDARIO_BANCARIO.get(str(anio))
+                if calendario:
+                    feriados.extend(calendario["fechas"])
+                else:
+                    feriados.extend(str(f) for f in feriados_nacionales(anio) if f.year == anio)
+            dia = dt.timedelta(days=1)
+            rez = int(np.busday_count(fecha + dia, hoy + dia, holidays=feriados))
         return rez, unidad, limite, rez > limite
     rez = (hoy - fecha).days
     if unidad == "mh":
@@ -547,7 +566,8 @@ def main():
                        ("argentinadatos", F.argentinadatos), ("byma_historicos", F.byma_historicos),
                        ("bonos_historicos", F.bonos_historicos),
                        ("rofex_futuros", F.rofex_futuros), ("cammesa", F.cammesa),
-                       ("treasury", F.treasury), ("yahoo", F.yahoo), ("byma_indices", F.byma_indices),("datos_gob", F.datos_gob), ("indec_ipc", F.indec_ipc),
+                       ("treasury", F.treasury), ("yahoo", F.yahoo), ("byma_merval_web", IAMC.merval_web),
+                       ("byma_indices", F.byma_indices), ("datos_gob", F.datos_gob), ("indec_ipc", F.indec_ipc),
                        ("indec_emae", F.indec_emae), ("indec_industria", F.indec_industria), ("indec_ica", F.indec_ica), ("bls_cpi", F.cpi_eeuu), ("rem", F.rem), ("itcrm", F.itcrm),
                        ("balance_cambiario", F.balance_cambiario), ("a3_mae", F.a3_mae)]:
         if not toca(nombre, previo):
@@ -617,6 +637,7 @@ def main():
 
     fpath = RAW / "lecap_fichas.json"
     fichas = json.loads(fpath.read_text(encoding="utf-8")) if fpath.exists() else {}
+    tem_lic = {}
     try:
         lic_path = DATA / "licitaciones.json"
         tem_lic = F.tem_licitaciones(json.loads(lic_path.read_text(encoding="utf-8"))) if lic_path.exists() else {}
@@ -672,7 +693,18 @@ def main():
         base = nuevo
     if F.COMPLETO:  # la curva de cada letra que se volvió a bajar se recalcula entera; las demás conservan su historia
         rehechas = set(nuevo.loc[nuevo["variable"].str.startswith("lecap_tem_"), "variable"])
-        base = base[~base["variable"].isin(rehechas) | base.index.isin(base.index[len(base) - len(nuevo):])]
+        base = base[~base["variable"].isin(rehechas) | base.index.isin(base.index[len(base) - len(nuevo):])
+                    | base["fuente"].str.contains(IAMC.CANAL, regex=False)]
+    try:
+        cierres = IAMC.cotizaciones(RAW / "iamc", fichas, fichas_cer, tem_lic)
+        base = IAMC.incorporar(base, cierres)
+        estado["byma_cierres_iamc"] = {"estado": "ok", "filas": len(cierres),
+                                       "ultimo_cierre": str(cierres.fecha.max()), "ok_utc": dt.datetime.utcnow().isoformat()}
+        if cierres.attrs["errores"]:
+            estado["byma_cierres_iamc"]["error"] = " | ".join(cierres.attrs["errores"])[:800]
+    except Exception as e:
+        base = IAMC.incorporar(base, F._df([]))
+        estado["byma_cierres_iamc"] = {"estado": "ERROR", "error": str(e)[:800]}
     # Variables descartadas: foto de caución de BYMA (la reemplaza A3) y EMBIG del BCRP (no empalma con el EMBIGD)
     base = base[~base["variable"].str.match(r"caucion_pesos_\d+d$|riesgo_pais_.*_bcrp$|riesgo_pais_latam_largo$")]
     # Las reservas previas se reemplazan solo si derivadas() termina bien.

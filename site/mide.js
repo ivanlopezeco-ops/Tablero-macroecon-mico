@@ -59,8 +59,8 @@ const MIDE = {
     "Tasa que el mercado exige por prestar entre el vencimiento 2027 y el 2028, implícita en las tasas de dos bonos de la misma curva: (1 + forward) ^ (t2 - t1) = (1 + tasa larga) ^ t2 / (1 + tasa corta) ^ t1. Se expresa como tasa nominal anual con capitalización semestral (base 180/360).",
     "En los Bonares AO27 y AO28 se usa la TIR en dólares con el precio contra cable y, como plazo, la duration de Macaulay, porque amortizan en cuotas mensuales. En los Boncer TZX27 y TZX28, que son cero cupón, se usa la tasa real sobre CER y los días al vencimiento. Una suba del forward con la tasa corta quieta indica que el mercado cobra más por el tramo 2027/2028 en particular.",
   ],
-  precio_2030: "Precio del AL30 y del GD30 en dólar MEP, por cada 100 nominales. La serie de BYMA viene ajustada por cada pago de cupón o cuota: no cae el día de pago, de modo que sirve para seguir el rendimiento total.",
-  precio_largos: "Precio de los Globales largos en dólar MEP, por cada 100 nominales, con la serie ajustada por cada pago que publica BYMA.",
+  precio_2030: "Precio del AL30 y del GD30 en dólar MEP por cada 100 nominales. Open Data ajusta el histórico por los pagos de capital e intereses. Cuando interviene el informe diario del IAMC, se muestra el cierre informado por BYMA. En ese tramo un pago puede reducir la cotización.",
+  precio_largos: "Precio de los Globales largos en dólar MEP por cada 100 nominales. Open Data ajusta el histórico por los pagos de capital e intereses. Los cierres de BYMA publicados por el IAMC corresponden al precio informado para cada rueda.",
   precio_bopreales: "Precio de los Bopreales en dólar MEP, por cada 100 nominales. Los Bopreales Serie 1 (A, B, C y D) vencen en octubre de 2027 y los de la Serie 4 (A y B), en octubre de 2028.",
 
   servicio_deuda: [
@@ -117,7 +117,7 @@ const MIDE = {
     "Merval dividido por el contado con liqui del mismo día: muestra cuánto vale la bolsa argentina en dólares. Antes del primer dato propio del CCL (calculado con el AL30) se usa el CCL de ArgentinaDatos.",
     "Desde el 19/10/26 el índice lo calcula MSCI (MSCI MERVAL) en lugar de S&P. El MSCI MERVAL arranca en 100.000 puntos el 16/10/26, último día del S&P Merval; el tablero lo lleva a la escala del S&P Merval multiplicándolo por el cierre de ese día, de modo que la serie queda empalmada. Las composiciones de los dos índices difieren.",
   ],
-  merval: "Índice Merval en pesos. Hasta el 16/10/26 es el S&P Merval (Yahoo Finance) y desde el 19/10/26 el MSCI MERVAL de BYMA, llevado a la escala del S&P Merval. BYMA no ofrece la historia del índice nuevo: el tablero la acumula día a día. Durante la rueda se muestra el último valor, como provisorio.",
+  merval: "Índice Merval en pesos. Hasta el 16/10/26 es el S&P Merval (Yahoo Finance) y desde el 19/10/26 el MSCI MERVAL de BYMA, llevado a la escala del S&P Merval. El tablero acumula los valores publicados por BYMA y completa los cierres con el archivo de ruedas del IAMC. Durante la rueda se muestra el último valor disponible con fecha, como provisorio.",
   adr_base100: "Cotización en Nueva York de los ADR de Galicia, YPF, Pampa, Macro y Vista, con valor 100 al inicio del período elegido. Precios de cierre en dólares por ADR, sin ajustar por dividendos, según Yahoo Finance.",
   tabla_adrs: "Último cierre de los ADR argentinos en Nueva York y su variación en el día, en 30 días, en el año y en 12 meses, en dólares, según Yahoo Finance. Las variaciones no incluyen dividendos.",
 

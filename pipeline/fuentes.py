@@ -1085,6 +1085,22 @@ def fichas_desde_licitaciones(lic):
     return {t: nuevas[v] for t, v in tickers.items() if v in nuevas}
 
 
+def tasa_emision(sym, ficha, tem_lic):
+    return ficha.get("tem") or (TEM_MANUAL.get(sym) or (tem_lic or {}).get(ficha["vencimiento"]) or 0) / 100
+
+
+def tem_de_cierre(sym, ficha, tasa, fecha, precio, canal="BYMA"):
+    emi, ven = pd.Timestamp(ficha["emision"]), pd.Timestamp(ficha["vencimiento"])
+    liq = pd.Timestamp(fecha) + pd.offsets.BDay(1)
+    dias = (ven - liq).days
+    if not precio or dias < 10:
+        return None
+    pago = 100 * (1 + tasa) ** (_dias360(emi, ven) / 30)
+    tem = ((pago / precio) ** (30 / dias) - 1) * 100
+    return (fecha, f"lecap_tem_{sym}", tem, "% TEM",
+            f"Cálculo: {canal} {sym} (vence {ficha['vencimiento']}, TEM emisión {tasa*100:.2f}%)")
+
+
 def lecaps(fichas, tem_lic=None, historicas=()):
     """TEM de mercado de cada LECAP/BONCAP: pago final (100 capitalizado a la TEM de emisión) vs precio."""
     _byma()
@@ -1114,25 +1130,17 @@ def lecaps(fichas, tem_lic=None, historicas=()):
             if sym not in fichas or not fichas[sym].get("tem"):
                 fichas[sym] = _ficha(sym)
             fi = fichas[sym]
-            if not fi["tem"] and TEM_MANUAL.get(sym):  # la ficha no trae la tasa: se toma de config/lecap_tem.json
-                fi = {**fi, "tem": TEM_MANUAL[sym] / 100}
-            elif not fi["tem"] and (tem_lic or {}).get(fi["vencimiento"]):  # o del comunicado de la licitación en que se emitió
-                fi = {**fi, "tem": tem_lic[fi["vencimiento"]] / 100}
-            if not fi["tem"]:
+            tasa = tasa_emision(sym, fi, tem_lic)
+            if not tasa:
                 continue
-            emi, ven = pd.Timestamp(fi["emision"]), pd.Timestamp(fi["vencimiento"])
-            pago = 100 * (1 + fi["tem"]) ** (_dias360(emi, ven) / 30)
             j = _get(f"{BYMA}/chart/historical-series/history", verify=False,
                      params={"symbol": f"{sym} 24HS", "resolution": "D", "from": t0,
                              "to": int(dt.datetime.now().timestamp())}).json()
             for t, c in zip(j.get("t", []), j.get("c", [])):
                 f = (dt.datetime.utcfromtimestamp(t) - dt.timedelta(hours=3)).date()
-                liq = pd.Timestamp(f) + pd.offsets.BDay(1)
-                dias = (ven - liq).days
-                if c and dias >= 10 and f <= ven.date():  # con menos de 10 días el redondeo distorsiona la tasa
-                    tem = ((pago / c) ** (30 / dias) - 1) * 100
-                    filas.append((f, f"lecap_tem_{sym}", tem, "% TEM",
-                                  f"Cálculo: BYMA {sym} (vence {fi['vencimiento']}, TEM emisión {fi['tem']*100:.2f}%)"))
+                fila = tem_de_cierre(sym, fi, tasa, f, c)
+                if fila:
+                    filas.append(fila)
         except Exception:  # noqa: BLE001
             continue
     return _df(filas)
