@@ -1,0 +1,366 @@
+{
+ "corrida_utc": "2026-11-28T07:49:17.431981",
+ "modo": "completo",
+ "fuentes": {
+  "byma_intradia": {
+   "estado": "ok",
+   "filas": 0,
+   "ok_utc": "2026-11-28T07:36:32.923924"
+  },
+  "ambito_riesgo": {
+   "estado": "ok",
+   "filas": 30,
+   "ok_utc": "2026-11-28T07:36:33.125220"
+  },
+  "bcra": {
+   "estado": "ok",
+   "filas": 90536,
+   "ok_utc": "2026-11-28T07:36:52.389432"
+  },
+  "bcra_cny": {
+   "estado": "ok",
+   "filas": 724,
+   "ok_utc": "2026-11-28T07:36:58.012983"
+  },
+  "bcrd_embi": {
+   "estado": "ok",
+   "filas": 84256,
+   "ok_utc": "2026-11-28T07:36:59.771797"
+  },
+  "argentinadatos": {
+   "estado": "ok",
+   "filas": 15787,
+   "ok_utc": "2026-11-28T07:37:01.077041"
+  },
+  "byma_historicos": {
+   "estado": "ok",
+   "filas": 2910,
+   "ok_utc": "2026-11-28T07:37:09.765472"
+  },
+  "bonos_historicos": {
+   "estado": "ok",
+   "filas": 25544,
+   "ok_utc": "2026-11-28T07:38:25.935486"
+  },
+  "rofex_futuros": {
+   "estado": "ok",
+   "filas": 19529,
+   "ok_utc": "2026-11-28T07:38:42.253633"
+  },
+  "cammesa": {
+   "estado": "ok",
+   "filas": 1,
+   "ok_utc": "2026-11-28T07:38:43.488679"
+  },
+  "treasury": {
+   "estado": "ok",
+   "filas": 19193,
+   "ok_utc": "2026-11-28T07:38:54.270593"
+  },
+  "yahoo": {
+   "estado": "ok",
+   "filas": 140923,
+   "ok_utc": "2026-11-28T07:38:58.381832"
+  },
+  "byma_merval_web": {
+   "estado": "ok",
+   "filas": 1,
+   "ok_utc": "2026-11-28T07:38:58.619565"
+  },
+  "byma_indices": {
+   "estado": "PARCIAL",
+   "filas": 2,
+   "ok_utc": "2026-11-28T07:38:59.121507",
+   "error": "MSCI MERVAL: BYMA devolvió la cotización sin fecha; se conserva el último dato fechado",
+   "error_desde": "2026-11-28T07:49:17.431889"
+  },
+  "datos_gob": {
+   "estado": "ok",
+   "filas": 1842,
+   "ok_utc": "2026-11-28T07:39:27.511805"
+  },
+  "indec_ipc": {
+   "estado": "ok",
+   "filas": 238,
+   "ok_utc": "2026-11-28T07:39:29.704477"
+  },
+  "indec_emae": {
+   "estado": "ok",
+   "filas": 273,
+   "ok_utc": "2026-11-28T07:39:31.215798"
+  },
+  "indec_industria": {
+   "estado": "ok",
+   "filas": 3030,
+   "ok_utc": "2026-11-28T07:39:38.784693"
+  },
+  "indec_ica": {
+   "estado": "ok",
+   "filas": 884,
+   "ok_utc": "2026-11-28T07:39:40.626140"
+  },
+  "bls_cpi": {
+   "estado": "ok",
+   "filas": 153,
+   "ok_utc": "2026-11-28T07:39:41.105211"
+  },
+  "rem": {
+   "estado": "ok",
+   "filas": 322,
+   "ok_utc": "2026-11-28T07:39:42.956600"
+  },
+  "itcrm": {
+   "estado": "ok",
+   "filas": 32769,
+   "ok_utc": "2026-11-28T07:39:50.073831",
+   "url": "https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/itcrm-serie.xlsx"
+  },
+  "balance_cambiario": {
+   "estado": "ERROR",
+   "error": "ValueError: PDF BCRA: oleaginosas y cereales ausente o no unívoco",
+   "traza": "o/Tablero-macroecon-mico/pipeline/balance_pdf.py\", line 90, in consultar\n    valores = parsear(texto, fecha)\n              ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/Tablero-macroecon-mico/Tablero-macroecon-mico/pipeline/balance_pdf.py\", line 76, in parsear\n    out['agro'] = saldo(t, r'(?<!excluyendo )oleaginos[ao]s y cereales.{0,110}?(ventas|compras) netas por usd\\s+' + n, 'oleaginosas y cereales')\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/Tablero-macroecon-mico/Tablero-macroecon-mico/pipeline/balance_pdf.py\", line 36, in saldo\n    raise ValueError(f'PDF BCRA: {nombre} ausente o no unívoco')\nValueError: PDF BCRA: oleaginosas y cereales ausente o no unívoco\n",
+   "error_desde": "2026-11-27T21:56:48.578970"
+  },
+  "a3_mae": {
+   "estado": "ok",
+   "filas": 5706,
+   "ok_utc": "2026-11-28T07:46:32.917864"
+  },
+  "servicio_deuda": {
+   "estado": "ok",
+   "filas": 24,
+   "ok_utc": "2026-11-28T07:46:32.919794"
+  },
+  "calendario_indec": {
+   "estado": "ok",
+   "filas": 157,
+   "ok_utc": "2026-11-28T07:46:38.607756"
+  },
+  "licitaciones": {
+   "estado": "ok",
+   "filas": 62,
+   "ok_utc": "2026-11-28T07:46:39.948167"
+  },
+  "lecaps": {
+   "estado": "ok",
+   "filas": 4400
+  },
+  "cer_bonos": {
+   "estado": "ok",
+   "filas": 4037,
+   "ok_utc": "2026-11-28T07:48:17.566768"
+  },
+  "byma_snapshots": {
+   "estado": "ok",
+   "filas": 0
+  },
+  "byma_cierres_iamc": {
+   "estado": "ok",
+   "filas": 1006,
+   "ultimo_cierre": "2026-11-27",
+   "ok_utc": "2026-11-28T07:48:20.425267"
+  },
+  "ampliacion": {
+   "estado": "ok",
+   "filas": 68,
+   "ok_utc": "2026-11-28T07:48:49.604714"
+  },
+  "ipom_fed": {
+   "estado": "ok",
+   "filas": 5978,
+   "variables": [
+    "ipom_fed_piso",
+    "ipom_fed_techo"
+   ],
+   "ok_utc": "2026-11-28T07:48:49.615498+00:00",
+   "cache": false,
+   "version_fuente": 2,
+   "hasta": {
+    "ipom_fed_piso": "2026-11-25",
+    "ipom_fed_techo": "2026-11-25"
+   }
+  },
+  "ipom_pce": {
+   "estado": "ok",
+   "filas": 826,
+   "variables": [
+    "ipom_pce_general",
+    "ipom_pce_general_ia",
+    "ipom_pce_general_mensual",
+    "ipom_pce_nucleo",
+    "ipom_pce_nucleo_ia",
+    "ipom_pce_nucleo_mensual"
+   ],
+   "ok_utc": "2026-11-28T07:48:49.615498+00:00",
+   "cache": false,
+   "version_fuente": 2,
+   "hasta": {
+    "ipom_pce_general": "2026-10-01",
+    "ipom_pce_general_mensual": "2026-10-01",
+    "ipom_pce_general_ia": "2026-10-01",
+    "ipom_pce_nucleo": "2026-10-01",
+    "ipom_pce_nucleo_mensual": "2026-10-01",
+    "ipom_pce_nucleo_ia": "2026-10-01"
+   }
+  },
+  "ipom_tasas_mensuales": {
+   "estado": "ok",
+   "filas": 390,
+   "variables": [
+    "ipom_tasa_adelantos_mensual",
+    "ipom_tasa_documentos_mensual",
+    "ipom_tasa_personales_mensual"
+   ],
+   "ok_utc": "2026-11-28T07:48:49.615498+00:00",
+   "cache": false,
+   "version_fuente": 1,
+   "hasta": {
+    "ipom_tasa_adelantos_mensual": "2026-10-01",
+    "ipom_tasa_documentos_mensual": "2026-10-01",
+    "ipom_tasa_personales_mensual": "2026-10-01"
+   }
+  },
+  "ipom_comercio": {
+   "estado": "ok",
+   "filas": 2442,
+   "variables": [
+    "ipom_expo_cantidad",
+    "ipom_expo_cantidad_ia",
+    "ipom_expo_precio",
+    "ipom_expo_valor",
+    "ipom_impo_cantidad",
+    "ipom_impo_cantidad_ia",
+    "ipom_impo_precio",
+    "ipom_impo_valor",
+    "ipom_terminos_intercambio"
+   ],
+   "ok_utc": "2026-11-28T07:48:49.615498+00:00",
+   "cache": false,
+   "version_fuente": 1,
+   "hasta": {
+    "ipom_expo_valor": "2026-10-01",
+    "ipom_expo_precio": "2026-10-01",
+    "ipom_expo_cantidad": "2026-10-01",
+    "ipom_impo_valor": "2026-10-01",
+    "ipom_impo_precio": "2026-10-01",
+    "ipom_impo_cantidad": "2026-10-01",
+    "ipom_terminos_intercambio": "2026-10-01",
+    "ipom_expo_cantidad_ia": "2026-10-01",
+    "ipom_impo_cantidad_ia": "2026-10-01"
+   }
+  },
+  "ipom_brasil": {
+   "estado": "ok",
+   "filas": 282,
+   "variables": [
+    "ipom_br_ibc",
+    "ipom_br_industria"
+   ],
+   "ok_utc": "2026-11-28T07:48:49.615498+00:00",
+   "cache": false,
+   "version_fuente": 1,
+   "hasta": {
+    "ipom_br_ibc": "2026-09-01",
+    "ipom_br_industria": "2026-09-01"
+   }
+  },
+  "ipom_tasas_diarias": {
+   "estado": "ok",
+   "filas": 5302,
+   "variables": [
+    "ipom_tasa_adelantos_diaria",
+    "ipom_tasa_personales_diaria"
+   ],
+   "ok_utc": "2026-11-28T07:48:49.615498+00:00",
+   "cache": false,
+   "version_fuente": 1,
+   "hasta": {
+    "ipom_tasa_adelantos_diaria": "2026-11-26",
+    "ipom_tasa_personales_diaria": "2026-11-26"
+   }
+  },
+  "ipom_mora": {
+   "estado": "ok",
+   "filas": 603,
+   "variables": [
+    "ipom_mora_empresas",
+    "ipom_mora_familias",
+    "ipom_mora_total"
+   ],
+   "ok_utc": "2026-11-28T07:48:49.615498+00:00",
+   "cache": false,
+   "version_fuente": 1,
+   "hasta": {
+    "ipom_mora_total": "2026-09-01",
+    "ipom_mora_familias": "2026-09-01",
+    "ipom_mora_empresas": "2026-09-01"
+   }
+  },
+  "ipom_cnv": {
+   "estado": "ok",
+   "filas": 1119,
+   "variables": [
+    "ipom_cnv_cpd",
+    "ipom_cnv_fce",
+    "ipom_cnv_ff",
+    "ipom_cnv_on",
+    "ipom_cnv_pagares",
+    "ipom_cnv_pyme_cpd_avalados",
+    "ipom_cnv_pyme_cpd_directos",
+    "ipom_cnv_pyme_fce",
+    "ipom_cnv_pyme_ff",
+    "ipom_cnv_pyme_on",
+    "ipom_cnv_pyme_pagares",
+    "ipom_cnv_pyme_total",
+    "ipom_cnv_total"
+   ],
+   "ok_utc": "2026-11-28T07:48:49.615498+00:00",
+   "cache": false,
+   "version_fuente": 1,
+   "hasta": {
+    "ipom_cnv_pyme_on": "2026-10-01",
+    "ipom_cnv_pyme_ff": "2026-10-01",
+    "ipom_cnv_pyme_cpd_avalados": "2026-10-01",
+    "ipom_cnv_pyme_cpd_directos": "2026-10-01",
+    "ipom_cnv_pyme_pagares": "2026-10-01",
+    "ipom_cnv_pyme_fce": "2026-10-01",
+    "ipom_cnv_pyme_total": "2026-10-01",
+    "ipom_cnv_total": "2026-10-01",
+    "ipom_cnv_on": "2026-10-01",
+    "ipom_cnv_cpd": "2026-10-01",
+    "ipom_cnv_pagares": "2026-10-01",
+    "ipom_cnv_ff": "2026-10-01",
+    "ipom_cnv_fce": "2026-10-01"
+   }
+  }
+ },
+ "notas": {
+  "tcr_base": "2026-10",
+  "swap_cny_millones_usado": 130010.5,
+  "dep_tesoro": "BCRA id 1266 (depósitos del gobierno en ME, en pesos) / A3500",
+  "inflacion_implicita_puntos": 2089
+ },
+ "atrasadas": [
+  "caucion_a3_pesos_1d",
+  "caucion_a3_usd_1d",
+  "repo_a3_pesos_1d",
+  "riesgo_pais_bolivia",
+  "riesgo_pais_brasil",
+  "riesgo_pais_chile",
+  "riesgo_pais_colombia",
+  "riesgo_pais_costa_rica",
+  "riesgo_pais_ecuador",
+  "riesgo_pais_el_salvador",
+  "riesgo_pais_global",
+  "riesgo_pais_guatemala",
+  "riesgo_pais_honduras",
+  "riesgo_pais_latam",
+  "riesgo_pais_mexico",
+  "riesgo_pais_panama",
+  "riesgo_pais_paraguay",
+  "riesgo_pais_peru",
+  "riesgo_pais_rep_dominicana",
+  "riesgo_pais_uruguay",
+  "riesgo_pais_venezuela"
+ ]
+}
